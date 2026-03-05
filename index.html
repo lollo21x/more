@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>more — Gamify Your Life</title>
+    <meta name="description"
+        content="more turns your real life into a video game. Complete side quests, earn XP, and level up.">
+    <link rel="icon" href="../logo.png">
+    <link rel="manifest" href="data:application/json,{}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Syne:wght@700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ── CSS VARIABLES ────────────────────────────────── */
+        :root {
+            --bg: #0a0a0f;
+            --surface: rgba(255, 255, 255, 0.04);
+            --surface-hover: rgba(255, 255, 255, 0.07);
+            --border: rgba(255, 255, 255, 0.06);
+            --border-light: rgba(255, 255, 255, 0.10);
+            --text: #f0f0f5;
+            --text-dim: rgba(255, 255, 255, 0.50);
+            --text-muted: rgba(255, 255, 255, 0.30);
+            --accent: #c8f135;
+            --accent-glow: rgba(200, 241, 53, 0.45);
+            --accent-dim: rgba(200, 241, 53, 0.12);
+            --diff-easy: #4fa3ff;
+            --diff-easy-bg: rgba(79, 163, 255, 0.15);
+            --diff-easy-border: rgba(79, 163, 255, 0.25);
+            --diff-medium: #ffb347;
+            --diff-medium-bg: rgba(255, 179, 71, 0.15);
+            --diff-medium-border: rgba(255, 179, 71, 0.25);
+            --diff-hard: #ff4f4f;
+            --diff-hard-bg: rgba(255, 79, 79, 0.15);
+            --diff-hard-border: rgba(255, 79, 79, 0.25);
+            --radius: 20px;
+            --radius-sm: 14px;
+            --radius-xs: 10px;
+            --font-display: 'Syne', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
+            --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
+        }
+
+        /* ── RESET ────────────────────────────────────────── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            height: 100%
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100%;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        input,
+        button,
+        textarea {
+            font: inherit;
+            color: inherit;
+            border: none;
+            outline: none;
+            background: none
+        }
+
+        button {
+            cursor: pointer
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none
+        }
+
+        ::-webkit-scrollbar {
+            display: none
+        }
+
+        html {
+            scrollbar-width: none
+        }
+
+        /* ── BACKGROUND ───────────────────────────────────── */
+        #bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse 60% 50% at 15% 10%, rgba(200, 241, 53, 0.08) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 60% at 85% 90%, rgba(60, 100, 255, 0.07) 0%, transparent 70%),
+                var(--bg);
+        }
+
+        /* ── GRAIN OVERLAY ────────────────────────────────── */
+        #grain {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0.028;
+            mix-blend-mode: overlay;
+        }
+
+        /* ── MAIN SCREEN ──────────────────────────────────── */
+        #main-screen {
+            display: flex;
+            flex-direction: column;
+            min-height: 100dvh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            padding-top: calc(12px + var(--safe-top));
+            background: rgba(10, 10, 15, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-logo {
+            height: 32px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            transition: transform .15s var(--spring), background .15s;
+        }
+
+        .btn-icon:active {
+            transform: scale(0.92)
+        }
+
+        .btn-icon:hover {
+            background: var(--surface-hover)
+        }
+
+        .btn-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--text-dim);
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            padding-bottom: calc(84px + var(--safe-bottom));
+            -webkit-overflow-scrolling: touch;
+            overflow-y: auto;
+        }
+
+        /* ── TAB BAR ───────────────────────────────────────── */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: calc(64px + var(--safe-bottom));
+            background: rgba(10, 10, 15, 0.65);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: var(--safe-bottom);
+            z-index: 300;
+        }
+
+        .tab-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-dim);
+            transition: color 0.2s, transform 0.1s;
+        }
+
+        .tab-btn:active {
+            transform: scale(0.92);
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+        }
+
+        .tab-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .tab-btn span {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+
+        /* ── XP CARD ──────────────────────────────────────── */
+        .xp-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px 24px 24px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        .xp-level-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: var(--accent-dim);
+            padding: 5px 14px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+
+        .xp-level-badge svg {
+            width: 14px;
+            height: 14px;
+            fill: var(--accent);
+            stroke: none
+        }
+
+        .xp-number {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: clamp(48px, 12vw, 64px);
+            letter-spacing: -2px;
+            color: var(--accent);
+            text-shadow:
+                0 0 10px var(--accent-glow),
+                0 0 30px var(--accent-glow),
+                0 0 60px rgba(200, 241, 53, 0.20);
+            line-height: 1;
+            margin-bottom: 14px;
+            animation: glow-pulse 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow-pulse {
+            0% {
+                text-shadow: 0 0 10px var(--accent-glow), 0 0 30px var(--accent-glow), 0 0 60px rgba(200, 241, 53, 0.20)
+            }
+
+            100% {
+                text-shadow: 0 0 15px var(--accent-glow), 0 0 45px var(--accent-glow), 0 0 80px rgba(200, 241, 53, 0.28)
+            }
+        }
+
+        .xp-progress-wrap {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            height: 6px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .xp-progress-bar {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 20px;
+            transition: width .6s var(--ease);
+            box-shadow: 0 0 8px rgba(200, 241, 53, 0.3);
+        }
+
+        .xp-progress-label {
+            font-size: 12.5px;
+            color: var(--text-dim);
+        }
+
+        /* ── QUEST SECTION ────────────────────────────────── */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 17px;
+            letter-spacing: -.3px;
+        }
+
+        .btn-ghost {
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 600;
+            padding: 8px 14px;
+            border-radius: var(--radius-xs);
+            border: 1px solid var(--accent-dim);
+            transition: transform .15s var(--spring), background .15s, opacity .15s;
+        }
+
+        .btn-ghost:active {
+            transform: scale(0.96)
+        }
+
+        .btn-ghost:hover {
+            background: var(--accent-dim)
+        }
+
+        .btn-ghost.disabled {
+            opacity: 0.4;
+            pointer-events: none
+        }
+
+        /* ── QUEST CARD ───────────────────────────────────── */
+        .quest-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px 20px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            margin-bottom: 28px;
+            transition: transform .2s var(--spring);
+        }
+
+        .quest-card:active {
+            transform: scale(0.985)
+        }
+
+        .quest-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+
+        .quest-icon {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+
+        .quest-icon.icon-easy {
+            background: var(--diff-easy-bg)
+        }
+
+        .quest-icon.icon-medium {
+            background: var(--diff-medium-bg)
+        }
+
+        .quest-icon.icon-hard {
+            background: var(--diff-hard-bg)
+        }
+
+        .quest-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round
+        }
+
+        .quest-icon.icon-easy svg {
+            stroke: var(--diff-easy)
+        }
+
+        .quest-icon.icon-medium svg {
+            stroke: var(--diff-medium)
+        }
+
+        .quest-icon.icon-hard svg {
+            stroke: var(--diff-hard)
+        }
+
+        .quest-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 17px;
+            letter-spacing: -.3px;
+            flex: 1;
+            line-height: 1.3;
+        }
+
+        .diff-badge {
+            flex-shrink: 0;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .diff-easy {
+            background: var(--diff-easy-bg);
+            color: var(--diff-easy);
+            border: 1px solid var(--diff-easy-border)
+        }
+
+        .diff-medium {
+            background: var(--diff-medium-bg);
+            color: var(--diff-medium);
+            border: 1px solid var(--diff-medium-border)
+        }
+
+        .diff-hard {
+            background: var(--diff-hard-bg);
+            color: var(--diff-hard);
+            border: 1px solid var(--diff-hard-border)
+        }
+
+        .dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%
+        }
+
+        .dot-easy {
+            background: var(--diff-easy)
+        }
+
+        .dot-medium {
+            background: var(--diff-medium)
+        }
+
+        .dot-hard {
+            background: var(--diff-hard)
+        }
+
+        .quest-desc {
+            color: var(--text-dim);
+            font-size: 14px;
+            line-height: 1.55;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .quest-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .quest-xp {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .quest-xp svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--accent);
+            stroke: none
+        }
+
+        .btn-complete {
+            padding: 10px 22px;
+            background: var(--accent);
+            color: #0a0a0f;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 13px;
+            letter-spacing: .3px;
+            border-radius: var(--radius-xs);
+            transition: transform .15s var(--spring), box-shadow .2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-complete:active {
+            transform: scale(0.96)
+        }
+
+        .btn-complete svg {
+            width: 14px;
+            height: 14px;
+            stroke: #0a0a0f;
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round
+        }
+
+        /* ── SKELETON ─────────────────────────────────────── */
+        .skeleton-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px 20px;
+            margin-bottom: 28px;
+        }
+
+        .skel-line {
+            height: 14px;
+            border-radius: 7px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.04) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            margin-bottom: 12px;
+        }
+
+        .skel-line:nth-child(1) {
+            width: 40%;
+            height: 18px
+        }
+
+        .skel-line:nth-child(2) {
+            width: 60%
+        }
+
+        .skel-line:nth-child(3) {
+            width: 85%
+        }
+
+        .skel-line:nth-child(4) {
+            width: 30%;
+            margin-bottom: 0
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0
+            }
+
+            100% {
+                background-position: -200% 0
+            }
+        }
+
+        /* ── QUEST EMPTY ──────────────────────────────────── */
+        .quest-empty {
+            text-align: center;
+            padding: 32px 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .quest-empty svg {
+            width: 40px;
+            height: 40px;
+            stroke: var(--text-muted);
+            fill: none;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            display: block;
+            margin: 0 auto 10px
+        }
+
+        /* ── COMPLETED QUESTS ─────────────────────────────── */
+        .completed-section {
+            margin-top: 8px
+        }
+
+        .completed-list {
+            list-style: none
+        }
+
+        .completed-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .completed-item:last-child {
+            border-bottom: none
+        }
+
+        .completed-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent);
+            flex-shrink: 0;
+            box-shadow: 0 0 6px rgba(200, 241, 53, 0.3);
+        }
+
+        .completed-name {
+            flex: 1;
+            font-size: 14px;
+            color: var(--text-dim)
+        }
+
+        .completed-xp {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .completed-empty {
+            text-align: center;
+            padding: 28px 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .completed-empty svg {
+            width: 32px;
+            height: 32px;
+            stroke: var(--text-muted);
+            fill: none;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            display: block;
+            margin: 0 auto 8px
+        }
+
+        /* ── XP POPUP MODAL ───────────────────────────────── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            opacity: 0;
+            transition: opacity .25s var(--ease);
+        }
+
+        .modal-overlay.show {
+            display: flex;
+            opacity: 1
+        }
+
+        .modal-content {
+            background: rgba(20, 20, 30, 0.92);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            padding: 36px 28px;
+            text-align: center;
+            max-width: 340px;
+            width: 100%;
+            transform: scale(0.85);
+            opacity: 0;
+            transition: transform .35s var(--spring), opacity .25s var(--ease);
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+            opacity: 1
+        }
+
+        .modal-icon {
+            margin-bottom: 12px
+        }
+
+        .modal-icon svg {
+            width: 48px;
+            height: 48px;
+            fill: var(--accent);
+            stroke: none;
+            filter: drop-shadow(0 0 12px var(--accent-glow))
+        }
+
+        .modal-xp {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 48px;
+            color: var(--accent);
+            text-shadow: 0 0 15px var(--accent-glow), 0 0 40px var(--accent-glow);
+            margin-bottom: 8px;
+        }
+
+        .modal-quest-name {
+            font-size: 15px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+
+        .modal-hype {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 22px;
+            margin-bottom: 24px;
+            letter-spacing: -.3px;
+        }
+
+        .btn-modal-close {
+            padding: 12px 32px;
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text);
+            transition: transform .15s var(--spring), background .15s;
+        }
+
+        .btn-modal-close:active {
+            transform: scale(0.96)
+        }
+
+        .btn-modal-close:hover {
+            background: rgba(255, 255, 255, 0.1)
+        }
+
+        /* ── SETTINGS SHEET ───────────────────────────────── */
+        .sheet-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 400;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity .25s var(--ease);
+        }
+
+        .sheet-overlay.show {
+            display: block;
+            opacity: 1
+        }
+
+        .sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 401;
+            background: rgba(18, 18, 28, 0.96);
+            border-top: 1px solid var(--border-light);
+            border-radius: 20px 20px 0 0;
+            padding: 12px 24px calc(24px + var(--safe-bottom));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transform: translateY(100%);
+            transition: transform .35s var(--ease);
+        }
+
+        .sheet.show {
+            transform: translateY(0)
+        }
+
+        .sheet-handle {
+            width: 36px;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.15);
+            margin: 0 auto 20px;
+        }
+
+        .sheet-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 20px;
+            margin-bottom: 20px;
+            letter-spacing: -.3px;
+        }
+
+        .sheet-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .sheet-row:last-of-type {
+            border-bottom: none
+        }
+
+        .sheet-label {
+            color: var(--text-dim)
+        }
+
+        .sheet-value {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text)
+        }
+
+        .sheet-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-sheet {
+            width: 100%;
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 14px;
+            transition: transform .15s var(--spring), background .15s;
+            text-align: center;
+        }
+
+        .btn-sheet:active {
+            transform: scale(0.97)
+        }
+
+        .btn-sheet-danger {
+            border: 1px solid rgba(255, 79, 79, 0.2);
+            color: var(--diff-hard);
+            background: rgba(255, 79, 79, 0.06);
+        }
+
+        .btn-sheet-danger:hover {
+            background: rgba(255, 79, 79, 0.1)
+        }
+
+        /* ── TOAST ────────────────────────────────────────── */
+        .toast {
+            position: fixed;
+            bottom: calc(32px + var(--safe-bottom));
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            z-index: 600;
+            background: rgba(30, 30, 45, 0.92);
+            border: 1px solid var(--border-light);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 12px 22px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .25s var(--ease), transform .3s var(--spring);
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto
+        }
+
+        /* ── CONFIRM DIALOG ───────────────────────────────── */
+        .confirm-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 550;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            opacity: 0;
+            transition: opacity .2s var(--ease);
+        }
+
+        .confirm-overlay.show {
+            display: flex;
+            opacity: 1
+        }
+
+        .confirm-box {
+            background: rgba(22, 22, 35, 0.96);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            max-width: 320px;
+            width: 100%;
+            text-align: center;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: transform .3s var(--spring), opacity .2s var(--ease);
+        }
+
+        .confirm-overlay.show .confirm-box {
+            transform: scale(1);
+            opacity: 1
+        }
+
+        .confirm-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .confirm-msg {
+            color: var(--text-dim);
+            font-size: 14px;
+            margin-bottom: 24px;
+            line-height: 1.5
+        }
+
+        .confirm-btns {
+            display: flex;
+            gap: 10px
+        }
+
+        .confirm-btns button {
+            flex: 1;
+            padding: 12px;
+            border-radius: var(--radius-xs);
+            font-weight: 600;
+            font-size: 14px;
+            transition: transform .15s var(--spring)
+        }
+
+        .confirm-btns button:active {
+            transform: scale(0.96)
+        }
+
+        .btn-cancel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text)
+        }
+
+        .btn-confirm-danger {
+            background: rgba(255, 79, 79, 0.15);
+            border: 1px solid rgba(255, 79, 79, 0.25);
+            color: var(--diff-hard)
+        }
+
+        /* ── VICTORY SCREEN ───────────────────────────────── */
+        .victory-card {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            margin-bottom: 28px;
+        }
+
+        .victory-card svg {
+            width: 56px;
+            height: 56px;
+            fill: var(--accent);
+            stroke: none;
+            filter: drop-shadow(0 0 18px var(--accent-glow));
+            margin-bottom: 16px
+        }
+
+        .victory-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .victory-msg {
+            color: var(--text-dim);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px
+        }
+
+        .btn-victory {
+            padding: 14px 28px;
+            background: var(--accent);
+            color: #0a0a0f;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 14px;
+            border-radius: var(--radius-sm);
+            transition: transform .15s var(--spring);
+        }
+
+        .btn-victory:active {
+            transform: scale(0.96)
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- BACKGROUND -->
+    <div id="bg-layer"></div>
+
+    <!-- GRAIN SVG FILTER -->
+    <svg id="grain" width="100%" height="100%">
+        <filter id="grain-filter">
+            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
+            <feColorMatrix type="saturate" values="0" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#grain-filter)" />
+    </svg>
+
+    <!-- SVG ICONS (hidden defs) -->
+    <svg style="display:none">
+        <defs>
+            <!-- Settings gear -->
+            <symbol id="ico-settings" viewBox="0 0 24 24">
+                <path
+                    d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                <circle cx="12" cy="12" r="3" />
+            </symbol>
+            <!-- Diamond (XP icon) -->
+            <symbol id="ico-diamond" viewBox="0 0 24 24">
+                <path
+                    d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41L13.7 2.71a2.41 2.41 0 0 0-3.41 0Z" />
+            </symbol>
+            <!-- Shield (quest icon) -->
+            <symbol id="ico-shield" viewBox="0 0 24 24">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </symbol>
+            <!-- Crosshair (quest target) -->
+            <symbol id="ico-crosshair" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="22" y1="12" x2="18" y2="12" />
+                <line x1="6" y1="12" x2="2" y2="12" />
+                <line x1="12" y1="6" x2="12" y2="2" />
+                <line x1="12" y1="22" x2="12" y2="18" />
+            </symbol>
+            <!-- Checkmark -->
+            <symbol id="ico-check" viewBox="0 0 24 24">
+                <polyline points="20 6 9 17 4 12" />
+            </symbol>
+            <!-- Crown (level badge) -->
+            <symbol id="ico-crown" viewBox="0 0 24 24">
+                <path d="M2 4l3 12h14l3-12-5 4-5-4-5 4z" />
+                <path d="M5 16v2a2 2 0 002 2h10a2 2 0 002-2v-2" />
+            </symbol>
+            <!-- Sword (empty quest) -->
+            <symbol id="ico-sword" viewBox="0 0 24 24">
+                <line x1="18" y1="2" x2="22" y2="6" />
+                <path d="M7.5 20.5L2 22l1.5-5.5L17 3l4 4z" />
+                <line x1="15" y1="5" x2="19" y2="9" />
+                <line x1="2.5" y1="21.5" x2="5.5" y2="18.5" />
+            </symbol>
+            <!-- Ghost (empty completed) -->
+            <symbol id="ico-ghost" viewBox="0 0 24 24">
+                <path
+                    d="M9 10h.01M15 10h.01M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z" />
+            </symbol>
+            <!-- Trophy -->
+            <symbol id="ico-trophy" viewBox="0 0 24 24">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                <path d="M4 22h16" />
+                <path d="M10 22V16a2 2 0 0 0-2-2H6a8 8 0 0 1 8-12 8 8 0 0 1 8 12h-2a2 2 0 0 0-2 2v6" />
+            </symbol>
+            <!-- Home -->
+            <symbol id="ico-home" viewBox="0 0 24 24">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
+            </symbol>
+        </defs>
+    </svg>
+
+    <!-- ────────── MAIN SCREEN ────────── -->
+    <div id="main-screen">
+        <header class="header">
+            <img src="../logo.png" alt="more logo" class="header-logo">
+        </header>
+        <main class="content">
+            <!-- XP CARD -->
+            <div class="xp-card">
+                <div class="xp-level-badge" id="level-badge">
+                    <svg>
+                        <use href="#ico-crown" />
+                    </svg>
+                    LVL 1 &middot; NOVICE
+                </div>
+                <div class="xp-number" id="xp-display">0</div>
+                <div class="xp-progress-wrap">
+                    <div class="xp-progress-bar" id="xp-bar" style="width:0%"></div>
+                </div>
+                <div class="xp-progress-label" id="xp-label">0 / 5.000 XP al prossimo livello</div>
+            </div>
+
+            <!-- ACTIVE QUEST -->
+            <div class="section-header">
+                <span class="section-title">Quest Attiva</span>
+                <button class="btn-ghost" id="btn-new-quest">Genera nuova</button>
+            </div>
+            <div id="quest-container"></div>
+
+            <!-- COMPLETED QUESTS -->
+            <div class="completed-section">
+                <div class="section-header">
+                    <span class="section-title">Quest Completate</span>
+                </div>
+                <div id="completed-container"></div>
+            </div>
+        </main>
+
+        <!-- TAB BAR -->
+        <nav class="tab-bar">
+            <button class="tab-btn active" id="btn-home">
+                <svg>
+                    <use href="#ico-home" />
+                </svg>
+                <span>Home</span>
+            </button>
+            <button class="tab-btn" id="btn-tab-settings">
+                <svg>
+                    <use href="#ico-settings" />
+                </svg>
+                <span>Impostazioni</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- ────────── XP MODAL ────────── -->
+    <div class="modal-overlay" id="xp-modal">
+        <div class="modal-content">
+            <div class="modal-icon"><svg>
+                    <use href="#ico-diamond" />
+                </svg></div>
+            <div class="modal-xp" id="modal-xp-text">+1000 XP</div>
+            <div class="modal-quest-name" id="modal-quest-name">Quest Name</div>
+            <div class="modal-hype" id="modal-hype">Leggendario!</div>
+            <button class="btn-modal-close" id="btn-close-modal">Continua</button>
+        </div>
+    </div>
+
+    <!-- ────────── SETTINGS SHEET ────────── -->
+    <div class="sheet-overlay" id="sheet-overlay"></div>
+    <div class="sheet" id="settings-sheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">Impostazioni</div>
+        <div class="sheet-row">
+            <span class="sheet-label">Quest completate</span>
+            <span class="sheet-value" id="sheet-quest-count">0</span>
+        </div>
+        <div class="sheet-row">
+            <span class="sheet-label">Quest disponibili</span>
+            <span class="sheet-value" id="sheet-quest-avail">304</span>
+        </div>
+        <div class="sheet-row">
+            <span class="sheet-label">XP totali</span>
+            <span class="sheet-value" id="sheet-xp-total">0</span>
+        </div>
+        <div class="sheet-actions">
+            <button class="btn-sheet btn-sheet-danger" id="btn-reset">Reset completo</button>
+        </div>
+    </div>
+
+    <!-- ────────── CONFIRM DIALOG ────────── -->
+    <div class="confirm-overlay" id="confirm-overlay">
+        <div class="confirm-box">
+            <div class="confirm-title">Reset completo?</div>
+            <p class="confirm-msg">Tutti i progressi, XP e quest verranno cancellati. Questa azione è irreversibile.</p>
+            <div class="confirm-btns">
+                <button class="btn-cancel" id="btn-confirm-cancel">Annulla</button>
+                <button class="btn-confirm-danger" id="btn-confirm-reset">Conferma</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ────────── TOAST ────────── -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ────────── QUEST POOL ────────── -->
+    <script src="questpool.js"></script>
+
+    <script>
+        /* ──────────────────────────────────────────────────
+           MORE — VANILLA JS APP
+           ────────────────────────────────────────────────── */
+
+        const LEVELS = [
+            { name: 'Novice', xp: 0 },
+            { name: 'Explorer', xp: 5000 },
+            { name: 'Drifter', xp: 15000 },
+            { name: 'Hunter', xp: 30000 },
+            { name: 'Renegade', xp: 55000 },
+            { name: 'Legend', xp: 90000 },
+        ];
+
+        const HYPES = [
+            'Leggendario!', 'Fenomenale!', 'Incredibile!',
+            'Inarrestabile!', 'Epico!', 'Straordinario!',
+            'Devastante!', 'Mitico!', 'Supremo!'
+        ];
+
+        /* ── STATE ────────────────────────────────────────── */
+        let state = {
+            xp: 0,
+            currentQuest: null,
+            completed: [],
+        };
+
+        function loadState() {
+            try {
+                const s = localStorage.getItem('more_state');
+                if (s) { const p = JSON.parse(s); Object.assign(state, p); }
+            } catch (e) { }
+        }
+
+        function saveState() {
+            localStorage.setItem('more_state', JSON.stringify(state));
+        }
+
+        /* ── DOM REFS ─────────────────────────────────────── */
+        const $ = id => document.getElementById(id);
+
+        const xpDisplay = $('xp-display');
+        const xpBar = $('xp-bar');
+        const xpLabel = $('xp-label');
+        const levelBadge = $('level-badge');
+        const btnNewQuest = $('btn-new-quest');
+        const questContainer = $('quest-container');
+        const completedCont = $('completed-container');
+        const xpModal = $('xp-modal');
+        const modalXpText = $('modal-xp-text');
+        const modalQuestName = $('modal-quest-name');
+        const modalHype = $('modal-hype');
+        const btnCloseModal = $('btn-close-modal');
+        const sheetOverlay = $('sheet-overlay');
+        const settingsSheet = $('settings-sheet');
+        const sheetQuestCnt = $('sheet-quest-count');
+        const sheetQuestAvl = $('sheet-quest-avail');
+        const sheetXpTotal = $('sheet-xp-total');
+        const btnSettings = $('btn-tab-settings');
+        const btnHome = $('btn-home');
+        const btnReset = $('btn-reset');
+        const confirmOverlay = $('confirm-overlay');
+        const btnConfCancel = $('btn-confirm-cancel');
+        const btnConfReset = $('btn-confirm-reset');
+        const toast = $('toast');
+
+        /* ── INIT ─────────────────────────────────────────── */
+        loadState();
+        updateXPUI();
+        renderActiveQuest();
+        renderCompleted();
+
+        /* ── XP / LEVEL SYSTEM ────────────────────────────── */
+        function getLevelInfo(xp) {
+            let lvlIndex = 0;
+            for (let i = LEVELS.length - 1; i >= 0; i--) {
+                if (xp >= LEVELS[i].xp) { lvlIndex = i; break; }
+            }
+            const current = LEVELS[lvlIndex];
+            const next = LEVELS[lvlIndex + 1] || null;
+            return {
+                level: lvlIndex + 1,
+                name: current.name,
+                currentXP: xp,
+                nextLevelXP: next ? next.xp : null,
+                prevLevelXP: current.xp,
+            };
+        }
+
+        function updateXPUI() {
+            const info = getLevelInfo(state.xp);
+            xpDisplay.textContent = state.xp.toLocaleString('it-IT');
+            levelBadge.innerHTML = `<svg><use href="#ico-crown"/></svg> LVL ${info.level} &middot; ${info.name.toUpperCase()}`;
+
+            if (info.nextLevelXP) {
+                const progress = ((state.xp - info.prevLevelXP) / (info.nextLevelXP - info.prevLevelXP)) * 100;
+                xpBar.style.width = Math.min(progress, 100) + '%';
+                const needed = info.nextLevelXP - info.prevLevelXP;
+                const current = state.xp - info.prevLevelXP;
+                xpLabel.textContent = `${current.toLocaleString('it-IT')} / ${needed.toLocaleString('it-IT')} XP al prossimo livello`;
+            } else {
+                xpBar.style.width = '100%';
+                xpLabel.textContent = 'Livello massimo raggiunto!';
+            }
+        }
+
+        /* ── QUEST RENDERING ──────────────────────────────── */
+        function getQuestIconSVG(difficulty) {
+            if (difficulty === 'hard') return '<svg><use href="#ico-shield"/></svg>';
+            if (difficulty === 'medium') return '<svg><use href="#ico-crosshair"/></svg>';
+            return '<svg><use href="#ico-crosshair"/></svg>';
+        }
+
+        function renderActiveQuest() {
+            if (!state.currentQuest) {
+                questContainer.innerHTML = `<div class="quest-empty">
+      <svg><use href="#ico-sword"/></svg>
+      Nessuna quest attiva.<br>Genera la tua prima quest!
+    </div>`;
+                return;
+            }
+            const q = state.currentQuest;
+            const diffClass = q.difficulty === 'easy' ? 'diff-easy' : q.difficulty === 'medium' ? 'diff-medium' : 'diff-hard';
+            const diffLabel = q.difficulty === 'easy' ? 'Facile' : q.difficulty === 'medium' ? 'Media' : 'Difficile';
+            const iconClass = `icon-${q.difficulty}`;
+            questContainer.innerHTML = `
+    <div class="quest-card">
+      <div class="quest-top">
+        <div class="quest-icon ${iconClass}">${getQuestIconSVG(q.difficulty)}</div>
+        <span class="quest-title">${escapeHtml(q.title)}</span>
+        <span class="diff-badge ${diffClass}"><span class="dot dot-${q.difficulty}"></span>${diffLabel}</span>
+      </div>
+      <p class="quest-desc">${escapeHtml(q.description)}</p>
+      <div class="quest-footer">
+        <span class="quest-xp"><svg><use href="#ico-diamond"/></svg>+${q.xp.toLocaleString('it-IT')} XP</span>
+        <button class="btn-complete" id="btn-complete-quest"><svg><use href="#ico-check"/></svg>Completata</button>
+      </div>
+    </div>`;
+            $('btn-complete-quest').addEventListener('click', completeQuest);
+        }
+
+        function renderCompleted() {
+            if (state.completed.length === 0) {
+                completedCont.innerHTML = `<div class="completed-empty">
+      <svg><use href="#ico-ghost"/></svg>
+      Nessuna quest completata... ancora.
+    </div>`;
+                return;
+            }
+            const last10 = state.completed.slice(-10).reverse();
+            completedCont.innerHTML = `<ul class="completed-list">${last10.map(q =>
+                `<li class="completed-item">
+      <span class="completed-dot"></span>
+      <span class="completed-name">${escapeHtml(q.title)}</span>
+      <span class="completed-xp">+${q.xp.toLocaleString('it-IT')}</span>
+    </li>`
+            ).join('')}</ul>`;
+        }
+
+        /* ── QUEST GENERATION (from pool) ─────────────────── */
+        btnNewQuest.addEventListener('click', generateQuest);
+
+        function generateQuest() {
+            const completedTitles = new Set(state.completed.map(c => c.title));
+            const available = QUESTS_POOL.filter(q => !completedTitles.has(q.title));
+
+            if (available.length === 0) {
+                // All 304 quests completed — show victory
+                questContainer.innerHTML = `
+      <div class="victory-card">
+        <svg><use href="#ico-trophy"/></svg>
+        <div class="victory-title">Tutte le quest completate!</div>
+        <p class="victory-msg">Hai completato tutte le ${QUESTS_POOL.length} quest.<br>Sei una leggenda. Resetta per ricominciare l'avventura.</p>
+        <button class="btn-victory" id="btn-victory-reset">Ricomincia</button>
+      </div>`;
+                $('btn-victory-reset').addEventListener('click', () => {
+                    state.completed = [];
+                    state.currentQuest = null;
+                    saveState();
+                    renderCompleted();
+                    generateQuest();
+                    showToast('Quest resettate — nuova avventura!');
+                });
+                return;
+            }
+
+            const quest = available[Math.floor(Math.random() * available.length)];
+            state.currentQuest = quest;
+            saveState();
+            renderActiveQuest();
+        }
+
+        /* ── QUEST COMPLETION ─────────────────────────────── */
+        function completeQuest() {
+            if (!state.currentQuest) return;
+            const q = state.currentQuest;
+            state.xp += q.xp;
+            state.completed.push({ title: q.title, xp: q.xp, difficulty: q.difficulty });
+            state.currentQuest = null;
+            saveState();
+
+            // Show XP modal
+            modalXpText.textContent = `+${q.xp.toLocaleString('it-IT')} XP`;
+            modalQuestName.textContent = q.title;
+            modalHype.textContent = HYPES[Math.floor(Math.random() * HYPES.length)];
+            xpModal.classList.add('show');
+
+            updateXPUI();
+            renderCompleted();
+            renderActiveQuest();
+        }
+
+        btnCloseModal.addEventListener('click', closeModal);
+        xpModal.addEventListener('click', e => { if (e.target === xpModal) closeModal(); });
+
+        function closeModal() {
+            xpModal.classList.remove('show');
+            // Auto-generate next quest after 800ms
+            setTimeout(generateQuest, 800);
+        }
+
+        /* ── NAVIGATION ───────────────────────────────────── */
+        btnHome.addEventListener('click', () => {
+            document.querySelector('.content').scrollTo({ top: 0, behavior: 'smooth' });
+            btnHome.classList.add('active');
+            btnSettings.classList.remove('active');
+        });
+
+        /* ── SETTINGS ─────────────────────────────────────── */
+        btnSettings.addEventListener('click', () => {
+            openSettings();
+            // Optional: visual feedback on tab
+            btnHome.classList.remove('active');
+            btnSettings.classList.add('active');
+        });
+        sheetOverlay.addEventListener('click', closeSettings);
+
+        function openSettings() {
+            const completedTitles = new Set(state.completed.map(c => c.title));
+            const avail = QUESTS_POOL.filter(q => !completedTitles.has(q.title)).length;
+            sheetQuestCnt.textContent = state.completed.length;
+            sheetQuestAvl.textContent = avail;
+            sheetXpTotal.textContent = state.xp.toLocaleString('it-IT');
+            sheetOverlay.classList.add('show');
+            settingsSheet.classList.add('show');
+        }
+
+        function closeSettings() {
+            sheetOverlay.classList.remove('show');
+            settingsSheet.classList.remove('show');
+            // Back to home tab
+            btnHome.classList.add('active');
+            btnSettings.classList.remove('active');
+        }
+
+        btnReset.addEventListener('click', () => {
+            closeSettings();
+            confirmOverlay.classList.add('show');
+        });
+
+        btnConfCancel.addEventListener('click', () => confirmOverlay.classList.remove('show'));
+        confirmOverlay.addEventListener('click', e => { if (e.target === confirmOverlay) confirmOverlay.classList.remove('show'); });
+
+        btnConfReset.addEventListener('click', () => {
+            confirmOverlay.classList.remove('show');
+            state = { xp: 0, currentQuest: null, completed: [] };
+            localStorage.removeItem('more_state');
+            updateXPUI();
+            renderActiveQuest();
+            renderCompleted();
+            showToast('Progressi resettati');
+        });
+
+        /* ── TOAST ────────────────────────────────────────── */
+        let toastTimer = null;
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+        }
+
+        /* ── UTILS ────────────────────────────────────────── */
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+
+</html>
