@@ -1,9 +1,9 @@
 {
     "name": "more",
     "short_name": "more",
-    "id": "./",
+    "id": "more-app",
     "description": "more turns your real life into a video game. Complete side quests, earn XP, and level up.",
-    "start_url": "./index.html",
+    "start_url": "index.html?mode=standalone",
     "display": "standalone",
     "background_color": "#0a0a0f",
     "theme_color": "#0a0a0f",
