@@ -11,7 +11,9 @@
     <meta name="description"
         content="more turns your real life into a video game. Complete side quests, earn XP, and level up.">
     <link rel="icon" href="logo.png">
-    <link rel="manifest" href="data:application/json,{}">
+    <link rel="apple-touch-icon" href="logo.png">
+    <meta name="apple-mobile-web-app-title" content="more">
+    <link rel="manifest" href="manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -1512,6 +1514,14 @@
             const div = document.createElement('div');
             div.textContent = str;
             return div.innerHTML;
+        }
+        /* ── SERVICE WORKER ──────────────────────────────── */
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW Registered', reg))
+                    .catch(err => console.log('SW Error', err));
+            });
         }
     </script>
 </body>
