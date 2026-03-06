@@ -1,4 +1,4 @@
-const QUESTS_POOL = [
+window.QUESTS_POOL = [
 
     // ── EASY (1000 XP) ─────────────────────────────────────────────────────────
 
@@ -328,4 +328,30 @@ const QUESTS_POOL = [
     { title: "Impara a fare il formaggio in casa", description: "Segui una ricetta per fare il formaggio in casa — ricotta, primosale o mozzarella — dall'inizio alla fine.", difficulty: "medium", xp: 2000 },
     { title: "Fai un'uscita in kayak di mare", description: "Percorri almeno 10 km in kayak in mare aperto, anche con istruttore.", difficulty: "medium", xp: 2000 },
 
+    // ── SEASONAL QUESTS ────────────────────────────────────────────────────────
+
+    // WINTER
+    { title: "Costruisci un pupazzo di neve", description: "Esci con la neve e costruisci un pupazzo vero, con dettagli e personalità.", difficulty: "easy", xp: 1000, category: "natura", season: "winter" },
+    { title: "Fai una passeggiata nella neve di notte", description: "Esci dopo le 22 con la neve al suolo e cammina per almeno 30 minuti nel silenzio invernale.", difficulty: "easy", xp: 1000, category: "natura", season: "winter" },
+    { title: "Fai il bagno in un fiume ghiacciato", description: "Immergiti in un corso d'acqua invernale freddo per almeno 10 secondi. Sicurezza prima di tutto.", difficulty: "hard", xp: 5000, category: "sfida", season: "winter" },
+    { title: "Dormi con la finestra aperta in pieno inverno", description: "Una notte intera con la finestra aperta. Zero riscaldamento, solo coperte.", difficulty: "medium", xp: 2000, category: "sfida", season: "winter" },
+
+    // SUMMER
+    { title: "Dormi sulla spiaggia fino all'alba", description: "Passa la notte su una spiaggia e aspetta il sorgere del sole senza dormire al chiuso.", difficulty: "medium", xp: 2000, category: "natura", season: "summer" },
+    { title: "Nuota fino a un punto lontano dalla riva", description: "Nuota in mare aperto fino a un punto dove non tocchi e sei lontano dalla spiaggia. Con sicurezza.", difficulty: "hard", xp: 5000, category: "sport", season: "summer" },
+    { title: "Fai un'escursione di notte in estate", description: "Scegli un sentiero che conosci e percorrilo di notte con solo una torcia frontale.", difficulty: "medium", xp: 2000, category: "natura", season: "summer" },
+    { title: "Passa un'intera giornata all'aperto senza entrare mai in casa", description: "Dalla sveglia al tramonto, zero interni. Mangia fuori, lavora fuori, riposati fuori.", difficulty: "medium", xp: 2000, category: "sfida", season: "summer" },
+
+    // SPRING
+    { title: "Pianta qualcosa e prenditi cura finché non cresce", description: "Pianta un seme o una piantina e seguila ogni giorno finché non vedi la crescita visibile.", difficulty: "easy", xp: 1000, category: "natura", season: "spring" },
+    { title: "Fai un'escursione all'alba di primavera", description: "Svegliati prima del sole in un giorno di primavera e raggiungi un punto panoramico per l'alba.", difficulty: "medium", xp: 2000, category: "natura", season: "spring" },
+
+    // AUTUMN
+    { title: "Raccogli funghi con un esperto", description: "Accompagna un esperto nella raccolta di funghi in autunno. Impara a distinguere almeno 5 specie.", difficulty: "medium", xp: 2000, category: "natura", season: "autumn" },
+    { title: "Fai un falò autunnale con gli amici", description: "Organizza una serata attorno a un falò in un posto autorizzato. Niente telefoni per almeno 2 ore.", difficulty: "easy", xp: 1000, category: "sociale", season: "autumn" },
+
+    // WEEKEND ONLY
+    { title: "Svegliati prima di tutti nel weekend", description: "Di sabato o domenica, svegliati entro le 6:00 e fai qualcosa di produttivo prima che gli altri si alzino.", difficulty: "easy", xp: 1000, category: "sfida", season: "weekend" },
+    { title: "Organizza un'attività di gruppo spontanea", description: "Manda un messaggio a 5+ persone proponendo qualcosa per oggi pomeriggio. Vai avanti comunque.", difficulty: "medium", xp: 2000, category: "sociale", season: "weekend" },
+    { title: "Fai un'escursione last minute", description: "Scegli una destinazione, prepara lo zaino in 20 minuti e parti entro un'ora dalla decisione.", difficulty: "medium", xp: 2000, category: "natura", season: "weekend" },
 ];
