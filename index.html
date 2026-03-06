@@ -199,6 +199,7 @@
             padding-bottom: calc(84px + var(--safe-bottom));
             -webkit-overflow-scrolling: touch;
             overflow-y: auto;
+            overflow-x: hidden;
         }
 
         /* ── TAB BAR ───────────────────────────────────────── */
@@ -336,6 +337,8 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 14px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .section-title {
@@ -343,16 +346,18 @@
             font-weight: 800;
             font-size: 17px;
             letter-spacing: -.3px;
+            flex-shrink: 0;
         }
 
         .btn-ghost {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--accent);
             font-weight: 600;
-            padding: 8px 14px;
+            padding: 7px 12px;
             border-radius: var(--radius-xs);
             border: 1px solid var(--accent-dim);
             transition: transform .15s var(--spring), background .15s, opacity .15s;
+            white-space: nowrap;
         }
 
         .btn-ghost:active {
@@ -373,11 +378,13 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 22px 20px;
+            padding: 20px 16px;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             margin-bottom: 28px;
             transition: transform .2s var(--spring);
+            overflow: hidden;
+            word-break: break-word;
         }
 
         .quest-card:active {
@@ -386,10 +393,10 @@
 
         .quest-top {
             display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
             margin-bottom: 12px;
-            gap: 12px;
         }
 
         .quest-icon {
@@ -440,8 +447,9 @@
             font-weight: 800;
             font-size: 17px;
             letter-spacing: -.3px;
-            flex: 1;
             line-height: 1.3;
+            width: 100%;
+            order: 3;
         }
 
         .diff-badge {
@@ -509,7 +517,9 @@
         .quest-footer {
             display: flex;
             align-items: center;
-            justify-content: space-between
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .quest-xp {
@@ -712,10 +722,12 @@
             background: rgba(20, 20, 30, 0.92);
             border: 1px solid var(--border-light);
             border-radius: var(--radius);
-            padding: 36px 28px;
+            padding: 32px 20px;
             text-align: center;
             max-width: 340px;
             width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
             transform: scale(0.85);
             opacity: 0;
             transition: transform .35s var(--spring), opacity .25s var(--ease);
@@ -741,7 +753,7 @@
         .modal-xp {
             font-family: var(--font-display);
             font-weight: 800;
-            font-size: 48px;
+            font-size: clamp(36px, 10vw, 48px);
             color: var(--accent);
             text-shadow: 0 0 15px var(--accent-glow), 0 0 40px var(--accent-glow);
             margin-bottom: 8px;
@@ -1046,6 +1058,781 @@
         .btn-victory:active {
             transform: scale(0.96)
         }
+
+        /* ── AUTH SCREEN ──────────────────────────────────── */
+        #auth-screen {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            background: rgba(10, 10, 15, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            flex-direction: column;
+            padding: 24px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            opacity: 0;
+            transition: opacity .3s var(--ease);
+        }
+
+        #auth-screen.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .auth-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 400px;
+            width: 100%;
+            margin: auto;
+        }
+
+        .auth-logo {
+            width: 100px;
+            margin: 0 auto 32px;
+            display: block;
+        }
+
+        .auth-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            text-align: center;
+            color: var(--text-dim);
+            margin-bottom: 32px;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+
+        .auth-input-group {
+            margin-bottom: 14px;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-size: 15px;
+            transition: border-color .2s, background .2s;
+        }
+
+        .auth-input:focus {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .auth-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 15px;
+            transition: transform .15s var(--spring), opacity .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            letter-spacing: .3px;
+        }
+
+        .auth-btn:active {
+            transform: scale(0.97);
+        }
+
+        .auth-btn.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .auth-btn-primary {
+            background: var(--accent);
+            color: #0a0a0f;
+            margin-top: 8px;
+        }
+
+        .auth-btn-google {
+            background: white;
+            color: #0a0a0f;
+        }
+
+        .auth-btn-google svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .auth-btn-ghost {
+            background: transparent;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 24px 0;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .auth-divider:not(:empty)::before {
+            margin-right: 16px;
+        }
+
+        .auth-divider:not(:empty)::after {
+            margin-left: 16px;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-dim);
+            font-size: 14px;
+        }
+
+        .auth-switch a {
+            color: var(--accent);
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .btn-sheet-ghost {
+            background: transparent;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+
+        .btn-sheet-ghost:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* ── STATS SCREEN ─────────────────────────────────── */
+        #stats-screen {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            padding: 20px;
+            padding-bottom: calc(84px + var(--safe-bottom));
+            -webkit-overflow-scrolling: touch;
+            overflow-y: auto;
+        }
+
+        #stats-screen.show {
+            display: flex;
+        }
+
+        .streak-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 13px;
+            color: #ffb347;
+            background: rgba(255, 179, 71, 0.15);
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            border: 1px solid rgba(255, 179, 71, 0.25);
+        }
+
+        .streak-badge svg {
+            width: 14px;
+            height: 14px;
+            fill: #ffb347;
+            stroke: none;
+        }
+
+        .stats-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px 20px;
+            margin-bottom: 24px;
+        }
+
+        .stats-header {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 17px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stats-header svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: var(--text-dim);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* GitHub-style XP Graph */
+        .xp-graph-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .xp-grid {
+            display: grid;
+            grid-template-rows: repeat(7, 1fr);
+            grid-auto-flow: column;
+            gap: 4px;
+            padding-bottom: 8px;
+            min-width: max-content;
+        }
+
+        .xp-cell {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Average Time */
+        .avg-time {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        /* Records Category Grid */
+        .records-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .record-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px 12px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .record-card.easy {
+            background: var(--diff-easy-bg);
+            border-color: var(--diff-easy-border);
+            color: var(--diff-easy);
+        }
+
+        .record-card.medium {
+            background: var(--diff-medium-bg);
+            border-color: var(--diff-medium-border);
+            color: var(--diff-medium);
+        }
+
+        .record-card.hard {
+            background: var(--diff-hard-bg);
+            border-color: var(--diff-hard-border);
+            color: var(--diff-hard);
+        }
+
+        .record-count {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 24px;
+            margin-bottom: 4px;
+            line-height: 1;
+        }
+
+        .record-xp {
+            font-size: 12px;
+            font-weight: 600;
+            opacity: 0.8;
+            margin-bottom: 6px;
+        }
+
+        .record-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        /* ── DIFFICULTY FILTER ────────────────────────────── */
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .filter-pill {
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-dim);
+            white-space: nowrap;
+            transition: all .15s var(--ease);
+            flex-shrink: 0;
+        }
+
+        .filter-pill:active {
+            transform: scale(0.95);
+        }
+
+        .filter-pill.active {
+            background: var(--accent-dim);
+            color: var(--accent);
+            border-color: rgba(200, 241, 53, 0.3);
+        }
+
+        /* ── CUSTOM QUEST TAG ────────────────────────────── */
+        .custom-tag {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: var(--accent);
+            background: var(--accent-dim);
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        /* ── CHALLENGE BANNER ────────────────────────────── */
+        .challenge-banner {
+            background: rgba(79, 163, 255, 0.12);
+            border: 1px solid rgba(79, 163, 255, 0.25);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            font-size: 13px;
+            color: var(--diff-easy);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .challenge-banner svg {
+            width: 16px;
+            height: 16px;
+            stroke: var(--diff-easy);
+            fill: none;
+            stroke-width: 2;
+            flex-shrink: 0;
+        }
+
+        /* ── QUEST CARD ACTION ROW ───────────────────────── */
+        .quest-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-quest-action {
+            padding: 8px 14px;
+            border-radius: var(--radius-xs);
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: transform .15s var(--spring), background .15s;
+        }
+
+        .btn-quest-action:active {
+            transform: scale(0.95);
+        }
+
+        .btn-quest-action:hover {
+            background: var(--surface-hover);
+        }
+
+        .btn-quest-action svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ── SHARE BUTTON (in modal) ─────────────────────── */
+        .btn-share {
+            padding: 12px 20px;
+            background: var(--accent-dim);
+            border: 1px solid rgba(200, 241, 53, 0.25);
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--accent);
+            transition: transform .15s var(--spring), background .15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-share:active {
+            transform: scale(0.96);
+        }
+
+        .btn-share svg {
+            width: 15px;
+            height: 15px;
+            stroke: var(--accent);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .modal-buttons .btn-modal-close {
+            flex: 1;
+        }
+
+        /* ── CREATE QUEST MODAL ───────────────────────────── */
+        .create-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 550;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            opacity: 0;
+            transition: opacity .25s var(--ease);
+        }
+
+        .create-modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .create-modal {
+            background: rgba(20, 20, 30, 0.95);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            max-width: 380px;
+            width: 100%;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: transform .3s var(--spring), opacity .25s var(--ease);
+        }
+
+        .create-modal-overlay.show .create-modal {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .create-modal-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .create-field {
+            margin-bottom: 14px;
+        }
+
+        .create-field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .create-field input,
+        .create-field textarea,
+        .create-field select {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xs);
+            color: var(--text);
+            font-size: 14px;
+            transition: border-color .2s;
+        }
+
+        .create-field textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .create-field input:focus,
+        .create-field textarea:focus,
+        .create-field select:focus {
+            border-color: var(--accent);
+        }
+
+        .create-field select option {
+            background: #1a1a2a;
+            color: var(--text);
+        }
+
+        .create-modal-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .create-modal-btns button {
+            flex: 1;
+            padding: 12px;
+            border-radius: var(--radius-xs);
+            font-weight: 600;
+            font-size: 14px;
+            transition: transform .15s var(--spring);
+        }
+
+        .create-modal-btns button:active {
+            transform: scale(0.96);
+        }
+
+        .btn-create-save {
+            background: var(--accent);
+            color: #0a0a0f;
+        }
+
+        /* ── CUSTOM QUEST LIST IN SETTINGS ────────────────── */
+        .custom-quest-list {
+            margin-top: 12px;
+        }
+
+        .custom-quest-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .custom-quest-item:last-child {
+            border-bottom: none;
+        }
+
+        .custom-quest-item .cq-title {
+            flex: 1;
+            color: var(--text-dim);
+        }
+
+        .btn-delete-cq {
+            padding: 4px 10px;
+            background: rgba(255, 79, 79, 0.1);
+            border: 1px solid rgba(255, 79, 79, 0.2);
+            border-radius: 8px;
+            color: var(--diff-hard);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* ── PUBLIC PROFILE SCREEN ────────────────────────── */
+        #profile-screen {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 998;
+            background: var(--bg);
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 24px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #profile-screen.show {
+            display: flex;
+        }
+
+        .profile-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px 24px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .profile-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--accent-dim);
+            color: var(--accent);
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .profile-username {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .profile-level {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: var(--accent-dim);
+            padding: 5px 14px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+        }
+
+        .profile-stat-row {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+
+        .profile-stat {
+            text-align: center;
+        }
+
+        .profile-stat-val {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 24px;
+            color: var(--accent);
+        }
+
+        .profile-stat-label {
+            font-size: 11px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .profile-quests-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .profile-private {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .btn-profile-close {
+            margin-top: 20px;
+            padding: 12px 28px;
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        /* ── TOGGLE SWITCH ───────────────────────────────── */
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background .2s;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch.active {
+            background: var(--accent);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            transition: transform .2s var(--spring);
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
     </style>
 </head>
 
@@ -1053,6 +1840,53 @@
 
     <!-- BACKGROUND -->
     <div id="bg-layer"></div>
+
+    <!-- ────────── AUTH SCREEN ────────── -->
+    <div id="auth-screen">
+        <div class="auth-container">
+            <img src="logo.png" alt="more" class="auth-logo">
+            <div class="auth-title" id="auth-title">Bentornato</div>
+            <div class="auth-subtitle" id="auth-subtitle">Accedi con Google per salvare i tuoi progressi.</div>
+
+            <div id="auth-form-container">
+                <div id="signup-fields" style="display: none;">
+                    <div class="auth-input-group">
+                        <input type="text" id="auth-name" class="auth-input" placeholder="Nome (opzionale)">
+                    </div>
+                    <div class="auth-input-group">
+                        <input type="text" id="auth-surname" class="auth-input" placeholder="Cognome (opzionale)">
+                    </div>
+                    <div class="auth-input-group">
+                        <input type="text" id="auth-username" class="auth-input" placeholder="@username">
+                    </div>
+                </div>
+
+                <button class="auth-btn auth-btn-primary" id="btn-auth-submit" style="display: none;">Completa
+                    registrazione</button>
+            </div>
+
+            <button class="auth-btn auth-btn-google" id="btn-auth-google">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                        fill="#4285F4" />
+                    <path
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                        fill="#34A853" />
+                    <path
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                        fill="#FBBC05" />
+                    <path
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                        fill="#EA4335" />
+                </svg>
+                Accedi con Google
+            </button>
+
+            <button class="auth-btn auth-btn-ghost" id="btn-auth-guest" style="margin-top: 12px;">Continua come
+                Ospite</button>
+        </div>
+    </div>
 
     <!-- GRAIN SVG FILTER -->
     <svg id="grain" width="100%" height="100%">
@@ -1066,6 +1900,17 @@
     <!-- SVG ICONS (hidden defs) -->
     <svg style="display:none">
         <defs>
+            <!-- Chart (stats tab) -->
+            <symbol id="ico-chart" viewBox="0 0 24 24">
+                <line x1="18" y1="20" x2="18" y2="10" />
+                <line x1="12" y1="20" x2="12" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="14" />
+            </symbol>
+            <!-- Flame (streak) -->
+            <symbol id="ico-flame" viewBox="0 0 24 24">
+                <path
+                    d="M12 12c2-2.96 0-7-1-8 0 3.038-1.773 4.741-3 6-1.226 1.26-2 3.24-2 5a6 6 0 1 0 12 0c0-1.532-1.056-3.94-2-5-1.786 3-2.791 3-4 2z" />
+            </symbol>
             <!-- Settings gear -->
             <symbol id="ico-settings" viewBox="0 0 24 24">
                 <path
@@ -1122,6 +1967,29 @@
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
             </symbol>
+            <!-- Share -->
+            <symbol id="ico-share" viewBox="0 0 24 24">
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+            </symbol>
+            <!-- Send / Challenge -->
+            <symbol id="ico-send" viewBox="0 0 24 24">
+                <line x1="22" y1="2" x2="11" y2="13" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </symbol>
+            <!-- Plus -->
+            <symbol id="ico-plus" viewBox="0 0 24 24">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+            </symbol>
+            <!-- User -->
+            <symbol id="ico-user" viewBox="0 0 24 24">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+            </symbol>
         </defs>
     </svg>
 
@@ -1130,7 +1998,7 @@
         <header class="header">
             <img src="logo.png" alt="more logo" class="header-logo">
         </header>
-        <main class="content">
+        <main class="content" id="home-screen">
             <!-- XP CARD -->
             <div class="xp-card">
                 <div class="xp-level-badge" id="level-badge">
@@ -1144,13 +2012,33 @@
                     <div class="xp-progress-bar" id="xp-bar" style="width:0%"></div>
                 </div>
                 <div class="xp-progress-label" id="xp-label">0 / 5.000 XP al prossimo livello</div>
+                <div class="streak-badge" id="streak-badge" style="display: none;">
+                    <svg>
+                        <use href="#ico-flame" />
+                    </svg> <span id="streak-count">0</span>&nbsp;giorni di fila
+                </div>
+            </div>
+
+            <!-- DIFFICULTY FILTER -->
+            <div class="filter-bar">
+                <button class="filter-pill active" data-filter="all">Tutte</button>
+                <button class="filter-pill" data-filter="easy">Facile</button>
+                <button class="filter-pill" data-filter="medium">Media</button>
+                <button class="filter-pill" data-filter="hard">Difficile</button>
             </div>
 
             <!-- ACTIVE QUEST -->
             <div class="section-header">
                 <span class="section-title">Quest Attiva</span>
-                <button class="btn-ghost" id="btn-new-quest">Genera nuova</button>
+                <div style="display:flex;gap:8px">
+                    <button class="btn-ghost" id="btn-create-quest" style="border-color: rgba(200,241,53,0.2);"><svg
+                            style="width:14px;height:14px;stroke:var(--accent);fill:none;stroke-width:2;vertical-align:-2px;margin-right:2px">
+                            <use href="#ico-plus" />
+                        </svg>Crea</button>
+                    <button class="btn-ghost" id="btn-new-quest">Genera nuova</button>
+                </div>
             </div>
+            <div id="challenge-banner-container"></div>
             <div id="quest-container"></div>
 
             <!-- COMPLETED QUESTS -->
@@ -1162,6 +2050,46 @@
             </div>
         </main>
 
+        <!-- STATS SCREEN -->
+        <main class="content" id="stats-screen">
+            <div class="stats-card">
+                <div class="stats-header">
+                    <svg>
+                        <use href="#ico-chart" />
+                    </svg> Statistiche di Gioco
+                </div>
+                <div class="avg-time" id="avg-time">Media: -- ore tra le quest</div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-header">Record Personali</div>
+                <div class="records-grid">
+                    <div class="record-card easy">
+                        <div class="record-count" id="stat-easy-cnt">0</div>
+                        <div class="record-xp"><span id="stat-easy-xp">0</span> XP</div>
+                        <div class="record-label">Facili</div>
+                    </div>
+                    <div class="record-card medium">
+                        <div class="record-count" id="stat-med-cnt">0</div>
+                        <div class="record-xp"><span id="stat-med-xp">0</span> XP</div>
+                        <div class="record-label">Medie</div>
+                    </div>
+                    <div class="record-card hard">
+                        <div class="record-count" id="stat-hard-cnt">0</div>
+                        <div class="record-xp"><span id="stat-hard-xp">0</span> XP</div>
+                        <div class="record-label">Difficili</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-header">Cronologia XP (Ultime 16 Settimane)</div>
+                <div class="xp-graph-wrapper">
+                    <div class="xp-grid" id="xp-graph"></div>
+                </div>
+            </div>
+        </main>
+
         <!-- TAB BAR -->
         <nav class="tab-bar">
             <button class="tab-btn active" id="btn-home">
@@ -1169,6 +2097,12 @@
                     <use href="#ico-home" />
                 </svg>
                 <span>Home</span>
+            </button>
+            <button class="tab-btn" id="btn-tab-stats">
+                <svg>
+                    <use href="#ico-chart" />
+                </svg>
+                <span>Statistiche</span>
             </button>
             <button class="tab-btn" id="btn-tab-settings">
                 <svg>
@@ -1188,8 +2122,56 @@
             <div class="modal-xp" id="modal-xp-text">+1000 XP</div>
             <div class="modal-quest-name" id="modal-quest-name">Quest Name</div>
             <div class="modal-hype" id="modal-hype">Leggendario!</div>
-            <button class="btn-modal-close" id="btn-close-modal">Continua</button>
+            <div class="modal-buttons">
+                <button class="btn-share" id="btn-share-card"><svg>
+                        <use href="#ico-share" />
+                    </svg>Condividi</button>
+                <button class="btn-modal-close" id="btn-close-modal">Continua</button>
+            </div>
         </div>
+    </div>
+
+    <!-- ────────── CREATE QUEST MODAL ────────── -->
+    <div class="create-modal-overlay" id="create-quest-overlay">
+        <div class="create-modal">
+            <div class="create-modal-title">Crea Quest Personalizzata</div>
+            <div class="create-field">
+                <label>Titolo</label>
+                <input type="text" id="cq-title" placeholder="Titolo della quest">
+            </div>
+            <div class="create-field">
+                <label>Descrizione</label>
+                <textarea id="cq-desc" placeholder="Descrivi la sfida..."></textarea>
+            </div>
+            <div class="create-field">
+                <label>Difficoltà</label>
+                <select id="cq-diff">
+                    <option value="easy">Facile (1.000 XP)</option>
+                    <option value="medium">Media (2.000 XP)</option>
+                    <option value="hard">Difficile (5.000 XP)</option>
+                </select>
+            </div>
+            <div class="create-field">
+                <label>Categoria</label>
+                <select id="cq-cat">
+                    <option value="sfida">Sfida</option>
+                    <option value="natura">Natura</option>
+                    <option value="sport">Sport</option>
+                    <option value="sociale">Sociale</option>
+                    <option value="creatività">Creatività</option>
+                    <option value="altro">Altro</option>
+                </select>
+            </div>
+            <div class="create-modal-btns">
+                <button class="btn-cancel" id="btn-cq-cancel">Annulla</button>
+                <button class="btn-create-save" id="btn-cq-save">Salva Quest</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ────────── PUBLIC PROFILE SCREEN ────────── -->
+    <div id="profile-screen">
+        <div id="profile-content"></div>
     </div>
 
     <!-- ────────── SETTINGS SHEET ────────── -->
@@ -1197,6 +2179,10 @@
     <div class="sheet" id="settings-sheet">
         <div class="sheet-handle"></div>
         <div class="sheet-title">Impostazioni</div>
+        <div class="sheet-row" id="sheet-user-row" style="display: none;">
+            <span class="sheet-label">Account</span>
+            <span class="sheet-value" id="sheet-user-name">Ospite</span>
+        </div>
         <div class="sheet-row">
             <span class="sheet-label">Quest completate</span>
             <span class="sheet-value" id="sheet-quest-count">0</span>
@@ -1209,8 +2195,22 @@
             <span class="sheet-label">XP totali</span>
             <span class="sheet-value" id="sheet-xp-total">0</span>
         </div>
+        <div class="sheet-row">
+            <span class="sheet-label">Profilo pubblico</span>
+            <div class="toggle-switch" id="toggle-public-profile"></div>
+        </div>
+        <div id="custom-quests-section"
+            style="display:none;border-top:1px solid var(--border);margin-top:12px;padding-top:12px">
+            <div style="font-size:13px;font-weight:600;color:var(--text-dim);margin-bottom:4px">Le tue Quest
+                personalizzate</div>
+            <div id="custom-quest-list" class="custom-quest-list"></div>
+        </div>
         <div class="sheet-actions">
-            <button class="btn-sheet btn-sheet-danger" id="btn-reset">Reset completo</button>
+            <button class="btn-sheet" id="btn-logout"
+                style="display: none; background: rgba(255, 255, 255, 0.1);">Disconnetti</button>
+            <button class="btn-sheet btn-sheet-ghost" id="btn-login-prompt" style="display: none;">Accedi per
+                salvare</button>
+            <button class="btn-sheet btn-sheet-danger" id="btn-reset">Reset progressi locali</button>
         </div>
     </div>
 
@@ -1229,7 +2229,29 @@
     <!-- ────────── TOAST ────────── -->
     <div class="toast" id="toast"></div>
 
-    <!-- ────────── QUEST POOL ────────── -->
+    <!-- ────────── FIREBASE & LOGIC ────────── -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA27qqn90L4cs21nnlk9v3Erf6Svo82lQY",
+            authDomain: "doot-inc.firebaseapp.com",
+            projectId: "doot-inc",
+            storageBucket: "doot-inc.firebasestorage.app",
+            messagingSenderId: "361145205770",
+            appId: "1:361145205770:web:728036d27c84429b05cbf3",
+            measurementId: "G-E0DLQJPS1J"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        window.firebaseApp = { auth, db, googleProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, doc, setDoc, getDoc, serverTimestamp };
+    </script>
     <script src="questpool.js"></script>
 
     <script>
@@ -1252,23 +2274,67 @@
             'Devastante!', 'Mitico!', 'Supremo!'
         ];
 
-        /* ── STATE ────────────────────────────────────────── */
+        /* ── STATE & FIREBASE ─────────────────────────────── */
+        let fb = null;
+        let currentUser = null;
+        let isGuest = localStorage.getItem('more_guest') === 'true';
+        let isLoginMode = true;
+        let currentFilter = 'all';
+        let lastCompletedQuest = null;
+
         let state = {
             xp: 0,
             currentQuest: null,
             completed: [],
+            streak: 0,
+            lastQuestDate: null,
+            xpHistory: [],
+            stats: {
+                easy: { count: 0, totalXp: 0 },
+                medium: { count: 0, totalXp: 0 },
+                hard: { count: 0, totalXp: 0 }
+            },
+            questTimestamps: [],
+            customQuests: [],
+            challenges_sent: [],
+            profilePublic: false,
+            updatedAt: 0
         };
 
         function loadState() {
             try {
                 const s = localStorage.getItem('more_state');
-                if (s) { const p = JSON.parse(s); Object.assign(state, p); }
+                if (s) {
+                    const p = JSON.parse(s);
+                    Object.assign(state, p);
+                    if (typeof state.streak === 'undefined') state.streak = 0;
+                    if (!state.xpHistory) state.xpHistory = [];
+                    if (!state.stats) state.stats = { easy: { count: 0, totalXp: 0 }, medium: { count: 0, totalXp: 0 }, hard: { count: 0, totalXp: 0 } };
+                    if (!state.questTimestamps) state.questTimestamps = [];
+                    if (!state.customQuests) state.customQuests = [];
+                    if (!state.challenges_sent) state.challenges_sent = [];
+                    if (typeof state.profilePublic === 'undefined') state.profilePublic = false;
+                }
             } catch (e) { }
         }
 
-        function saveState() {
+        function saveLocal() {
+            state.updatedAt = Date.now();
             localStorage.setItem('more_state', JSON.stringify(state));
         }
+
+        function saveState() {
+            saveLocal();
+            syncToFirestore();
+        }
+
+        function syncToFirestore() {
+            if (!currentUser || !navigator.onLine || !fb) return;
+            fb.setDoc(fb.doc(fb.db, 'more_users', currentUser.uid), state, { merge: true })
+                .catch(e => console.error("Sync error:", e));
+        }
+
+        window.addEventListener('online', syncToFirestore);
 
         /* ── DOM REFS ─────────────────────────────────────── */
         const $ = id => document.getElementById(id);
@@ -1285,6 +2351,7 @@
         const modalQuestName = $('modal-quest-name');
         const modalHype = $('modal-hype');
         const btnCloseModal = $('btn-close-modal');
+
         const sheetOverlay = $('sheet-overlay');
         const settingsSheet = $('settings-sheet');
         const sheetQuestCnt = $('sheet-quest-count');
@@ -1292,17 +2359,293 @@
         const sheetXpTotal = $('sheet-xp-total');
         const btnSettings = $('btn-tab-settings');
         const btnHome = $('btn-home');
-        const btnReset = $('btn-reset');
+        const btnTabStats = $('btn-tab-stats');
+
+        const homeScreen = $('home-screen');
+        const statsScreen = $('stats-screen');
+        const streakBadge = $('streak-badge');
+        const streakCount = $('streak-count');
+
+        const statEasyCnt = $('stat-easy-cnt');
+        const statEasyXp = $('stat-easy-xp');
+        const statMedCnt = $('stat-med-cnt');
+        const statMedXp = $('stat-med-xp');
+        const statHardCnt = $('stat-hard-cnt');
+        const statHardXp = $('stat-hard-xp');
+
+        const avgTime = $('avg-time');
+        const xpGraph = $('xp-graph');
+
+        // New feature DOM refs
+        const btnShareCard = $('btn-share-card');
+        const btnCreateQuest = $('btn-create-quest');
+        const createQuestOverlay = $('create-quest-overlay');
+        const btnCqCancel = $('btn-cq-cancel');
+        const btnCqSave = $('btn-cq-save');
+        const cqTitle = $('cq-title');
+        const cqDesc = $('cq-desc');
+        const cqDiff = $('cq-diff');
+        const cqCat = $('cq-cat');
+        const challengeBannerCont = $('challenge-banner-container');
+        const profileScreen = $('profile-screen');
+        const profileContent = $('profile-content');
+        const togglePublicProfile = $('toggle-public-profile');
+        const customQuestsSection = $('custom-quests-section');
+        const customQuestList = $('custom-quest-list');
+        let pendingGoogleCreds = null;
+
         const confirmOverlay = $('confirm-overlay');
         const btnConfCancel = $('btn-confirm-cancel');
         const btnConfReset = $('btn-confirm-reset');
         const toast = $('toast');
+
+        // Auth DOM
+        const authScreen = $('auth-screen');
+        const authTitle = $('auth-title');
+        const authSubtitle = $('auth-subtitle');
+        const signupFields = $('signup-fields');
+        const emailGroup = $('email-group');
+        const passwordGroup = $('password-group');
+        const authName = $('auth-name');
+        const authSurname = $('auth-surname');
+        const authUsername = $('auth-username');
+        const authEmail = $('auth-email');
+        const authPassword = $('auth-password');
+        const btnAuthSubmit = $('btn-auth-submit');
+        const btnAuthSwitch = $('btn-auth-switch');
+        const btnAuthGoogle = $('btn-auth-google');
+        const btnAuthGuest = $('btn-auth-guest');
+        const authSwitchText = $('auth-switch-text');
+        const authDivider = $('auth-divider');
+        const authSwitchContainer = $('auth-switch-container');
+
+        // Settings Sheet DOM for Auth
+        const sheetUserRow = $('sheet-user-row');
+        const sheetUserName = $('sheet-user-name');
+        const btnLogout = $('btn-logout');
+        const btnLoginPrompt = $('btn-login-prompt');
+        const btnReset = $('btn-reset');
 
         /* ── INIT ─────────────────────────────────────────── */
         loadState();
         updateXPUI();
         renderActiveQuest();
         renderCompleted();
+        initAuth();
+        initFilterBar();
+        handleDeepLinks();
+
+        /* ── AUTH LOGIC ───────────────────────────────────── */
+        function initAuth() {
+            if (isGuest) {
+                authScreen.classList.remove('show');
+            } else {
+                // DO NOT SHOW AUTH SCREEN YET, wait for onAuthStateChanged
+                // Otherwise it pops up and then vanishes if the user IS logged in
+            }
+
+            const checkFb = setInterval(() => {
+                if (window.firebaseApp) {
+                    clearInterval(checkFb);
+                    fb = window.firebaseApp;
+                    setupAuthVars();
+                }
+            }, 50);
+        }
+
+        function completeLoginFlow(user, cloudState) {
+            currentUser = user;
+            isGuest = false;
+            localStorage.removeItem('more_guest');
+            authScreen.classList.remove('show');
+
+            const cloudT = cloudState?.updatedAt || 0;
+            const localT = state.updatedAt || 0;
+
+            if (cloudState && (cloudT > localT)) {
+
+                // If cloud is newer, overwrite local completely BUT keep the new date
+                state = {
+                    xp: cloudState.xp ?? 0,
+                    currentQuest: cloudState.currentQuest ?? null,
+                    completed: cloudState.completed ?? [],
+                    streak: cloudState.streak ?? 0,
+                    lastQuestDate: cloudState.lastQuestDate ?? null,
+                    xpHistory: cloudState.xpHistory ?? [],
+                    stats: cloudState.stats ?? {
+                        easy: { count: 0, totalXp: 0 },
+                        medium: { count: 0, totalXp: 0 },
+                        hard: { count: 0, totalXp: 0 }
+                    },
+                    questTimestamps: cloudState.questTimestamps ?? [],
+                    customQuests: cloudState.customQuests ?? [],
+                    challenges_sent: cloudState.challenges_sent ?? [],
+                    profilePublic: cloudState.profilePublic ?? false,
+                    updatedAt: cloudT
+                };
+
+                localStorage.setItem('more_state', JSON.stringify(state));
+                updateXPUI();
+                renderActiveQuest();
+                renderCompleted();
+            } else if (localT >= cloudT) {
+                // If local is newer OR EQUAL (like right after login with Guest data), push it
+                syncToFirestore();
+            }
+
+            let display = 'Utente';
+            if (cloudState && cloudState.username) display = cloudState.username;
+            else if (cloudState && cloudState.displayName) display = cloudState.displayName;
+            else if (user && user.displayName) display = user.displayName;
+
+            sheetUserName.textContent = display;
+            sheetUserRow.style.display = 'flex';
+            btnLogout.style.display = 'block';
+            btnLoginPrompt.style.display = 'none';
+
+            authTitle.textContent = 'Bentornato';
+            authSubtitle.textContent = 'Accedi con Google per salvare i tuoi progressi.';
+            signupFields.style.display = 'none';
+            btnAuthSubmit.style.display = 'none';
+            btnAuthGoogle.style.display = 'flex';
+            btnAuthGuest.style.display = 'block';
+
+            authUsername.value = '';
+            authName.value = '';
+            authSurname.value = '';
+            pendingGoogleCreds = null;
+        }
+
+        function setupAuthVars() {
+            fb.onAuthStateChanged(fb.auth, async (user) => {
+                if (user) {
+                    try {
+                        const docSnap = await fb.getDoc(fb.doc(fb.db, 'more_users', user.uid));
+                        if (docSnap.exists() && docSnap.data().username) {
+                            completeLoginFlow(user, docSnap.data());
+                            if (!pendingGoogleCreds) showToast('Accesso effettuato');
+                        } else {
+                            // User authenticated via Google or legacy account missing username
+                            pendingGoogleCreds = user;
+                            authScreen.classList.add('show');
+                            authTitle.textContent = 'Quasi fatto!';
+                            authSubtitle.textContent = 'Scegli un username per completare il profilo.';
+                            signupFields.style.display = 'block';
+                            btnAuthSubmit.style.display = 'block';
+                            btnAuthSubmit.textContent = 'Completa registrazione';
+                            if (user.displayName) {
+                                const parts = user.displayName.split(' ');
+                                authName.value = parts[0] || '';
+                                authSurname.value = parts.slice(1).join(' ') || '';
+                            }
+                            btnAuthGoogle.style.display = 'none';
+                            btnAuthGuest.style.display = 'none';
+                        }
+                    } catch (e) { console.error(e); }
+                } else {
+                    currentUser = null;
+                    sheetUserRow.style.display = 'none';
+                    btnLogout.style.display = 'none';
+                    btnLoginPrompt.style.display = 'block';
+                    if (!isGuest && !pendingGoogleCreds) {
+                        authScreen.classList.add('show');
+                    }
+                }
+            });
+        }
+
+        // Email code stripped
+
+        btnAuthGuest.addEventListener('click', () => {
+            isGuest = true;
+            localStorage.setItem('more_guest', 'true');
+            authScreen.classList.remove('show');
+            sheetUserName.textContent = 'Ospite';
+            sheetUserRow.style.display = 'flex';
+            btnLogout.style.display = 'none';
+            btnLoginPrompt.style.display = 'block';
+            showToast('Sei entrato come Ospite');
+        });
+
+        btnLoginPrompt.addEventListener('click', () => {
+            closeSettings();
+            authScreen.classList.add('show');
+        });
+
+        btnLogout.addEventListener('click', () => {
+            if (fb) fb.signOut(fb.auth).then(() => {
+                // Clear local state to prevent inherited quests 
+                state = {
+                    xp: 0,
+                    currentQuest: null,
+                    completed: [],
+                    streak: 0,
+                    lastQuestDate: null,
+                    xpHistory: [],
+                    stats: {
+                        easy: { count: 0, totalXp: 0 },
+                        medium: { count: 0, totalXp: 0 },
+                        hard: { count: 0, totalXp: 0 }
+                    },
+                    questTimestamps: [],
+                    customQuests: [],
+                    challenges_sent: [],
+                    profilePublic: false,
+                    updatedAt: 0
+                };
+                localStorage.removeItem('more_state');
+                updateXPUI();
+                renderActiveQuest();
+                renderCompleted();
+
+                closeSettings();
+                showToast('Disconnesso');
+            });
+        });
+
+        btnAuthGoogle.addEventListener('click', async () => {
+            if (btnAuthGoogle.classList.contains('disabled')) return;
+            btnAuthGoogle.classList.add('disabled');
+            try {
+                await fb.signInWithPopup(fb.auth, fb.googleProvider);
+                // onAuthStateChanged takes over completely!
+            } catch (error) {
+                showToast(error.message.replace('Firebase: ', ''));
+            } finally {
+                btnAuthGoogle.classList.remove('disabled');
+            }
+        });
+
+        btnAuthSubmit.addEventListener('click', async () => {
+            if (!fb) return;
+            btnAuthSubmit.classList.add('disabled');
+
+            try {
+                if (pendingGoogleCreds) {
+                    let username = authUsername.value.trim();
+                    if (!username) throw new Error("Inserisci uno username");
+                    if (!username.startsWith('@')) username = '@' + username;
+                    if (username.length < 3) throw new Error("Username troppo corto");
+
+                    const fullName = (authName.value.trim() + ' ' + authSurname.value.trim()).trim();
+
+                    const newState = {
+                        username,
+                        displayName: fullName || pendingGoogleCreds.displayName || '',
+                        ...state,
+                        updatedAt: Date.now()
+                    };
+                    await fb.setDoc(fb.doc(fb.db, 'more_users', pendingGoogleCreds.uid), newState, { merge: true });
+
+                    completeLoginFlow(pendingGoogleCreds, newState);
+                    showToast('Account completato con successo!');
+                }
+            } catch (err) {
+                showToast(err.message.replace('Firebase: ', ''));
+            } finally {
+                btnAuthSubmit.classList.remove('disabled');
+            }
+        });
 
         /* ── XP / LEVEL SYSTEM ────────────────────────────── */
         function getLevelInfo(xp) {
@@ -1336,6 +2679,13 @@
                 xpBar.style.width = '100%';
                 xpLabel.textContent = 'Livello massimo raggiunto!';
             }
+
+            if (state.streak > 0) {
+                streakBadge.style.display = 'inline-flex';
+                streakCount.textContent = state.streak;
+            } else {
+                streakBadge.style.display = 'none';
+            }
         }
 
         /* ── QUEST RENDERING ──────────────────────────────── */
@@ -1357,20 +2707,25 @@
             const diffClass = q.difficulty === 'easy' ? 'diff-easy' : q.difficulty === 'medium' ? 'diff-medium' : 'diff-hard';
             const diffLabel = q.difficulty === 'easy' ? 'Facile' : q.difficulty === 'medium' ? 'Media' : 'Difficile';
             const iconClass = `icon-${q.difficulty}`;
+            const customTag = q.isCustom ? '<span class="custom-tag">Custom</span>' : '';
             questContainer.innerHTML = `
     <div class="quest-card">
       <div class="quest-top">
         <div class="quest-icon ${iconClass}">${getQuestIconSVG(q.difficulty)}</div>
-        <span class="quest-title">${escapeHtml(q.title)}</span>
         <span class="diff-badge ${diffClass}"><span class="dot dot-${q.difficulty}"></span>${diffLabel}</span>
+        <span class="quest-title">${escapeHtml(q.title)}${customTag}</span>
       </div>
       <p class="quest-desc">${escapeHtml(q.description)}</p>
       <div class="quest-footer">
         <span class="quest-xp"><svg><use href="#ico-diamond"/></svg>+${q.xp.toLocaleString('it-IT')} XP</span>
         <button class="btn-complete" id="btn-complete-quest"><svg><use href="#ico-check"/></svg>Completata</button>
       </div>
+      <div class="quest-actions">
+        <button class="btn-quest-action" id="btn-challenge-quest"><svg><use href="#ico-send"/></svg>Sfida un amico</button>
+      </div>
     </div>`;
             $('btn-complete-quest').addEventListener('click', completeQuest);
+            $('btn-challenge-quest').addEventListener('click', () => challengeQuest(q));
         }
 
         function renderCompleted() {
@@ -1391,20 +2746,63 @@
             ).join('')}</ul>`;
         }
 
-        /* ── QUEST GENERATION (from pool) ─────────────────── */
+        /* ── SEASONAL HELPER ──────────────────────────────── */
+        function getCurrentSeason() {
+            const m = new Date().getMonth(); // 0-11
+            if (m >= 2 && m <= 4) return 'spring';
+            if (m >= 5 && m <= 7) return 'summer';
+            if (m >= 8 && m <= 10) return 'autumn';
+            return 'winter';
+        }
+        function isWeekend() {
+            const d = new Date().getDay();
+            return d === 0 || d === 6;
+        }
+
+        /* ── QUEST GENERATION (from pool + custom) ─────────── */
         btnNewQuest.addEventListener('click', generateQuest);
 
+        function getFullPool() {
+            const custom = (state.customQuests || []).map(q => ({ ...q, isCustom: true }));
+            return [...QUESTS_POOL, ...custom];
+        }
+
         function generateQuest() {
+            const pool = getFullPool();
             const completedTitles = new Set(state.completed.map(c => c.title));
-            const available = QUESTS_POOL.filter(q => !completedTitles.has(q.title));
+            const season = getCurrentSeason();
+            const weekend = isWeekend();
+
+            let available = pool.filter(q => {
+                if (completedTitles.has(q.title)) return false;
+                // Seasonal filtering
+                if (q.season) {
+                    if (q.season === 'weekend') return weekend;
+                    if (q.season !== season) return false;
+                }
+                // Difficulty filter
+                if (currentFilter !== 'all' && q.difficulty !== currentFilter) return false;
+                return true;
+            });
 
             if (available.length === 0) {
-                // All 304 quests completed — show victory
+                // Fallback: try without filter
+                available = pool.filter(q => {
+                    if (completedTitles.has(q.title)) return false;
+                    if (q.season) {
+                        if (q.season === 'weekend') return weekend;
+                        if (q.season !== season) return false;
+                    }
+                    return true;
+                });
+            }
+
+            if (available.length === 0) {
                 questContainer.innerHTML = `
       <div class="victory-card">
         <svg><use href="#ico-trophy"/></svg>
         <div class="victory-title">Tutte le quest completate!</div>
-        <p class="victory-msg">Hai completato tutte le ${QUESTS_POOL.length} quest.<br>Sei una leggenda. Resetta per ricominciare l'avventura.</p>
+        <p class="victory-msg">Hai completato tutte le quest disponibili.<br>Sei una leggenda. Resetta per ricominciare l'avventura.</p>
         <button class="btn-victory" id="btn-victory-reset">Ricomincia</button>
       </div>`;
                 $('btn-victory-reset').addEventListener('click', () => {
@@ -1430,8 +2828,42 @@
             const q = state.currentQuest;
             state.xp += q.xp;
             state.completed.push({ title: q.title, xp: q.xp, difficulty: q.difficulty });
+
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+            if (state.lastQuestDate === yesterdayStr) {
+                state.streak++;
+                state.lastQuestDate = todayStr;
+            } else if (state.lastQuestDate !== todayStr) {
+                state.streak = 1;
+                state.lastQuestDate = todayStr;
+            }
+
+            let todayHistory = state.xpHistory.find(h => h.date === todayStr);
+            if (todayHistory) {
+                todayHistory.xp += q.xp;
+            } else {
+                state.xpHistory.push({ date: todayStr, xp: q.xp });
+            }
+
+            if (state.stats[q.difficulty]) {
+                state.stats[q.difficulty].count++;
+                state.stats[q.difficulty].totalXp += q.xp;
+            }
+
+            state.questTimestamps.push(Date.now());
+
             state.currentQuest = null;
+            lastCompletedQuest = q;
             saveState();
+
+            if (statsScreen.style.display === 'flex') {
+                renderStatsScreen();
+            }
 
             // Show XP modal
             modalXpText.textContent = `+${q.xp.toLocaleString('it-IT')} XP`;
@@ -1455,10 +2887,75 @@
 
         /* ── NAVIGATION ───────────────────────────────────── */
         btnHome.addEventListener('click', () => {
-            document.querySelector('.content').scrollTo({ top: 0, behavior: 'smooth' });
+            homeScreen.scrollTo({ top: 0, behavior: 'smooth' });
             btnHome.classList.add('active');
+            btnTabStats.classList.remove('active');
             btnSettings.classList.remove('active');
+            homeScreen.style.display = 'block';
+            statsScreen.style.display = 'none';
         });
+
+        btnTabStats.addEventListener('click', () => {
+            statsScreen.scrollTo({ top: 0, behavior: 'smooth' });
+            btnHome.classList.remove('active');
+            btnTabStats.classList.add('active');
+            btnSettings.classList.remove('active');
+            homeScreen.style.display = 'none';
+            statsScreen.style.display = 'flex';
+            renderStatsScreen();
+        });
+
+        function renderStatsScreen() {
+            statEasyCnt.textContent = state.stats.easy.count;
+            statEasyXp.textContent = state.stats.easy.totalXp.toLocaleString('it-IT');
+            statMedCnt.textContent = state.stats.medium.count;
+            statMedXp.textContent = state.stats.medium.totalXp.toLocaleString('it-IT');
+            statHardCnt.textContent = state.stats.hard.count;
+            statHardXp.textContent = state.stats.hard.totalXp.toLocaleString('it-IT');
+
+            if (state.questTimestamps && state.questTimestamps.length > 1) {
+                const sorted = [...state.questTimestamps].sort((a, b) => a - b);
+                let totalDiff = 0;
+                for (let i = 1; i < sorted.length; i++) {
+                    totalDiff += (sorted[i] - sorted[i - 1]);
+                }
+                const avgMs = totalDiff / (sorted.length - 1);
+                const avgHrs = (avgMs / (1000 * 60 * 60)).toFixed(1);
+                avgTime.textContent = `Media: ${avgHrs} ore tra le quest`;
+            } else {
+                avgTime.textContent = `Media: -- ore tra le quest`;
+            }
+
+            xpGraph.innerHTML = '';
+            const historyMap = {};
+            if (state.xpHistory) {
+                state.xpHistory.forEach(h => { historyMap[h.date] = h.xp; });
+            }
+
+            const today = new Date();
+            const currentDayOfWeek = today.getDay();
+            const totalDaysToRender = (15 * 7) + (currentDayOfWeek + 1);
+
+            let html = '';
+            for (let i = totalDaysToRender - 1; i >= 0; i--) {
+                const d = new Date(today);
+                d.setDate(d.getDate() - i);
+                const dStr = d.toISOString().split('T')[0];
+                const xp = historyMap[dStr] || 0;
+
+                let colorClass = '';
+                if (xp > 0 && xp < 1000) colorClass = 'style="background: rgba(79,163,255,0.4);"';
+                else if (xp >= 1000 && xp < 2000) colorClass = 'style="background: #4fa3ff;"';
+                else if (xp >= 2000 && xp < 5000) colorClass = 'style="background: #ffb347;"';
+                else if (xp >= 5000) colorClass = 'style="background: #ff4f4f;"';
+
+                html += `<div class="xp-cell" ${colorClass} title="${dStr}: ${xp} XP"></div>`;
+            }
+            xpGraph.innerHTML = html;
+
+            const wrapper = document.querySelector('.xp-graph-wrapper');
+            if (wrapper) wrapper.scrollLeft = wrapper.scrollWidth;
+        }
 
         /* ── SETTINGS ─────────────────────────────────────── */
         btnSettings.addEventListener('click', () => {
@@ -1470,11 +2967,39 @@
         sheetOverlay.addEventListener('click', closeSettings);
 
         function openSettings() {
+            const pool = getFullPool();
             const completedTitles = new Set(state.completed.map(c => c.title));
-            const avail = QUESTS_POOL.filter(q => !completedTitles.has(q.title)).length;
+            const avail = pool.filter(q => !completedTitles.has(q.title)).length;
             sheetQuestCnt.textContent = state.completed.length;
             sheetQuestAvl.textContent = avail;
             sheetXpTotal.textContent = state.xp.toLocaleString('it-IT');
+
+            // Public profile toggle
+            if (state.profilePublic) togglePublicProfile.classList.add('active');
+            else togglePublicProfile.classList.remove('active');
+
+            // Custom quests list
+            if (state.customQuests && state.customQuests.length > 0) {
+                customQuestsSection.style.display = 'block';
+                customQuestList.innerHTML = state.customQuests.map((cq, i) => `
+                    <div class="custom-quest-item">
+                        <span class="cq-title">${escapeHtml(cq.title)}</span>
+                        <button class="btn-delete-cq" data-idx="${i}">Elimina</button>
+                    </div>
+                `).join('');
+                customQuestList.querySelectorAll('.btn-delete-cq').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const idx = parseInt(btn.dataset.idx);
+                        state.customQuests.splice(idx, 1);
+                        saveState();
+                        openSettings();
+                        showToast('Quest personalizzata eliminata');
+                    });
+                });
+            } else {
+                customQuestsSection.style.display = 'none';
+            }
+
             sheetOverlay.classList.add('show');
             settingsSheet.classList.add('show');
         }
@@ -1497,8 +3022,26 @@
 
         btnConfReset.addEventListener('click', () => {
             confirmOverlay.classList.remove('show');
-            state = { xp: 0, currentQuest: null, completed: [] };
-            localStorage.removeItem('more_state');
+            state = {
+                xp: 0,
+                currentQuest: null,
+                completed: [],
+                streak: 0,
+                lastQuestDate: null,
+                xpHistory: [],
+                stats: {
+                    easy: { count: 0, totalXp: 0 },
+                    medium: { count: 0, totalXp: 0 },
+                    hard: { count: 0, totalXp: 0 }
+                },
+                questTimestamps: [],
+                customQuests: [],
+                challenges_sent: [],
+                profilePublic: false,
+                updatedAt: Date.now()
+            };
+            localStorage.setItem('more_state', JSON.stringify(state));
+            syncToFirestore();
             updateXPUI();
             renderActiveQuest();
             renderCompleted();
@@ -1520,6 +3063,257 @@
             div.textContent = str;
             return div.innerHTML;
         }
+
+        /* ── DIFFICULTY FILTER ─────────────────────────────── */
+        function initFilterBar() {
+            document.querySelectorAll('.filter-pill').forEach(pill => {
+                pill.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    currentFilter = pill.dataset.filter;
+                });
+            });
+        }
+
+        /* ── CUSTOM QUESTS ────────────────────────────────── */
+        btnCreateQuest.addEventListener('click', () => {
+            cqTitle.value = ''; cqDesc.value = ''; cqDiff.value = 'easy'; cqCat.value = 'sfida';
+            createQuestOverlay.classList.add('show');
+        });
+        btnCqCancel.addEventListener('click', () => createQuestOverlay.classList.remove('show'));
+        createQuestOverlay.addEventListener('click', e => { if (e.target === createQuestOverlay) createQuestOverlay.classList.remove('show'); });
+
+        btnCqSave.addEventListener('click', () => {
+            const title = cqTitle.value.trim();
+            const desc = cqDesc.value.trim();
+            const diff = cqDiff.value;
+            const cat = cqCat.value;
+            if (!title) { showToast('Inserisci un titolo'); return; }
+            const xpMap = { easy: 1000, medium: 2000, hard: 5000 };
+            const newQuest = { title, description: desc || title, difficulty: diff, xp: xpMap[diff], category: cat, isCustom: true };
+            if (!state.customQuests) state.customQuests = [];
+            state.customQuests.push(newQuest);
+            saveState();
+            createQuestOverlay.classList.remove('show');
+            showToast('Quest personalizzata creata!');
+        });
+
+        /* ── CHALLENGE A FRIEND ───────────────────────────── */
+        function challengeQuest(quest) {
+            const username = getCurrentUsername();
+            const url = `${location.origin}${location.pathname}?challenge=${encodeURIComponent(quest.title)}&from=${encodeURIComponent(username)}`;
+
+            if (!state.challenges_sent) state.challenges_sent = [];
+            state.challenges_sent.push({ questTitle: quest.title, to: null, sentAt: new Date().toISOString() });
+            saveState();
+
+            if (navigator.share) {
+                navigator.share({ title: 'Sfida LifeQuest', text: `Ti sfido a completare: "${quest.title}"! 🎮`, url })
+                    .catch(() => copyToClipboard(url));
+            } else {
+                copyToClipboard(url);
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => showToast('Link copiato!')).catch(() => showToast('Impossibile copiare'));
+        }
+
+        function getCurrentUsername() {
+            return sheetUserName?.textContent || 'Ospite';
+        }
+
+        function handleDeepLinks() {
+            const params = new URLSearchParams(location.search);
+            const challengeTitle = params.get('challenge');
+            const fromUser = params.get('from');
+            if (challengeTitle) {
+                challengeBannerCont.innerHTML = `
+                    <div class="challenge-banner">
+                        <svg><use href="#ico-send"/></svg>
+                        Sfidato da ${escapeHtml(decodeURIComponent(fromUser || 'qualcuno'))}
+                    </div>`;
+                // Try to load the challenged quest
+                const pool = getFullPool();
+                const quest = pool.find(q => q.title === decodeURIComponent(challengeTitle));
+                if (quest && !state.currentQuest) {
+                    state.currentQuest = quest;
+                    saveLocal();
+                    renderActiveQuest();
+                }
+                // Clear URL params
+                history.replaceState(null, '', location.pathname);
+            }
+            // Handle profile route
+            checkProfileRoute();
+        }
+
+        /* ── SHARE COMPLETION CARD ────────────────────────── */
+        btnShareCard.addEventListener('click', async () => {
+            if (!lastCompletedQuest) return;
+            const q = lastCompletedQuest;
+            const username = getCurrentUsername();
+            const info = getLevelInfo(state.xp);
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 800; canvas.height = 600;
+            const ctx = canvas.getContext('2d');
+
+            // Background
+            ctx.fillStyle = '#0a0a0f';
+            ctx.fillRect(0, 0, 800, 600);
+            // Accent glow
+            const grd = ctx.createRadialGradient(200, 150, 0, 200, 150, 400);
+            grd.addColorStop(0, 'rgba(200,241,53,0.12)');
+            grd.addColorStop(1, 'transparent');
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, 800, 600);
+
+            // App name
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.font = '700 16px Syne, sans-serif';
+            ctx.fillText('more — Gamify Your Life', 40, 50);
+
+            // Border accent bar
+            ctx.fillStyle = '#c8f135';
+            ctx.fillRect(40, 70, 60, 4);
+
+            // Quest title
+            ctx.fillStyle = '#f0f0f5';
+            ctx.font = '800 36px Syne, sans-serif';
+            wrapText(ctx, q.title, 40, 130, 720, 44);
+
+            // XP
+            ctx.fillStyle = '#c8f135';
+            ctx.font = '800 56px Syne, sans-serif';
+            ctx.fillText(`+${q.xp.toLocaleString('it-IT')} XP`, 40, 320);
+
+            // Difficulty badge
+            const diffColors = { easy: '#4fa3ff', medium: '#ffb347', hard: '#ff4f4f' };
+            const diffLabels = { easy: 'FACILE', medium: 'MEDIA', hard: 'DIFFICILE' };
+            ctx.fillStyle = diffColors[q.difficulty] || '#4fa3ff';
+            ctx.font = '700 18px Syne, sans-serif';
+            ctx.fillText(diffLabels[q.difficulty] || 'QUEST', 40, 370);
+
+            // User info
+            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.font = '600 18px DM Sans, sans-serif';
+            ctx.fillText(`${username}  ·  LVL ${info.level} ${info.name}`, 40, 500);
+
+            // Streak
+            if (state.streak > 0) {
+                ctx.fillStyle = '#ffb347';
+                ctx.font = '700 18px Syne, sans-serif';
+                ctx.fillText(`🔥 ${state.streak} giorni di fila`, 40, 540);
+            }
+
+            // Bottom border
+            ctx.fillStyle = '#c8f135';
+            ctx.fillRect(0, 590, 800, 10);
+
+            try {
+                canvas.toBlob(async (blob) => {
+                    if (!blob) { showToast('Errore generazione immagine'); return; }
+                    const file = new File([blob], 'lifequest-completion.png', { type: 'image/png' });
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({ files: [file], title: 'LifeQuest', text: `Ho completato "${q.title}" e guadagnato ${q.xp} XP!` });
+                        } catch { showToast('Condivisione annullata'); }
+                    } else {
+                        // Fallback: download
+                        const a = document.createElement('a');
+                        a.href = URL.createObjectURL(blob);
+                        a.download = 'lifequest-completion.png';
+                        a.click();
+                        showToast('Immagine scaricata!');
+                    }
+                }, 'image/png');
+            } catch { showToast('Errore condivisione'); }
+        });
+
+        function wrapText(ctx, text, x, y, maxW, lineH) {
+            const words = text.split(' ');
+            let line = '';
+            for (const word of words) {
+                const test = line + word + ' ';
+                if (ctx.measureText(test).width > maxW && line !== '') {
+                    ctx.fillText(line, x, y);
+                    line = word + ' ';
+                    y += lineH;
+                } else {
+                    line = test;
+                }
+            }
+            ctx.fillText(line, x, y);
+        }
+
+        /* ── PUBLIC PROFILE ───────────────────────────────── */
+        togglePublicProfile.addEventListener('click', () => {
+            state.profilePublic = !state.profilePublic;
+            togglePublicProfile.classList.toggle('active', state.profilePublic);
+            saveState();
+            showToast(state.profilePublic ? 'Profilo pubblico attivato' : 'Profilo privato');
+        });
+
+        function checkProfileRoute() {
+            const hash = location.hash;
+            if (hash.startsWith('#profile/')) {
+                const uid = hash.replace('#profile/', '');
+                if (uid) loadPublicProfile(uid);
+            }
+        }
+        window.addEventListener('hashchange', checkProfileRoute);
+
+        async function loadPublicProfile(uid) {
+            profileScreen.classList.add('show');
+            profileContent.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-dim)">Caricamento...</div>';
+
+            const checkFbReady = () => {
+                if (!fb) { setTimeout(checkFbReady, 100); return; }
+                fb.getDoc(fb.doc(fb.db, 'more_users', uid)).then(docSnap => {
+                    if (!docSnap.exists()) {
+                        profileContent.innerHTML = '<div class="profile-private">Profilo non trovato.</div><button class="btn-profile-close" id="btn-close-profile">Chiudi</button>';
+                        $('btn-close-profile').addEventListener('click', closeProfile);
+                        return;
+                    }
+                    const data = docSnap.data();
+                    if (!data.profilePublic) {
+                        profileContent.innerHTML = '<div class="profile-private">Questo profilo è privato.</div><button class="btn-profile-close" id="btn-close-profile">Chiudi</button>';
+                        $('btn-close-profile').addEventListener('click', closeProfile);
+                        return;
+                    }
+                    const pInfo = getLevelInfo(data.xp || 0);
+                    const initial = (data.username || 'U')[0].toUpperCase();
+                    const last5 = (data.completed || []).slice(-5).reverse();
+                    profileContent.innerHTML = `
+                        <div class="profile-card">
+                            <div class="profile-avatar">${initial}</div>
+                            <div class="profile-username">${escapeHtml(data.username || 'Utente')}</div>
+                            <div class="profile-level">LVL ${pInfo.level} · ${pInfo.name.toUpperCase()}</div>
+                            <div class="profile-stat-row">
+                                <div class="profile-stat"><div class="profile-stat-val">${(data.xp || 0).toLocaleString('it-IT')}</div><div class="profile-stat-label">XP</div></div>
+                                <div class="profile-stat"><div class="profile-stat-val">${data.streak || 0}</div><div class="profile-stat-label">Streak</div></div>
+                                <div class="profile-stat"><div class="profile-stat-val">${(data.completed || []).length}</div><div class="profile-stat-label">Quest</div></div>
+                            </div>
+                            ${last5.length > 0 ? `<div class="profile-quests-title">Ultime quest</div>
+                            <ul class="completed-list">${last5.map(q => `<li class="completed-item"><span class="completed-dot"></span><span class="completed-name">${escapeHtml(q.title)}</span></li>`).join('')}</ul>` : ''}
+                        </div>
+                        <button class="btn-profile-close" id="btn-close-profile">Chiudi</button>
+                    `;
+                    $('btn-close-profile').addEventListener('click', closeProfile);
+                }).catch(err => {
+                    profileContent.innerHTML = '<div class="profile-private">Errore nel caricamento.</div><button class="btn-profile-close" id="btn-close-profile">Chiudi</button>';
+                    $('btn-close-profile').addEventListener('click', closeProfile);
+                });
+            };
+            checkFbReady();
+        }
+
+        function closeProfile() {
+            profileScreen.classList.remove('show');
+            location.hash = '';
+        }
+
         /* ── SERVICE WORKER ──────────────────────────────── */
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
