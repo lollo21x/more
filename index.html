@@ -1877,6 +1877,72 @@
             color: var(--text);
         }
 
+        function showPublicProfile(userData) {
+            const screen = document.getElementById('profile-screen');
+            const cleanUsername = (userData.username || 'utente').replace(/^@+/, '');
+            
+            const totalQuests = userData.completed ? userData.completed.length : 0;
+            const streak = userData.streak || 0;
+            
+            // Build recent activity
+            let recentHTML = '<div class="quest-empty" style="font-size:13px;">Nessuna attività recente</div>';
+            if (userData.completed && userData.completed.length > 0) {
+                const recent = [...userData.completed].sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt)).slice(0, 5);
+                recentHTML = '<ul class="completed-list" style="margin-top:0;">';
+                recent.forEach(q => {
+                    const diffDot = `dot-${q.difficulty || 'easy'}`;
+                    recentHTML += `
+                    <li class="completed-item" style="display:flex; align-items:center; gap:12px; margin-bottom:12px; border-bottom:1px solid var(--border-light); padding-bottom:8px;">
+                        <div class="completed-dot ${diffDot}" style="margin-top:0;"></div>
+                        <div style="flex:1;">
+                            <div class="completed-name" style="font-size:13px; font-weight:700;">${q.title}</div>
+                            <div style="font-size:11px; color:var(--text-dim);">+${(q.xp || 0).toLocaleString('it-IT')} XP</div>
+                        </div>
+                    </li>`;
+                });
+                recentHTML += '</ul>';
+            }
+
+            screen.innerHTML = `
+                <div style="width:100%; max-width:400px; margin:auto; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:24px; position:relative; max-height:90vh; overflow-y:auto;">
+                    <button class="btn-icon" onclick="document.getElementById('profile-screen').classList.remove('show')" style="position:absolute; top:12px; right:12px; background:transparent; border:none;"><svg style="width:24px;height:24px;"><use href="#ico-plus" style="transform:rotate(45deg);transform-origin:center;"/></svg></button>
+                    
+                    <div style="text-align: center; margin-bottom: 24px;">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; background: ${userData.avatarColor || '#333'}; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 32px; color: #fff;">
+                            ${cleanUsername.charAt(0).toUpperCase()}
+                        </div>
+                        <div style="font-family: var(--font-display); font-weight: 800; font-size: 22px; margin-bottom: 4px;">${userData.displayName || cleanUsername}</div>
+                        <div style="color: var(--text-dim); font-size: 14px; margin-bottom: 12px;">@${cleanUsername}</div>
+                        
+                        <div class="xp-level-badge" style="margin-bottom: 12px;">
+                            <svg><use href="#ico-crown"/></svg> LVL ${Math.floor(Math.sqrt((userData.xp||0) / 1500)) + 1}
+                        </div>
+                        
+                        ${userData.bio ? `<div style="font-size: 14px; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin: 0 auto; max-width: 280px; font-style:italic;">"${userData.bio}"</div>` : ''}
+                    </div>
+
+                    <div class="xp-card" style="display: flex; justify-content: space-around; padding: 16px; margin-bottom: 24px;">
+                        <div style="text-align: center;">
+                            <div style="font-family: var(--font-display); font-weight: 800; font-size: 18px; color: var(--accent);">${(userData.xp||0).toLocaleString()}</div>
+                            <div style="font-size: 10px; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">XP</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-family: var(--font-display); font-weight: 800; font-size: 18px; color: var(--text);">${totalQuests}</div>
+                            <div style="font-size: 10px; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">Quest</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-family: var(--font-display); font-weight: 800; font-size: 18px; color: #ffb347;">${streak}</div>
+                            <div style="font-size: 10px; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">Streak</div>
+                        </div>
+                    </div>
+                    
+                    <div class="section-title" style="font-size:14px; margin-bottom:12px;">Ultime Attività</div>
+                    ${recentHTML}
+                </div>
+            `;
+            screen.classList.add('show');
+        }
+
         /* ── TOGGLE SWITCH ───────────────────────────────── */
         .toggle-switch {
             position: relative;
@@ -2451,11 +2517,8 @@
 
     <!-- ────────── QUEST REVIEW MODAL ────────── -->
     <div class="modal-overlay" id="quest-review-overlay" style="z-index: 550;">
-        <div class="modal-content" style="padding-bottom:16px;">
-            <div class="modal-icon"><svg style="width:56px;height:56px;fill:var(--accent);">
-                    <use href="#ico-pen" />
-                </svg></div>
-            <div class="modal-hype" style="font-size:22px; margin-bottom:12px;">Com'è andata?</div>
+        <div class="modal-content" style="padding-bottom:20px; padding-top:20px;">
+            <div class="modal-hype" style="font-size:22px; margin-bottom:12px; margin-top:0;">Com'è andata?</div>
             <textarea id="review-note" maxlength="500" placeholder="Scrivi una nota (opzionale)..."
                 style="width:100%; height:80px; padding:12px; border-radius:var(--radius); border:2px solid var(--border); background:rgba(0,0,0,0.2); color:var(--text); font-family:var(--font); margin-bottom:12px; resize:none;"></textarea>
 
@@ -2464,7 +2527,7 @@
                     style="cursor:pointer; display:flex; align-items:center; gap:8px; border-color:var(--accent); color:var(--accent);">
                     <svg style="width:16px;height:16px;stroke:var(--accent);fill:none;">
                         <use href="#ico-plus" />
-                    </svg> <span style="font-weight: 800;">Aggiungi Foto</span>
+                    </svg> <span style="font-weight: 800;">Aggiungi/Cambia Foto</span>
                 </label>
                 <input type="file" id="review-photo-upload" accept="image/*" capture="environment"
                     style="display:none;">
@@ -2473,9 +2536,9 @@
             <img id="review-photo-preview"
                 style="display:none; width:100%; border-radius:var(--radius); margin-bottom:16px; object-fit:cover; max-height:200px;">
 
-            <div class="modal-buttons" style="display:flex; gap:12px; width:100%;">
-                <button class="btn-ghost" id="btn-review-skip" style="flex:1;">Salta</button>
-                <button class="btn-complete" id="btn-review-save" style="flex:1;">Salva</button>
+            <div class="modal-buttons" style="display:flex; flex-direction:column; gap:12px; width:100%;">
+                <button class="btn-complete" id="btn-review-save" style="width:100%;">Ok</button>
+                <button class="btn-sheet-danger" id="btn-review-delete" style="display:none; width:100%; padding:12px; border-radius:var(--radius-sm);">Elimina Quest</button>
             </div>
         </div>
     </div>
@@ -2560,7 +2623,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, serverTimestamp, collection, query, where, limit, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, serverTimestamp, collection, query, where, limit, getDocs, updateDoc, deleteDoc, onSnapshot, documentId } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA27qqn90L4cs21nnlk9v3Erf6Svo82lQY",
@@ -2577,7 +2640,7 @@
         const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
 
-        window.firebaseApp = { auth, db, googleProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, doc, setDoc, getDoc, serverTimestamp, collection, query, where, limit, getDocs, updateDoc, deleteDoc };
+        window.firebaseApp = { auth, db, googleProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, doc, setDoc, getDoc, serverTimestamp, collection, query, where, limit, getDocs, updateDoc, deleteDoc, onSnapshot, documentId };
     </script>
     <script src="questpool.js"></script>
 
@@ -2808,23 +2871,20 @@
         }
 
         function sanitizeForFirestore(obj) {
-            if (obj === undefined) return null;
-            if (obj === null) return null;
-            
-            if (Array.isArray(obj)) {
-                return obj.map(item => sanitizeForFirestore(item));
-            }
-            
+            if (obj === undefined || obj === null) return null;
+            if (Array.isArray(obj)) return obj.map(item => sanitizeForFirestore(item));
             if (typeof obj === 'object') {
                 const out = {};
                 for (let k in obj) {
                     if (k.startsWith('_')) continue;
-                    const val = obj[k];
+                    let val = obj[k];
+                    if (k === 'username' && typeof val === 'string') {
+                        val = val.replace(/^@+/, '').toLowerCase().trim();
+                    }
                     out[k] = sanitizeForFirestore(val);
                 }
                 return out;
             }
-            
             return obj;
         }
 
@@ -3186,26 +3246,22 @@
 
             try {
                 if (pendingGoogleCreds) {
-                    let username = authUsername.value.trim();
+                    let username = authUsername.value.trim().toLowerCase().replace(/^@+/, '');
                     if (!username) throw new Error("Inserisci uno username");
-                    if (!username.startsWith('@')) username = '@' + username;
                     if (username.length < 3) throw new Error("Username troppo corto");
 
-                    // Try to query but catch permission errors gracefully by assuming username is free if we can't check
-                    // This is a fallback for strict rules, though we should fix rules.
-                    try {
-                        const q = fb.query(fb.collection(fb.db, 'more_users'), fb.where('username', '==', username));
+                    let foundDoc = null;
+                    for (const uname of [username, '@' + username]) {
+                        const q = fb.query(fb.collection(fb.db, 'more_users'), fb.where('username', '==', uname));
                         const querySnapshot = await fb.getDocs(q);
                         if (!querySnapshot.empty) {
-                            const isMainUser = querySnapshot.docs.some(doc => doc.id === pendingGoogleCreds.uid);
-                            if (!isMainUser) throw new Error("Questo username è già stato scelto da qualcun altro.");
+                            foundDoc = querySnapshot.docs[0];
+                            break;
                         }
-                    } catch (e) {
-                        console.warn("Username check skipped/failed:", e);
-                        // If permission denied, we might proceed and let the write fail if it violates unique index? 
-                        // But Firestore doesn't have unique indexes enforced by rules easily without read.
-                        // We'll proceed and let the write happen.
-                        if (e.message.includes("chosen")) throw e; // Rethrow our own error
+                    }
+                    if (foundDoc) {
+                        const isMainUser = foundDoc.id === pendingGoogleCreds.uid;
+                        if (!isMainUser) throw new Error("Questo username è già stato scelto da qualcun altro.");
                     }
 
                     const fullName = (authName.value.trim() + ' ' + authSurname.value.trim()).trim();
@@ -3399,7 +3455,11 @@
                 return;
             }
             const last10 = state.completed.slice(-10).reverse();
-            completedCont.innerHTML = `<ul class="completed-list">${last10.map(q => {
+            // We need original indices for edit
+            const originalIndices = state.completed.map((_, i) => i).slice(-10).reverse();
+            
+            completedCont.innerHTML = `<ul class="completed-list">${last10.map((q, idx) => {
+                const realIndex = originalIndices[idx];
                 let noteHtml = '';
                 if (q.note || q.photo) {
                     noteHtml = `<div style="margin-top: 12px; padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); width: 100%;">`;
@@ -3409,16 +3469,22 @@
                 }
 
                 return `<li class="completed-item" style="flex-direction:column; align-items:flex-start; padding: 16px 0;">
-                  <div style="display:flex; width: 100%; align-items: center; justify-content: space-between;">
-                      <div style="display:flex; align-items:center;">
-                          <span class="completed-dot"></span>
-                          <span class="completed-name" style="margin-right:0;">${escapeHtml(q.title)}</span>
+                  <div style="display:flex; width: 100%; align-items: flex-start; justify-content: space-between; gap: 12px;">
+                      <div style="display:flex; align-items:center; flex:1;">
+                          <span class="completed-dot" style="margin-right: 12px;"></span>
+                          <span class="completed-name" style="margin-right:0; line-height: 1.3;">${escapeHtml(q.title)}</span>
                       </div>
-                      <span class="completed-xp" style="margin-left:0;">+${q.xp.toLocaleString('it-IT')} XP</span>
+                      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                        <span class="completed-xp" style="margin-left:0;">+${q.xp.toLocaleString('it-IT')} XP</span>
+                        <button class="btn-ghost" onclick="promptQuestEdit(${realIndex})" style="padding:4px 8px; font-size:10px; border:1px solid var(--border);">Modifica</button>
+                      </div>
                   </div>
                   ${noteHtml}
                 </li>`;
             }).join('')}</ul>`;
+            
+            // Expose function globally for onclick
+            window.promptQuestEdit = promptQuestEdit;
         }
 
         /* ── SEASONAL HELPER ──────────────────────────────── */
@@ -3593,6 +3659,40 @@
             }
             $('review-photo-upload').value = '';
             currentPhotoBase64 = null;
+            
+            // Setup buttons
+            $('btn-review-delete').style.display = 'none';
+            $('btn-review-save').textContent = 'Ok';
+            
+            $('quest-review-overlay').classList.add('show');
+        }
+
+        function promptQuestEdit(index) {
+            const q = state.completed[index];
+            if (!q) return;
+            
+            pendingCompletion = { quest: q, type: 'edit', index: index };
+            
+            const noteEl = $('review-note');
+            if (noteEl) noteEl.value = q.note || '';
+            
+            const previewEl = $('review-photo-preview');
+            if (q.photo) {
+                previewEl.src = q.photo;
+                previewEl.style.display = 'block';
+                currentPhotoBase64 = q.photo;
+            } else {
+                previewEl.style.display = 'none';
+                previewEl.src = '';
+                currentPhotoBase64 = null;
+            }
+            
+            $('review-photo-upload').value = '';
+            
+            // Setup buttons for edit mode
+            $('btn-review-delete').style.display = 'block';
+            $('btn-review-save').textContent = 'Salva Modifiche';
+            
             $('quest-review-overlay').classList.add('show');
         }
 
@@ -3604,10 +3704,33 @@
             if (pendingCompletion.type === 'normal') completeQuest(note, photo);
             else if (pendingCompletion.type === 'seasonal') completeSeasonal(pendingCompletion.index, note, photo);
             else if (pendingCompletion.type === 'daily') completeDaily(pendingCompletion.quest, note, photo);
+            else if (pendingCompletion.type === 'edit') {
+                // Update existing quest
+                state.completed[pendingCompletion.index].note = note;
+                state.completed[pendingCompletion.index].photo = photo;
+                saveState();
+                renderCompleted();
+                if (state.profilePublic) syncToFirestore(); // Sync if public
+                showToast("Quest aggiornata");
+            }
 
             $('quest-review-overlay').classList.remove('show');
             pendingCompletion = null;
         }
+        
+        $('btn-review-delete').addEventListener('click', () => {
+            if (pendingCompletion && pendingCompletion.type === 'edit') {
+                if(confirm("Vuoi davvero eliminare questa quest dalla cronologia? (XP rimarranno)")) {
+                    state.completed.splice(pendingCompletion.index, 1);
+                    saveState();
+                    renderCompleted();
+                    if (state.profilePublic) syncToFirestore();
+                    $('quest-review-overlay').classList.remove('show');
+                    pendingCompletion = null;
+                    showToast("Quest eliminata");
+                }
+            }
+        });
 
         $('review-photo-upload')?.addEventListener('change', function (e) {
             const file = e.target.files[0];
@@ -3641,12 +3764,6 @@
             reader.readAsDataURL(file);
         });
 
-        $('btn-review-skip')?.addEventListener('click', () => {
-            const noteEl = $('review-note');
-            if (noteEl) noteEl.value = '';
-            currentPhotoBase64 = null;
-            finalizeQuest();
-        });
         $('btn-review-save')?.addEventListener('click', finalizeQuest);
 
         /* ── SEASONAL CAROUSEL LOGIC ──────────────────────── */
@@ -3932,7 +4049,9 @@
             setTimeout(generateQuest, 800);
         }
 
-        /* ── NAVIGATION ───────────────────────────────────── */
+        /* ── NAVIGATION & REALTIME ────────────────────────── */
+        let unsubscribeComparison = null;
+
         btnHome.addEventListener('click', () => {
             homeScreen.scrollTo({ top: 0, behavior: 'smooth' });
             btnHome.classList.add('active');
@@ -3943,6 +4062,7 @@
             statsScreen.style.display = 'none';
             settingsScreen.style.display = 'none';
             myProfileScreen.style.display = 'none';
+            if(unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
         });
 
         btnTabStats.addEventListener('click', () => {
@@ -3956,6 +4076,7 @@
             settingsScreen.style.display = 'none';
             myProfileScreen.style.display = 'none';
             renderStatsScreen();
+            if(unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
         });
 
         // Profile Tab Handler
@@ -3972,6 +4093,8 @@
             myProfileScreen.style.display = 'flex';
 
             renderProfileScreen();
+            // If we are on comparison tab, restart listener
+            if($('sub-confronto').style.display === 'block') renderConfrontoTab();
         });
 
         function renderStatsScreen() {
@@ -4116,9 +4239,10 @@
 
             const totalQuests = state.completed ? state.completed.length : 0;
             const displayName = state.displayName;
-            const username = state.username ? `@${state.username}` : "@nessun_username";
+            const cleanUsername = state.username ? state.username.replace(/^@+/, '') : '';
+            const username = cleanUsername ? `@${cleanUsername}` : "@nessun_username";
             const bio = state.bio || "";
-            const initial = state.username ? state.username.charAt(0).toUpperCase() : displayName.charAt(0).toUpperCase();
+            const initial = cleanUsername ? cleanUsername.charAt(0).toUpperCase() : displayName.charAt(0).toUpperCase();
 
             // Render Recent Quests 
             let recentHTML = '<div class="quest-empty"><svg><use href="#ico-sword"/></svg>Nessuna quest recente</div>';
@@ -4239,7 +4363,13 @@
                 $('sub-' + targetId).style.display = 'block';
 
                 if (targetId === 'confronto') renderConfrontoTab();
-                if (targetId === 'amici') renderAmiciTab();
+                if (targetId === 'amici') {
+                    if(unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
+                    renderAmiciTab();
+                }
+                if (targetId === 'profilo') {
+                    if(unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
+                }
             });
         });
 
@@ -4247,20 +4377,20 @@
             if (!currentUser || !fb) return;
             const subConfronto = $('confronto-logged-view');
 
+            if(unsubscribeComparison) { unsubscribeComparison(); }
+
             subConfronto.innerHTML = '<div class="spinner"></div>';
 
             try {
-                // Fetch friends
+                // Get requests to identify friends
                 const reqsRef = fb.collection(fb.db, "comparison_requests");
                 const q1 = fb.query(reqsRef, fb.where("to", "==", currentUser.uid));
                 const q2 = fb.query(reqsRef, fb.where("from", "==", currentUser.uid));
-
                 const [snap1, snap2] = await Promise.all([fb.getDocs(q1), fb.getDocs(q2)]);
-
+                
                 const allReqs = [];
                 snap1.forEach(d => allReqs.push(d.data()));
                 snap2.forEach(d => allReqs.push(d.data()));
-
                 const accepted = allReqs.filter(r => r.status === 'accepted');
 
                 if (accepted.length === 0) {
@@ -4268,111 +4398,123 @@
                     return;
                 }
 
-                // Get start of week
-                const now = new Date();
-                const day = now.getDay() || 7;
-                const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day + 1);
-                monday.setHours(0, 0, 0, 0);
-
-                // My Week XP calculation
-                let myWeeklyXp = 0;
-                let myWeekQuests = [];
-                if (state.completed) {
-                    state.completed.forEach(c => {
-                        if (c.completedAt && c.completedAt >= monday.getTime()) {
-                            myWeeklyXp += (c.xp || 0);
-                            myWeekQuests.push({ ...c, owner: 'me', timestamp: c.completedAt });
-                        }
-                    });
-                }
-
-                let htmlStr = '';
-
-                for (let req of accepted) {
-                    const friendUid = req.from === currentUser.uid ? req.to : req.from;
-                    const friendDoc = await fb.getDoc(fb.doc(fb.db, "more_users", friendUid));
-                    if (!friendDoc.exists()) continue;
-                    const friendData = friendDoc.data();
-
-                    let friendWeeklyXp = 0;
-                    let friendWeekQuests = [];
-                    if (friendData.completed) {
-                        friendData.completed.forEach(c => {
-                            if (c.completedAt && c.completedAt >= monday.getTime()) {
-                                friendWeeklyXp += (c.xp || 0);
-                                friendWeekQuests.push({ ...c, owner: 'friend', ownerName: friendData.displayName, ownerInit: (friendData.username ? friendData.username.charAt(0).toUpperCase() : '?'), ownerColor: (friendData.avatarColor || '#333'), timestamp: c.completedAt });
-                            }
-                        });
-                    }
-
-                    // Comparison Bar Logic
-                    const totalXp = myWeeklyXp + friendWeeklyXp || 1; // avoid /0
-                    const myPerc = Math.max(5, Math.min(95, (myWeeklyXp / totalXp) * 100)); // clamp so it always shows a bit
-                    const friendPerc = 100 - myPerc;
-
-                    const myInit = state.username ? state.username.charAt(0).toUpperCase() : state.displayName.charAt(0).toUpperCase();
-                    const fInit = friendData.username ? friendData.username.charAt(0).toUpperCase() : '?';
-
-                    // Merged and Sorted Feed
-                    let combinedQuests = [...myWeekQuests, ...friendWeekQuests].sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
-
-                    let feedListHTML = '<div class="quest-empty" style="padding:12px;">Nessuna attività questa settimana</div>';
-                    if (combinedQuests.length > 0) {
-                        feedListHTML = '<ul class="completed-list" style="margin-top:12px;">';
-                        combinedQuests.forEach(q => {
-                            const diffDot = `dot-${q.difficulty}`;
-                            const isMe = q.owner === 'me';
-                            feedListHTML += `
-                            <li class="completed-item" style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-                                <div style="width: 28px; height: 28px; border-radius: 50%; background: ${isMe ? state.avatarColor : q.ownerColor}; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 12px; color: #fff; flex-shrink: 0;">${isMe ? myInit : q.ownerInit}</div>
-                                <div style="flex:1; line-height:1.2;">
-                                    <div class="completed-name" style="font-size:13px; font-weight:700;">${q.title}</div>
-                                    <div style="font-size:11px; color:var(--text-dim);">${isMe ? 'Tu' : q.ownerName} &middot; ${new Date(q.timestamp).toLocaleString('it-IT', { weekday: 'short', hour: '2-digit', minute: '2-digit' })}</div>
-                                </div>
-                                <div class="completed-xp" style="font-size:13px; font-weight:800; color:var(--accent);">+${(q.xp || 0).toLocaleString('it-IT')}</div>
-                            </li>`;
-                        });
-                        feedListHTML += '</ul>';
-                    }
-
-                    htmlStr += `
-                    <div class="xp-card" style="padding: 16px; margin-bottom: 24px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
-                            <div style="display:flex; align-items:center; gap:12px;">
-                                <div style="width: 48px; height: 48px; border-radius: 50%; background: ${state.avatarColor}; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 20px; color: #fff;">${myInit}</div>
-                                <div>
-                                    <div style="font-weight:700; font-size:15px; font-family:var(--font-display);">Tu</div>
-                                    <div style="color:var(--text-dim); font-size:12px;">${myWeeklyXp.toLocaleString('it-IT')} XP</div>
-                                </div>
-                            </div>
-                            <div style="font-family:var(--font-display); font-weight:800; color:var(--text-dim); font-size:16px; opacity:0.5;">VS</div>
-                            <div style="display:flex; align-items:center; gap:12px; text-align:right;">
-                                <div>
-                                    <div style="font-weight:700; font-size:15px; font-family:var(--font-display);">${friendData.displayName || 'Amico'}</div>
-                                    <div style="color:var(--text-dim); font-size:12px;">${friendWeeklyXp.toLocaleString('it-IT')} XP</div>
-                                </div>
-                                <div style="width: 48px; height: 48px; border-radius: 50%; background: ${friendData.avatarColor || '#555'}; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 20px; color: #fff;">${fInit}</div>
-                            </div>
-                        </div>
-                        
-                        <!-- Progress Bar -->
-                        <div style="width:100%; height:12px; background:rgba(255,255,255,0.05); border-radius:6px; overflow:hidden; display:flex; margin-bottom: 16px;">
-                            <div style="width: ${myPerc}%; height:100%; background: ${state.avatarColor || 'var(--accent)'}; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);"></div>
-                            <div style="width: ${friendPerc}%; height:100%; background: ${friendData.avatarColor || '#555'}; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);"></div>
-                        </div>
-                        
-                        <div class="section-title" style="font-size:12px; margin-bottom:0;">Feed Settimanale Comune</div>
-                        ${feedListHTML}
-                    </div>
-                    `;
-                }
-
-                subConfronto.innerHTML = htmlStr;
+                const friendUids = accepted.map(r => r.from === currentUser.uid ? r.to : r.from);
+                
+                // Real-time listener on Friend Users
+                const usersRef = fb.collection(fb.db, "more_users");
+                // Note: 'in' query supports max 10 values.
+                const qUsers = fb.query(usersRef, fb.where(fb.documentId(), 'in', friendUids.slice(0, 10)));
+                
+                unsubscribeComparison = fb.onSnapshot(qUsers, (userSnaps) => {
+                     updateConfrontoUI(userSnaps.docs, subConfronto);
+                });
 
             } catch (err) {
                 console.error(err);
                 subConfronto.innerHTML = '<div style="color:var(--text-muted); font-size:14px; text-align:center;">Errore caricamento confronti.</div>';
             }
+        }
+
+        function updateConfrontoUI(friendDocs, container) {
+            // Get start of week
+            const now = new Date();
+            const day = now.getDay() || 7;
+            const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day + 1);
+            monday.setHours(0, 0, 0, 0);
+
+            // My Data
+            let myWeeklyXp = 0;
+            let myWeekQuests = [];
+            if (state.completed) {
+                state.completed.forEach(c => {
+                    if (c.completedAt && new Date(c.completedAt).getTime() >= monday.getTime()) {
+                        myWeeklyXp += (c.xp || 0);
+                        myWeekQuests.push({ ...c, owner: 'me', timestamp: c.completedAt });
+                    }
+                });
+            }
+            
+            let htmlStr = '';
+            
+            friendDocs.forEach(doc => {
+                const friendData = doc.data();
+                let friendWeeklyXp = 0;
+                let friendWeekQuests = [];
+                
+                if (friendData.completed) {
+                    friendData.completed.forEach(c => {
+                         if (c.completedAt && new Date(c.completedAt).getTime() >= monday.getTime()) {
+                            friendWeeklyXp += (c.xp || 0);
+                            friendWeekQuests.push({ ...c, owner: 'friend', ownerName: friendData.displayName, ownerInit: ((friendData.username || '').replace(/^@/, '').charAt(0) || '?').toUpperCase(), ownerColor: (friendData.avatarColor || '#333'), timestamp: c.completedAt });
+                        }
+                    });
+                }
+                
+                // Comparison Bar Logic
+                const totalXp = myWeeklyXp + friendWeeklyXp || 1;
+                const myPerc = Math.max(5, Math.min(95, (myWeeklyXp / totalXp) * 100));
+                const friendPerc = 100 - myPerc;
+
+                const myInit = ((state.username || '').replace(/^@/, '').charAt(0) || state.displayName.charAt(0)).toUpperCase();
+                const fInit = ((friendData.username || '').replace(/^@/, '').charAt(0) || '?').toUpperCase();
+
+                // Merged and Sorted Feed
+                let combinedQuests = [...myWeekQuests, ...friendWeekQuests].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 10);
+
+                let feedListHTML = '<div class="quest-empty" style="padding:12px;">Nessuna attività questa settimana</div>';
+                if (combinedQuests.length > 0) {
+                    feedListHTML = '<ul class="completed-list" style="margin-top:12px;">';
+                    combinedQuests.forEach(q => {
+                        const isMe = q.owner === 'me';
+                        feedListHTML += `
+                        <li class="completed-item" style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                            <div style="width: 28px; height: 28px; border-radius: 50%; background: ${isMe ? state.avatarColor : q.ownerColor}; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 12px; color: #fff; flex-shrink: 0;">${isMe ? myInit : q.ownerInit}</div>
+                            <div style="flex:1; line-height:1.2;">
+                                <div class="completed-name" style="font-size:13px; font-weight:700;">${q.title}</div>
+                                <div style="font-size:11px; color:var(--text-dim);">${isMe ? 'Tu' : q.ownerName} &middot; ${new Date(q.timestamp).toLocaleString('it-IT', { weekday: 'short', hour: '2-digit', minute: '2-digit' })}</div>
+                            </div>
+                            <div class="completed-xp" style="font-size:13px; font-weight:800; color:var(--accent);">+${(q.xp || 0).toLocaleString('it-IT')}</div>
+                        </li>`;
+                    });
+                    feedListHTML += '</ul>';
+                }
+
+                htmlStr += `
+                <div class="xp-card" style="padding: 16px; margin-bottom: 24px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px;">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <div style="width: 48px; height: 48px; border-radius: 50%; background: ${state.avatarColor}; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 20px; color: #fff;">${myInit}</div>
+                            <div>
+                                <div style="font-weight:700; font-size:15px; font-family:var(--font-display);">Tu</div>
+                                <div style="color:var(--text-dim); font-size:12px;">${myWeeklyXp.toLocaleString('it-IT')} XP</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0; width:40px;">
+                             <div style="font-family:var(--font-display); font-weight:900; color:var(--text-dim); font-size:20px; opacity:0.3; line-height:1;">VS</div>
+                        </div>
+
+                        <div style="display:flex; align-items:center; gap:12px; text-align:right;">
+                            <div>
+                                <div style="font-weight:700; font-size:15px; font-family:var(--font-display);">${friendData.displayName || 'Amico'}</div>
+                                <div style="color:var(--text-dim); font-size:12px;">${friendWeeklyXp.toLocaleString('it-IT')} XP</div>
+                            </div>
+                            <div style="width: 48px; height: 48px; border-radius: 50%; background: ${friendData.avatarColor || '#555'}; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 20px; color: #fff;">${fInit}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div style="width:100%; height:12px; background:rgba(255,255,255,0.05); border-radius:6px; overflow:hidden; display:flex; margin-bottom: 16px;">
+                        <div style="width: ${myPerc}%; height:100%; background: ${state.avatarColor || 'var(--accent)'}; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                        <div style="width: ${friendPerc}%; height:100%; background: ${friendData.avatarColor || '#555'}; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                    </div>
+                    
+                    <div class="section-title" style="font-size:12px; margin-bottom:0;">Feed Settimanale Comune</div>
+                    ${feedListHTML}
+                </div>
+                `;
+            });
+            container.innerHTML = htmlStr;
         }
 
         async function renderAmiciTab() {
@@ -4385,36 +4527,53 @@
             // Setup search handler
             if (btnSearch) {
                 btnSearch.onclick = async () => {
-                    let searchStr = searchInput.value.trim().toLowerCase();
-                    if (searchStr.startsWith('@')) searchStr = searchStr.substring(1);
-                    if (!searchStr) return;
+                let searchStr = searchInput.value.trim().toLowerCase().replace(/^@+/, '');
+                if (!searchStr) return;
 
                     resultDiv.innerHTML = '<div class="spinner"></div>';
 
-                    if (searchStr === state.username) {
+                    const myUsername = (state.username || '').replace(/^@/, '');
+                    if (searchStr === myUsername) {
                         resultDiv.innerHTML = '<div style="color:var(--text-muted); font-size:14px; text-align:center;">Non puoi aggiungere te stesso.</div>';
                         return;
                     }
 
                     try {
                         const usersRef = fb.collection(fb.db, "more_users");
-                        const q = fb.query(usersRef, fb.where("username", "==", searchStr), fb.limit(1));
-                        const querySnapshot = await fb.getDocs(q);
+                        let userDoc = null;
+                        for (const uname of [searchStr, '@' + searchStr]) {
+                            const q = fb.query(usersRef, fb.where("username", "==", uname), fb.limit(1));
+                            const querySnapshot = await fb.getDocs(q);
+                            if (!querySnapshot.empty) {
+                                userDoc = querySnapshot.docs[0];
+                                break;
+                            }
+                        }
 
-                        if (querySnapshot.empty) {
+                        if (!userDoc) {
                             resultDiv.innerHTML = '<div style="color:var(--text-muted); font-size:14px; text-align:center;">Nessun utente trovato.</div>';
                             return;
                         }
 
-                        const userDoc = querySnapshot.docs[0];
                         const userData = userDoc.data();
                         const targetUid = userDoc.id;
+                        const safeUsername = (userData.username || '').replace(/^@+/, '');
 
-                        if (!userData.profilePublic) {
+                        // Se profilePublic è undefined, consideralo false. Se true, permette l'invio.
+                        // Se è privato e non sono io, blocca.
+                        if (userData.profilePublic !== true && userDoc.id !== currentUser.uid) {
                             resultDiv.innerHTML = '<div style="color:var(--text-muted); font-size:14px; text-align:center;">Profilo privato — non puoi inviare richieste.</div>';
                             return;
                         }
 
+                        // Store found user for global access (for showPublicProfile)
+                        window.lastFoundUser = userData;
+
+                        const initial = searchStr.charAt(0).toUpperCase();
+                        const color = userData.avatarColor || '#333';
+
+                        let actionBtn = `<button class="btn-complete" id="btn-send-req-${targetUid}" style="padding:8px 12px; font-size:12px;">Richiedi</button>`;
+                        
                         // Check existing request status
                         const reqId1 = currentUser.uid + "_" + targetUid;
                         const reqId2 = targetUid + "_" + currentUser.uid;
@@ -4425,43 +4584,42 @@
                         else if (reqDoc2.exists()) { existingReq = reqDoc2.data(); }
 
                         if (existingReq && existingReq.status === 'accepted') {
-                            resultDiv.innerHTML = '<div style="color:var(--diff-easy); font-size:14px; text-align:center;">Siete già collegati!</div>';
-                            return;
+                            actionBtn = `<span style="color:var(--diff-easy); font-size:12px; font-weight:700;">Amici</span>`;
                         } else if (existingReq && existingReq.status === 'pending') {
-                            resultDiv.innerHTML = '<div style="color:var(--text-dim); font-size:14px; text-align:center;">Richiesta in attesa.</div>';
-                            return;
+                            actionBtn = `<span style="color:var(--text-dim); font-size:12px;">In attesa</span>`;
                         }
-
-                        const initial = searchStr.charAt(0).toUpperCase();
-                        const color = userData.avatarColor || '#333';
 
                         resultDiv.innerHTML = `
                             <div class="xp-card" style="padding: 16px; margin-bottom: 0; display:flex; align-items:center; gap:16px;">
                                 <div style="width: 48px; height: 48px; border-radius: 50%; background: ${color}; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 20px; color: #fff;">${initial}</div>
                                 <div style="flex:1;">
                                     <div style="font-weight:700; font-family:var(--font-display); font-size:16px;">${userData.displayName || 'Utente'}</div>
-                                    <div style="color:var(--text-dim); font-size:13px;">@${userData.username}</div>
+                                    <div style="color:var(--text-dim); font-size:13px;">@${safeUsername}</div>
+                                    ${(userData.profilePublic) ? `<button onclick="showPublicProfile(window.lastFoundUser)" style="font-size:11px; color:var(--accent); text-decoration:underline; margin-top:4px; background:none; border:none; padding:0; cursor:pointer;">Vedi Profilo</button>` : ''}
                                 </div>
-                                <button class="btn-complete" id="btn-send-req-${targetUid}" style="padding:8px 12px; font-size:12px;">Richiedi</button>
+                                ${actionBtn}
                             </div>
                         `;
 
-                        document.getElementById(`btn-send-req-${targetUid}`).onclick = async () => {
-                            const reqId = currentUser.uid + "_" + targetUid;
-                            await fb.setDoc(fb.doc(fb.db, "comparison_requests", reqId), {
-                                from: currentUser.uid,
-                                fromUsername: state.username,
-                                to: targetUid,
-                                status: 'pending',
-                                createdAt: fb.serverTimestamp()
-                            });
-                            resultDiv.innerHTML = '<div style="color:var(--diff-easy); font-size:14px; text-align:center;">Richiesta inviata!</div>';
-                            loadFriends();
-                        };
+                        if(document.getElementById(`btn-send-req-${targetUid}`)) {
+                            document.getElementById(`btn-send-req-${targetUid}`).onclick = async () => {
+                                const reqId = currentUser.uid + "_" + targetUid;
+                                await fb.setDoc(fb.doc(fb.db, "comparison_requests", reqId), {
+                                    from: currentUser.uid,
+                                    fromUsername: myUsername || state.username,
+                                    to: targetUid,
+                                    status: 'pending',
+                                    createdAt: fb.serverTimestamp()
+                                });
+                                resultDiv.innerHTML = '<div style="color:var(--diff-easy); font-size:14px; text-align:center;">Richiesta inviata!</div>';
+                                loadFriends();
+                            };
+                        }
 
                     } catch (err) {
                         console.error(err);
-                        resultDiv.innerHTML = '<div style="color:var(--diff-hard); font-size:14px; text-align:center;">Errore nella ricerca.</div>';
+                        resultDiv.innerHTML = `<div style="color:var(--diff-hard); font-size:14px; text-align:center;">Errore: ${err.message}</div>`;
+                        showToast(`Errore ricerca: ${err.message}`);
                     }
                 };
             }
@@ -4509,7 +4667,7 @@
                             <div style="width: 40px; height: 40px; border-radius: 50%; background: ${friendData.avatarColor || '#555'}; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 16px; color: #fff;">${init}</div>
                             <div style="flex:1;">
                                 <div style="font-weight:700; font-size:14px;">${friendData.displayName}</div>
-                                <div style="color:var(--text-dim); font-size:12px;">@${friendData.username} ti vuole sfidare</div>
+                                <div style="color:var(--text-dim); font-size:12px;">@${(friendData.username || '').replace(/^@/, '')} ti vuole sfidare</div>
                             </div>
                             <div style="display:flex; gap:8px;">
                                 <button class="btn-ghost" onclick="replyRequest('${req.id}', 'declined')" style="padding:6px; color:var(--diff-hard); border-color:rgba(255,79,79,0.3);"><svg style="width:16px;height:16px;stroke:currentColor;fill:none;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
@@ -4551,7 +4709,7 @@
                             <div style="width: 48px; height: 48px; border-radius: 50%; background: ${friendData.avatarColor || '#555'}; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 20px; color: #fff;">${init}</div>
                             <div style="flex:1;">
                                 <div style="font-weight:700; font-size:15px; font-family:var(--font-display);">${friendData.displayName || 'Amico'}</div>
-                                <div style="color:var(--text-dim); font-size:12px; margin-bottom:4px;">@${friendData.username}</div>
+                                <div style="color:var(--text-dim); font-size:12px; margin-bottom:4px;">@${(friendData.username || '').replace(/^@/, '')}</div>
                                 <div style="color:var(--accent); font-weight:700; font-size:12px;">+${weeklyXp.toLocaleString('it-IT')} XP questa sett.</div>
                             </div>
                             <div style="display:flex; flex-direction:column; gap:6px;">
@@ -4634,8 +4792,7 @@
 
             // Profile Edit Fields
             $('input-display-name').value = state.displayName || '';
-            let cleanUsername = state.username || '';
-            if (cleanUsername.startsWith('@')) cleanUsername = cleanUsername.substring(1);
+            const cleanUsername = (state.username || '').replace(/^@+/, '');
             $('input-username').value = cleanUsername;
             $('input-bio').value = state.bio || '';
 
@@ -5022,12 +5179,13 @@
                         return;
                     }
                     const pInfo = getLevelInfo(data.xp || 0);
-                    const initial = (data.username || 'U')[0].toUpperCase();
+                    const cleanU = (data.username || 'U').replace(/^@+/, '');
+                    const initial = cleanU[0].toUpperCase();
                     const last5 = (data.completed || []).slice(-5).reverse();
                     profileContent.innerHTML = `
                         <div class="profile-card">
                             <div class="profile-avatar">${initial}</div>
-                            <div class="profile-username">${escapeHtml(data.username || 'Utente')}</div>
+                            <div class="profile-username">@${escapeHtml(cleanU)}</div>
                             <div class="profile-level">LVL ${pInfo.level} · ${pInfo.name.toUpperCase()}</div>
                             <div class="profile-stat-row">
                                 <div class="profile-stat"><div class="profile-stat-val">${(data.xp || 0).toLocaleString('it-IT')}</div><div class="profile-stat-label">XP</div></div>
