@@ -687,19 +687,29 @@
         }
 
         .completed-list {
-            list-style: none
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .completed-item {
             display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 0;
-            border-bottom: 1px solid var(--border);
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--surface);
+            transition: border-color 0.2s;
+        }
+
+        .completed-item:hover {
+            border-color: var(--border-light);
         }
 
         .completed-item:last-child {
-            border-bottom: none
+            border-bottom: 1px solid var(--border);
         }
 
         .completed-dot {
@@ -1878,68 +1888,76 @@
         }
 
         function showPublicProfile(userData) {
-            const screen = document.getElementById('profile-screen');
-            const cleanUsername = (userData.username || 'utente').replace(/^@+/, '');
-            
-            const totalQuests = userData.completed ? userData.completed.length : 0;
-            const streak = userData.streak || 0;
-            
+            const screen=document.getElementById('profile-screen');
+            const cleanUsername=(userData.username || 'utente').replace(/^@+/, '');
+
+            const totalQuests=userData.completed ? userData.completed.length: 0;
+            const streak=userData.streak || 0;
+
             // Build recent activity
-            let recentHTML = '<div class="quest-empty" style="font-size:13px;">Nessuna attività recente</div>';
+            let recentHTML='<div class="quest-empty" style="font-size:13px;">Nessuna attività recente</div>';
+
             if (userData.completed && userData.completed.length > 0) {
-                const recent = [...userData.completed].sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt)).slice(0, 5);
-                recentHTML = '<ul class="completed-list" style="margin-top:0;">';
-                recent.forEach(q => {
-                    const diffDot = `dot-${q.difficulty || 'easy'}`;
-                    recentHTML += `
-                    <li class="completed-item" style="display:flex; align-items:center; gap:12px; margin-bottom:12px; border-bottom:1px solid var(--border-light); padding-bottom:8px;">
-                        <div class="completed-dot ${diffDot}" style="margin-top:0;"></div>
-                        <div style="flex:1;">
-                            <div class="completed-name" style="font-size:13px; font-weight:700;">${q.title}</div>
-                            <div style="font-size:11px; color:var(--text-dim);">+${(q.xp || 0).toLocaleString('it-IT')} XP</div>
-                        </div>
-                    </li>`;
-                });
-                recentHTML += '</ul>';
+                const recent=[...userData.completed].sort((a, b)=> new Date(b.completedAt) - new Date(a.completedAt)).slice(0, 5);
+                recentHTML='<ul class="completed-list" style="margin-top:0;">';
+
+                recent.forEach(q=> {
+                        const diffDot=`dot-$ {
+                            q.difficulty || 'easy'
+                        }
+
+                        `;
+
+                        recentHTML +=` <li class="completed-item" style="display:flex; align-items:center; gap:12px; margin-bottom:12px; border-bottom:1px solid var(--border-light); padding-bottom:8px;" > <div class="completed-dot ${diffDot}" style="margin-top:0;" ></div> <div style="flex:1;" > <div class="completed-name" style="font-size:13px; font-weight:700;" >$ {
+                            q.title
+                        }
+
+                        </div> <div style="font-size:11px; color:var(--text-dim);" >+$ {
+                            (q.xp || 0).toLocaleString('it-IT')
+                        }
+
+                        XP</div> </div> </li>`;
+                    });
+                recentHTML+='</ul>';
             }
 
-            screen.innerHTML = `
-                <div style="width:100%; max-width:400px; margin:auto; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:24px; position:relative; max-height:90vh; overflow-y:auto;">
-                    <button class="btn-icon" onclick="document.getElementById('profile-screen').classList.remove('show')" style="position:absolute; top:12px; right:12px; background:transparent; border:none;"><svg style="width:24px;height:24px;"><use href="#ico-plus" style="transform:rotate(45deg);transform-origin:center;"/></svg></button>
-                    
-                    <div style="text-align: center; margin-bottom: 24px;">
-                        <div style="width: 80px; height: 80px; border-radius: 50%; background: ${userData.avatarColor || '#333'}; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 32px; color: #fff;">
-                            ${cleanUsername.charAt(0).toUpperCase()}
-                        </div>
-                        <div style="font-family: var(--font-display); font-weight: 800; font-size: 22px; margin-bottom: 4px;">${userData.displayName || cleanUsername}</div>
-                        <div style="color: var(--text-dim); font-size: 14px; margin-bottom: 12px;">@${cleanUsername}</div>
-                        
-                        <div class="xp-level-badge" style="margin-bottom: 12px;">
-                            <svg><use href="#ico-crown"/></svg> LVL ${Math.floor(Math.sqrt((userData.xp||0) / 1500)) + 1}
-                        </div>
-                        
-                        ${userData.bio ? `<div style="font-size: 14px; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin: 0 auto; max-width: 280px; font-style:italic;">"${userData.bio}"</div>` : ''}
-                    </div>
+            screen.innerHTML=` <div style="width:100%; max-width:400px; margin:auto; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:24px; position:relative; max-height:90vh; overflow-y:auto;"><button class="btn-icon" onclick="document.getElementById('profile-screen').classList.remove('show')" style="position:absolute; top:12px; right:12px; background:transparent; border:none;"><svg style="width:24px;height:24px;"><use href="#ico-plus" style="transform:rotate(45deg);transform-origin:center;" /></svg></button><div style="text-align: center; margin-bottom: 24px;"><div style="width: 80px; height: 80px; border-radius: 50%; background: ${userData.avatarColor || '#333'}; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 32px; color: #fff;">$ {
+                cleanUsername.charAt(0).toUpperCase()
+            }
 
-                    <div class="xp-card" style="display: flex; justify-content: space-around; padding: 16px; margin-bottom: 24px;">
-                        <div style="text-align: center;">
-                            <div style="font-family: var(--font-display); font-weight: 800; font-size: 18px; color: var(--accent);">${(userData.xp||0).toLocaleString()}</div>
-                            <div style="font-size: 10px; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">XP</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-family: var(--font-display); font-weight: 800; font-size: 18px; color: var(--text);">${totalQuests}</div>
-                            <div style="font-size: 10px; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">Quest</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-family: var(--font-display); font-weight: 800; font-size: 18px; color: #ffb347;">${streak}</div>
-                            <div style="font-size: 10px; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">Streak</div>
-                        </div>
-                    </div>
-                    
-                    <div class="section-title" style="font-size:14px; margin-bottom:12px;">Ultime Attività</div>
-                    ${recentHTML}
-                </div>
-            `;
+            </div><div style="font-family: var(--font-display); font-weight: 800; font-size: 22px; margin-bottom: 4px;">$ {
+                userData.displayName || cleanUsername
+            }
+
+            </div><div style="color: var(--text-dim); font-size: 14px; margin-bottom: 12px;">@$ {
+                cleanUsername
+            }
+
+            </div><div class="xp-level-badge" style="margin-bottom: 12px;"><svg><use href="#ico-crown" /></svg>LVL $ {
+                Math.floor(Math.sqrt((userData.xp||0) / 1500))+1
+            }
+
+            </div>$ {
+                userData.bio ? `<div style="font-size: 14px; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin: 0 auto; max-width: 280px; font-style:italic;">"${userData.bio}" </div>`: ''
+            }
+
+            </div><div class="xp-card" style="display: flex; justify-content: space-around; padding: 16px; margin-bottom: 24px;"><div style="text-align: center;"><div style="font-family: var(--font-display); font-weight: 800; font-size: 18px; color: var(--accent);">$ {
+                (userData.xp||0).toLocaleString()
+            }
+
+            </div><div style="font-size: 10px; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">XP</div></div><div style="text-align: center;"><div style="font-family: var(--font-display); font-weight: 800; font-size: 18px; color: var(--text);">$ {
+                totalQuests
+            }
+
+            </div><div style="font-size: 10px; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">Quest</div></div><div style="text-align: center;"><div style="font-family: var(--font-display); font-weight: 800; font-size: 18px; color: #ffb347;">$ {
+                streak
+            }
+
+            </div><div style="font-size: 10px; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">Streak</div></div></div><div class="section-title" style="font-size:14px; margin-bottom:12px;">Ultime Attività</div>$ {
+                recentHTML
+            }
+
+            </div>`;
             screen.classList.add('show');
         }
 
@@ -1974,6 +1992,256 @@
         .toggle-switch.active::after {
             transform: translateX(20px);
         }
+
+        /* ── FIX: spazio vuoto sopra le tab nel profilo (mobile) ── */
+        #my-profile-screen {
+            padding-top: 0 !important;
+        }
+        #my-profile-screen .profile-tabs {
+            padding-top: max(12px, env(safe-area-inset-top)) !important;
+        }
+
+        /* ── FIX: tab profilo compatte con 4 voci ── */
+        .pill-segmented-control {
+            display: flex;
+            background: rgba(255,255,255,0.06);
+            border-radius: 24px;
+            padding: 3px;
+            gap: 0;
+            overflow: hidden;
+        }
+        .pill-tab {
+            padding: 6px 12px !important;
+            border-radius: 20px !important;
+            font-weight: 700 !important;
+            font-size: 12px !important;
+            white-space: nowrap;
+            transition: all 0.2s !important;
+            color: var(--text-dim) !important;
+        }
+        .pill-tab.active {
+            background: rgba(255,255,255,0.12) !important;
+            color: var(--text) !important;
+        }
+
+        /* ── FIX: bottoni coperti dalla navbar ── */
+        #sub-profilo,
+        .profile-sub-section {
+            padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        /* ── FIX: Settings non coperta dalla navbar ── */
+        #settings-screen {
+            padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important;
+        }
+
+        /* ── Carousel: transizione fluida ── */
+        #seasonal-carousel-track {
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        /* ════════════════════════════════════════
+           SISTEMA BOTTONI UNIFICATO
+           Due varianti: .btn-primary (accent) e .btn-secondary (ghost)
+           Entrambi: stessa altezza, stesso border-radius, stesso font
+           ════════════════════════════════════════ */
+
+        /* Reset vecchi stili incoerenti */
+        .btn-ghost,
+        .btn-complete,
+        .btn-quest-action,
+        .btn-modal-close,
+        .btn-share,
+        .btn-sheet,
+        .btn-sheet-danger,
+        .btn-sheet-ghost {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-family: var(--font-body);
+            font-weight: 700;
+            font-size: 13px;
+            border-radius: var(--radius-xs);
+            padding: 9px 16px;
+            transition: transform 0.15s var(--spring), opacity 0.15s, background 0.15s;
+            white-space: nowrap;
+            cursor: pointer;
+            letter-spacing: 0;
+        }
+        .btn-ghost:active,
+        .btn-complete:active,
+        .btn-quest-action:active,
+        .btn-modal-close:active,
+        .btn-share:active,
+        .btn-sheet:active,
+        .btn-sheet-danger:active {
+            transform: scale(0.96);
+        }
+
+        /* Variante PRIMARY — accent fill */
+        .btn-complete {
+            background: var(--accent);
+            color: #0a0a0f !important;
+            border: none;
+            font-weight: 800;
+        }
+        .btn-complete svg {
+            width: 14px; height: 14px;
+            stroke: #0a0a0f; fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round; stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+        .btn-complete:hover { opacity: 0.9; }
+        .btn-complete.disabled { opacity: 0.4; pointer-events: none; }
+
+        /* Variante SECONDARY — bordo sottile */
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-dim);
+            border: 1px solid var(--border-light);
+        }
+        .btn-ghost:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+        .btn-ghost.disabled { opacity: 0.4; pointer-events: none; }
+        .btn-ghost svg {
+            width: 14px; height: 14px;
+            stroke: currentColor; fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+
+        /* Variante DANGER — bordo rosso */
+        .btn-sheet-danger {
+            background: rgba(255,79,79,0.07);
+            color: var(--diff-hard);
+            border: 1px solid rgba(255,79,79,0.25);
+        }
+        .btn-sheet-danger:hover { background: rgba(255,79,79,0.13); }
+
+        /* Variante NEUTRAL — per modal close / share */
+        .btn-modal-close {
+            background: rgba(255,255,255,0.07);
+            color: var(--text);
+            border: 1px solid var(--border-light);
+        }
+        .btn-modal-close:hover { background: rgba(255,255,255,0.11); }
+
+        .btn-share {
+            background: var(--accent-dim);
+            color: var(--accent);
+            border: 1px solid rgba(200,241,53,0.25);
+        }
+        .btn-share:hover { background: rgba(200,241,53,0.18); }
+        .btn-share svg {
+            width: 14px; height: 14px;
+            stroke: var(--accent); fill: none;
+            stroke-width: 2; flex-shrink: 0;
+        }
+
+        /* Quest actions: stile uniforme */
+        .btn-quest-action {
+            background: rgba(255,255,255,0.04);
+            color: var(--text-dim);
+            border: 1px solid var(--border-light);
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .btn-quest-action:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+        .btn-quest-action svg {
+            width: 14px; height: 14px;
+            stroke: currentColor; fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+
+        /* Sheet buttons full-width */
+        .btn-sheet {
+            width: 100%;
+            background: rgba(255,255,255,0.06);
+            color: var(--text);
+            border: 1px solid var(--border-light);
+            padding: 13px 16px;
+            font-size: 14px;
+        }
+        .btn-sheet:hover { background: rgba(255,255,255,0.1); }
+
+        /* ── FIX: quest actions layout mobile ── */
+        .quest-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        @media (max-width: 480px) {
+            .quest-actions {
+                flex-wrap: nowrap;
+            }
+            .quest-actions .qa-label {
+                display: none;
+            }
+            .quest-actions .qa-small {
+                padding: 8px 12px;
+                flex: 1;
+                justify-content: center;
+            }
+        }
+
+        /* ── FIX: completed quests come card separate ── */
+        .completed-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .completed-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--surface);
+            transition: border-color 0.2s;
+        }
+        .completed-item:hover {
+            border-color: var(--border-light);
+        }
+        .completed-item:last-child {
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* ── Settings: tipografia coerente ── */
+        .settings-section-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 10px;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+            margin-top: 4px;
+            display: block;
+            padding-top: 2px;
+        }
+
+        /* ── Custom quest: bottone Invia ── */
+        .btn-send-cq {
+            padding: 4px 10px;
+            background: rgba(200, 241, 53, 0.08);
+            border: 1px solid rgba(200, 241, 53, 0.25);
+            border-radius: 8px;
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background .15s;
+        }
+        .btn-send-cq:hover { background: rgba(200, 241, 53, 0.14); }
     </style>
 </head>
 
@@ -2134,6 +2402,10 @@
                 <line x1="22" y1="2" x2="11" y2="13" />
                 <polygon points="22 2 15 22 11 13 2 9 22 2" />
             </symbol>
+            <!-- Bookmark -->
+            <symbol id="ico-bookmark" viewBox="0 0 24 24">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+            </symbol>
             <!-- Plus -->
             <symbol id="ico-plus" viewBox="0 0 24 24">
                 <line x1="12" y1="5" x2="12" y2="19" />
@@ -2143,6 +2415,12 @@
             <symbol id="ico-user" viewBox="0 0 24 24">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
+            </symbol>
+            <!-- Refresh -->
+            <symbol id="ico-refresh" viewBox="0 0 24 24">
+                <polyline points="23 4 23 10 17 10" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+                <polyline points="1 20 1 14 7 14" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
             </symbol>
         </defs>
     </svg>
@@ -2181,7 +2459,7 @@
             <!-- DAILY QUEST -->
             <div id="daily-quest-zone" style="display:none; margin-bottom: 28px;">
                 <div class="section-header">
-                    <span class="section-title">Quest Giornaliera</span>
+                    <span class="section-title">Quest giornaliera</span>
                     <span id="daily-countdown"
                         style="font-size:14px; color:var(--text-muted); font-weight:600; font-family:monospace;"></span>
                 </div>
@@ -2199,7 +2477,7 @@
             <!-- SEASONAL CAROUSEL -->
             <div id="seasonal-zone" style="display:none; margin-bottom: 28px;">
                 <div class="section-header" style="margin-bottom: 8px;">
-                    <span class="section-title">Quest Stagionale <span id="seasonal-counter"
+                    <span class="section-title">Quest stagionale <span id="seasonal-counter"
                             style="color:var(--text-muted); font-size:14px; font-weight:600; margin-left:8px;">0/0</span></span>
                     <div style="display:flex;gap:8px">
                         <button class="btn-icon" id="btn-seasonal-prev" style="width:32px;height:32px;"><svg>
@@ -2215,20 +2493,20 @@
                 </div>
                 <div id="seasonal-carousel-container"
                     style="overflow:hidden; border-radius:var(--radius); position:relative;">
-                    <div id="seasonal-carousel-track" style="display:flex; transition:transform 0.4s var(--spring);">
+                    <div id="seasonal-carousel-track" style="display:flex; transition:transform 0.4s var(--ease);">
                     </div>
                 </div>
             </div>
 
             <!-- ACTIVE QUEST -->
             <div class="section-header">
-                <span class="section-title">Quest Attiva</span>
+                <span class="section-title">Quest attiva</span>
                 <div style="display:flex;gap:8px">
-                    <button class="btn-ghost" id="btn-create-quest" style="border-color: rgba(200,241,53,0.2);"><svg
-                            style="width:14px;height:14px;stroke:var(--accent);fill:none;stroke-width:2;vertical-align:-2px;margin-right:2px">
+                    <button class="btn-ghost" id="btn-create-quest"><svg
+                            style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:-2px;margin-right:2px">
                             <use href="#ico-plus" />
                         </svg>Crea</button>
-                    <button class="btn-ghost" id="btn-new-quest">Genera nuova</button>
+                    <button class="btn-ghost" id="btn-new-quest"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:-2px;margin-right:4px"><use href="#ico-refresh"/></svg>Genera nuova</button>
                 </div>
             </div>
             <div id="challenge-banner-container"></div>
@@ -2237,7 +2515,7 @@
             <!-- COMPLETED QUESTS -->
             <div class="completed-section">
                 <div class="section-header">
-                    <span class="section-title">Quest Completate</span>
+                    <span class="section-title">Quest completate</span>
                 </div>
                 <div id="completed-container"></div>
             </div>
@@ -2249,13 +2527,13 @@
                 <div class="stats-header">
                     <svg>
                         <use href="#ico-chart" />
-                    </svg> Statistiche di Gioco
+                    </svg> Statistiche di gioco
                 </div>
                 <div class="avg-time" id="avg-time">Media: -- ore tra le quest</div>
             </div>
 
             <div class="stats-card">
-                <div class="stats-header">Record Personali</div>
+                <div class="stats-header">Record personali</div>
                 <div class="records-grid">
                     <div class="record-card easy">
                         <div class="record-count" id="stat-easy-cnt">0</div>
@@ -2276,7 +2554,7 @@
             </div>
 
             <div class="stats-card">
-                <div class="stats-header">Cronologia XP (Ultime 16 Settimane)</div>
+                <div class="stats-header">Cronologia XP (Ultime 16 settimane)</div>
                 <div class="xp-graph-wrapper">
                     <div class="xp-grid" id="xp-graph"></div>
                 </div>
@@ -2287,9 +2565,11 @@
         <main class="content" id="settings-screen" style="display: none; flex-direction: column; flex: 1;">
             <div class="stats-card">
                 <div class="sheet-title" style="margin-bottom: 24px;">Impostazioni</div>
+
+                <!-- SECTION: Modifica profilo -->
                 <div class="sheet-row" id="sheet-user-row"
                     style="display: none; flex-direction: column; align-items: flex-start; gap: 12px; padding-bottom: 24px;">
-                    <span class="sheet-label" style="font-weight:800; font-size:16px;">Modifica Profilo</span>
+                    <span class="settings-section-title">Profilo</span>
 
                     <div style="width: 100%;">
                         <label style="font-size: 13px; color: var(--text-dim); margin-bottom: 6px; display: block;">Nome
@@ -2319,36 +2599,39 @@
                     </div>
 
                     <button class="btn-complete" id="btn-save-profile"
-                        style="width: 100%; padding: 14px; margin-top: 8px;">Salva Profilo</button>
+                        style="width: 100%; padding: 14px; margin-top: 8px;">Salva profilo</button>
                     <div id="profile-save-msg"
                         style="color: var(--diff-easy); font-size: 13px; display: none; text-align: center; width: 100%; margin-top: 8px;">
                         Profilo salvato!</div>
                 </div>
 
-                <div class="sheet-row" id="row-public-profile"
-                    style="padding-top: 24px; border-top: 1px solid var(--border); margin-top: 12px;">
-                    <span class="sheet-label">Profilo pubblico</span>
-                    <div class="toggle-switch" id="toggle-public-profile"></div>
+                <!-- SECTION: Visibilità -->
+                <div
+                    style="border-top: 1px solid var(--border); margin-top: 4px; padding-top: 16px; margin-bottom: 4px;">
+                    <span class="settings-section-title">Visibilità</span>
+                    <div class="sheet-row" id="row-public-profile">
+                        <span class="sheet-label">Profilo pubblico</span>
+                        <div class="toggle-switch" id="toggle-public-profile"></div>
+                    </div>
                 </div>
+
+                <!-- SECTION: Personalizzazione -->
                 <div class="sheet-row" id="sheet-title-row"
-                    style="flex-direction: column; align-items: flex-start; padding-bottom: 24px; padding-top: 24px;">
-                    <span class="sheet-label" style="margin-bottom: 12px; font-weight:800; font-size:16px;">Titolo
-                        visibile
-                        in
-                        Home</span>
+                    style="flex-direction: column; align-items: flex-start; padding-bottom: 24px; padding-top: 16px; border-top: 1px solid var(--border); margin-top: 8px;">
+                    <span class="settings-section-title">Personalizzazione</span>
+                    <span class="settings-section-title" style="letter-spacing:0; font-size:12px; text-transform:none; color:var(--text-dim); font-weight:600; margin-bottom:8px;">Titolo visibile in Home</span>
                     <select id="select-active-title"
                         style="width: 100%; padding: 12px; border-radius: var(--radius); border: 2px solid var(--border); background: var(--bg); color: var(--text); font-family: var(--font); font-weight:600; font-size:16px;">
                     </select>
                 </div>
                 <div id="custom-quests-section"
                     style="display:none;border-top:1px solid var(--border);margin-top:12px;padding-top:12px">
-                    <div style="font-size:13px;font-weight:600;color:var(--text-dim);margin-bottom:4px">Le tue Quest
-                        personalizzate</div>
+                    <span class="settings-section-title">Le tue quest personalizzate</span>
                     <div id="custom-quest-list" class="custom-quest-list"></div>
                 </div>
 
-                <div style="border-top: 1px solid var(--border); margin-top: 24px; padding-top: 24px;">
-                    <div style="font-size: 15px; font-weight: 800; margin-bottom: 16px;">Statistiche & Preferenze</div>
+                <div style="border-top: 1px solid var(--border); margin-top: 16px; padding-top: 16px;">
+                    <span class="settings-section-title">Statistiche</span>
 
                     <div class="sheet-row" style="margin-bottom:12px;">
                         <span class="sheet-label">Quest completate</span>
@@ -2385,35 +2668,32 @@
         <main class="content" id="my-profile-screen"
             style="display: none; flex-direction: column; flex: 1; padding: 0;">
             <div class="profile-tabs"
-                style="display:flex; justify-content:center; padding:calc(12px + var(--safe-top)) 20px 12px; background:rgba(10,10,15,0.75); backdrop-filter:blur(20px); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100;">
-                <div class="pill-segmented-control"
-                    style="display:flex; background:rgba(255,255,255,0.06); border-radius:24px; padding:4px;">
-                    <button class="pill-tab active" data-target="profilo"
-                        style="padding:6px 16px; border-radius:20px; font-weight:700; font-size:13px; color:var(--text); transition:all 0.2s;">Profilo</button>
-                    <button class="pill-tab" data-target="confronto"
-                        style="padding:6px 16px; border-radius:20px; font-weight:700; font-size:13px; color:var(--text-dim); transition:all 0.2s;">Confronto</button>
-                    <button class="pill-tab" data-target="amici"
-                        style="padding:6px 16px; border-radius:20px; font-weight:700; font-size:13px; color:var(--text-dim); transition:all 0.2s; position:relative;">
+                style="display:flex; justify-content:center; padding:calc(12px + var(--safe-top)) 16px 10px; background:rgba(10,10,15,0.85); backdrop-filter:blur(20px); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100;">
+                <div class="pill-segmented-control">
+                    <button class="pill-tab active" data-target="profilo">Profilo</button>
+                    <button class="pill-tab" data-target="confronto">Confronto</button>
+                    <button class="pill-tab" data-target="amici" style="position:relative;">
                         Amici
                         <span id="pending-friends-badge"
                             style="display:none; position:absolute; top:2px; right:2px; width:8px; height:8px; border-radius:50%; background:var(--diff-hard);"></span>
                     </button>
+                    <button class="pill-tab" data-target="salvati">Salvati</button>
                 </div>
             </div>
 
             <!-- SUB-SECTION 1: PROFILO -->
-            <div id="sub-profilo" class="profile-sub-section" style="padding:24px 20px;">
+            <div id="sub-profilo" class="profile-sub-section" style="padding:24px 20px; padding-bottom:100px;">
                 <div id="profile-guest-view" style="display:none; text-align:center; padding-top:60px;">
                     <svg
                         style="width:64px;height:64px;stroke:var(--text-muted);fill:none;margin:0 auto 20px;display:block;">
                         <use href="#ico-user" />
                     </svg>
                     <div style="font-family:var(--font-display); font-weight:800; font-size:24px; margin-bottom:12px;">
-                        Accedi per il Profilo</div>
+                        Accedi per il profilo</div>
                     <div style="color:var(--text-dim); font-size:15px; margin-bottom:32px; padding:0 20px;">Crea un
                         profilo per salvare i tuoi progressi, confrontarti con gli amici e sbloccare obiettivi.</div>
                     <button class="btn-complete" onclick="$('auth-screen').classList.add('show')"
-                        style="margin:0 auto;">Accedi o Registrati</button>
+                        style="margin:0 auto;">Accedi o registrati</button>
                 </div>
 
                 <div id="profile-logged-view" style="display:none;">
@@ -2422,14 +2702,15 @@
             </div>
 
             <!-- SUB-SECTION 2: CONFRONTO -->
-            <div id="sub-confronto" class="profile-sub-section" style="display:none; padding:24px 20px;">
+            <div id="sub-confronto" class="profile-sub-section"
+                style="display:none; padding:24px 20px; padding-bottom:100px;">
                 <div id="confronto-guest-view" style="display:none; text-align:center; padding-top:60px;">
                     <svg
                         style="width:64px;height:64px;stroke:var(--text-muted);fill:none;margin:0 auto 20px;display:block;">
                         <use href="#ico-crosshair" />
                     </svg>
                     <div style="font-family:var(--font-display); font-weight:800; font-size:24px; margin-bottom:12px;">
-                        Confronto Settimanale</div>
+                        Confronto settimanale</div>
                     <div style="color:var(--text-dim); font-size:15px; margin-bottom:32px; padding:0 20px;">Accedi per
                         aggiungere amici e confrontare i vostri XP settimanali.</div>
                 </div>
@@ -2439,14 +2720,15 @@
             </div>
 
             <!-- SUB-SECTION 3: AMICI -->
-            <div id="sub-amici" class="profile-sub-section" style="display:none; padding:24px 20px;">
+            <div id="sub-amici" class="profile-sub-section"
+                style="display:none; padding:24px 20px; padding-bottom:100px;">
                 <div id="amici-guest-view" style="display:none; text-align:center; padding-top:60px;">
                     <svg
                         style="width:64px;height:64px;stroke:var(--text-muted);fill:none;margin:0 auto 20px;display:block;">
                         <use href="#ico-user" />
                     </svg>
                     <div style="font-family:var(--font-display); font-weight:800; font-size:24px; margin-bottom:12px;">
-                        Trova Amici</div>
+                        Trova amici</div>
                     <div style="color:var(--text-dim); font-size:15px; margin-bottom:32px; padding:0 20px;">Accedi per
                         cercare e aggiungere amici.</div>
                 </div>
@@ -2464,9 +2746,14 @@
                         <div id="pending-requests-list"></div>
                     </div>
 
-                    <div class="section-title" style="margin-bottom:12px;">I tuoi Amici</div>
+                    <div class="section-title" style="margin-bottom:12px;">I tuoi amici</div>
                     <div id="friends-list"></div>
                 </div>
+            </div>
+
+            <!-- SUB-SECTION 4: SALVATI -->
+            <div id="sub-salvati" class="profile-sub-section" style="display:none; padding:24px 20px; padding-bottom:100px;">
+                <div id="salvati-content"></div>
             </div>
         </main>
 
@@ -2503,7 +2790,7 @@
             <div class="modal-icon"><svg style="width:56px;height:56px;fill:var(--accent);">
                     <use href="#ico-trophy" />
                 </svg></div>
-            <div class="modal-hype" style="font-size:22px; color:var(--text); margin-bottom: 8px;">Obiettivo Sbloccato
+            <div class="modal-hype" style="font-size:22px; color:var(--text); margin-bottom: 8px;">Obiettivo sbloccato
             </div>
             <div class="modal-xp" id="ach-title" style="font-size:32px; margin-bottom:12px;">Titolo</div>
             <div class="modal-quest-name" id="ach-desc" style="font-size:16px; color:var(--text-dim);">Descrizione</div>
@@ -2527,7 +2814,7 @@
                     style="cursor:pointer; display:flex; align-items:center; gap:8px; border-color:var(--accent); color:var(--accent);">
                     <svg style="width:16px;height:16px;stroke:var(--accent);fill:none;">
                         <use href="#ico-plus" />
-                    </svg> <span style="font-weight: 800;">Aggiungi/Cambia Foto</span>
+                    </svg> <span style="font-weight: 800;">Aggiungi/cambia foto</span>
                 </label>
                 <input type="file" id="review-photo-upload" accept="image/*" capture="environment"
                     style="display:none;">
@@ -2538,7 +2825,12 @@
 
             <div class="modal-buttons" style="display:flex; flex-direction:column; gap:12px; width:100%;">
                 <button class="btn-complete" id="btn-review-save" style="width:100%;">Ok</button>
-                <button class="btn-sheet-danger" id="btn-review-delete" style="display:none; width:100%; padding:12px; border-radius:var(--radius-sm);">Elimina Quest</button>
+                <button class="btn-ghost" id="btn-review-share"
+                    style="display:none; width:100%; padding:12px; border-radius:var(--radius-sm); border-color:var(--accent); color:var(--accent);">Condividi
+                    Quest</button>
+                <button class="btn-sheet-danger" id="btn-review-delete"
+                    style="display:none; width:100%; padding:12px; border-radius:var(--radius-sm);">Elimina
+                    Quest</button>
             </div>
         </div>
     </div>
@@ -2550,7 +2842,7 @@
                     <use href="#ico-diamond" />
                 </svg></div>
             <div class="modal-xp" id="modal-xp-text">+1000 XP</div>
-            <div class="modal-quest-name" id="modal-quest-name">Quest Name</div>
+            <div class="modal-quest-name" id="modal-quest-name">Quest name</div>
             <div class="modal-hype" id="modal-hype">Leggendario!</div>
             <div class="modal-buttons">
                 <button class="btn-share" id="btn-share-card"><svg>
@@ -2564,7 +2856,7 @@
     <!-- ────────── CREATE QUEST MODAL ────────── -->
     <div class="create-modal-overlay" id="create-quest-overlay">
         <div class="create-modal">
-            <div class="create-modal-title">Crea Quest Personalizzata</div>
+            <div class="create-modal-title">Crea quest personalizzata</div>
             <div class="create-field">
                 <label>Titolo</label>
                 <input type="text" id="cq-title" placeholder="Titolo della quest">
@@ -2594,7 +2886,7 @@
             </div>
             <div class="create-modal-btns">
                 <button class="btn-cancel" id="btn-cq-cancel">Annulla</button>
-                <button class="btn-create-save" id="btn-cq-save">Salva Quest</button>
+                <button class="btn-create-save" id="btn-cq-save">Salva quest</button>
             </div>
         </div>
     </div>
@@ -2765,7 +3057,8 @@
             bio: "",
             avatarColor: "",
             joinedAt: 0,
-            updatedAt: 0
+            updatedAt: 0,
+            bookmarkedQuests: []
         };
 
         function stringHashCode(str) {
@@ -2863,6 +3156,9 @@
                     if (typeof state.bio === 'undefined') state.bio = "";
                     if (typeof state.avatarColor === 'undefined') state.avatarColor = "";
                     if (typeof state.joinedAt === 'undefined') state.joinedAt = 0;
+                    // Migrazione bookmarks → bookmarkedQuests
+                    if (!state.bookmarkedQuests) state.bookmarkedQuests = state.bookmarks || [];
+                    if (!Array.isArray(state.bookmarkedQuests)) state.bookmarkedQuests = [];
                 }
             } catch (e) { }
             computeLocalStats();
@@ -3410,7 +3706,8 @@
                     <button class="btn-complete" id="btn-complete-quest"><svg><use href="#ico-check"/></svg>Sconfitto</button>
                   </div>
                   <div class="quest-actions" style="margin-top:16px;">
-                    <button class="btn-quest-action" id="btn-challenge-quest"><svg><use href="#ico-send"/></svg>Sfida un amico</button>
+                    <button class="btn-quest-action qa-small" id="btn-challenge-quest"><svg><use href="#ico-send"/></svg><span class="qa-label">Sfida un amico</span></button>
+                    <button class="btn-quest-action qa-small" id="btn-bookmark-quest"><svg style="fill:none;stroke:currentColor;stroke-width:2;"><use href="#ico-bookmark"/></svg><span class="qa-label">Salva</span></button>
                   </div>
                 </div>`;
             } else {
@@ -3437,14 +3734,117 @@
                 <button class="btn-complete" id="btn-complete-quest"><svg><use href="#ico-check"/></svg>Completata</button>
               </div>
               <div class="quest-actions">
-                <button class="btn-quest-action" id="btn-challenge-quest"><svg><use href="#ico-send"/></svg>Sfida un amico</button>
+                <button class="btn-quest-action qa-small" id="btn-challenge-quest"><svg><use href="#ico-send"/></svg><span class="qa-label">Sfida un amico</span></button>
+                <button class="btn-quest-action qa-small" id="btn-bookmark-quest"><svg style="fill:none;stroke:currentColor;stroke-width:2;"><use href="#ico-bookmark"/></svg><span class="qa-label">Salva</span></button>
               </div>
             </div>`;
             }
 
             $('btn-complete-quest').addEventListener('click', () => promptQuestReview(q, 'normal'));
             $('btn-challenge-quest').addEventListener('click', () => challengeQuest(q));
+            const bookmarkBtn = $('btn-bookmark-quest');
+            if (bookmarkBtn) {
+                const _saved = isBookmarked(q.title);
+                const _label = bookmarkBtn.querySelector('.qa-label');
+                if (_label) _label.textContent = _saved ? 'Salvata' : 'Salva';
+                const _bsvg = bookmarkBtn.querySelector('svg');
+                if (_bsvg) _bsvg.style.fill = _saved ? 'var(--accent)' : 'none';
+                bookmarkBtn.style.color = _saved ? 'var(--accent)' : '';
+                bookmarkBtn.style.borderColor = _saved ? 'rgba(200,241,53,0.35)' : '';
+                bookmarkBtn.style.background = _saved ? 'rgba(200,241,53,0.07)' : '';
+                bookmarkBtn.addEventListener('click', () => toggleBookmark(q));
+            }
         }
+
+        function toggleBookmark(quest) {
+            if (!state.bookmarkedQuests) state.bookmarkedQuests = [];
+            const idx = state.bookmarkedQuests.findIndex(b => b.title === quest.title);
+            if (idx >= 0) {
+                state.bookmarkedQuests.splice(idx, 1);
+                showToast('Rimosso dai salvati');
+            } else {
+                if (state.bookmarkedQuests.length >= 3) {
+                    showToast('Massimo 3 quest salvate! Rimuovine una prima.');
+                    return;
+                }
+                state.bookmarkedQuests.push({ title: quest.title, description: quest.description, difficulty: quest.difficulty, xp: quest.xp, category: quest.category, isCustom: quest.isCustom || false });
+                showToast('Quest salvata! (' + state.bookmarkedQuests.length + '/3)');
+            }
+            saveState();
+            renderActiveQuest();
+            renderProfileScreen();
+        }
+
+        function isBookmarked(questTitle) {
+            return (state.bookmarkedQuests || []).some(b => b.title === questTitle);
+        }
+
+        function renderSavedQuestsTab() {
+            const cont = $('salvati-content');
+            if (!cont) return;
+            const saved = state.bookmarkedQuests || [];
+            const completedTitles = new Set((state.completed || []).map(c => c.title));
+
+            if (saved.length === 0) {
+                cont.innerHTML = `
+                    <div style="text-align:center; padding:48px 20px; color:var(--text-muted);">
+                        <svg style="width:48px;height:48px;stroke:var(--text-muted);fill:none;stroke-width:1.5;display:block;margin:0 auto 16px;">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <div style="font-family:var(--font-display); font-weight:800; font-size:18px; margin-bottom:8px; color:var(--text-dim);">Nessuna quest salvata</div>
+                        <div style="font-size:14px;">Salva fino a 3 quest con il tasto <strong style="color:var(--accent);">Salva</strong> sulle card.</div>
+                    </div>`;
+                return;
+            }
+
+            const slotsHtml = [0, 1, 2].map(i => {
+                const q = saved[i];
+                if (!q) return `<div style="border:2px dashed var(--border); border-radius:var(--radius); padding:20px; text-align:center; color:var(--text-muted); font-size:13px; font-style:italic;">Slot libero</div>`;
+                const done = completedTitles.has(q.title);
+                const diffClass = q.difficulty === 'easy' ? 'diff-easy' : q.difficulty === 'medium' ? 'diff-medium' : 'diff-hard';
+                const diffLabel = q.difficulty === 'easy' ? 'Facile' : q.difficulty === 'medium' ? 'Media' : 'Difficile';
+                return `
+                    <div class="quest-card ${done ? 'completed' : ''}" style="${done ? 'opacity:0.65;' : ''}">
+                        <div class="quest-top">
+                            <span class="diff-badge ${diffClass}"><span class="dot dot-${q.difficulty}"></span>${diffLabel}</span>
+                            <span class="quest-title">${escapeHtml(q.title)}</span>
+                        </div>
+                        <p class="quest-desc">${escapeHtml(q.description || '')}</p>
+                        <div class="quest-footer">
+                            <span class="quest-xp"><svg><use href="#ico-diamond"/></svg>+${(q.xp || 0).toLocaleString('it-IT')} XP</span>
+                            <div style="display:flex;gap:8px;">
+                                ${done
+                                    ? `<span style="font-size:12px; color:var(--diff-easy); font-weight:600;">✓ Completata</span>`
+                                    : `<button class="btn-complete" style="font-size:12px;padding:6px 12px;" onclick="useSavedQuest(${i})">Usa questa</button>`
+                                }
+                                <button class="btn-ghost" style="font-size:12px;padding:6px 10px; border-color:rgba(255,79,79,0.3);color:var(--diff-hard);" onclick="removeSavedQuest(${i})">Rimuovi</button>
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            cont.innerHTML = `
+                <div style="font-size:12px; color:var(--text-muted); margin-bottom:16px; text-align:center; font-weight:600;">${saved.length}/3 slot utilizzati</div>
+                <div style="display:flex; flex-direction:column; gap:12px;">${slotsHtml}</div>`;
+        }
+
+        window.useSavedQuest = function(idx) {
+            const q = (state.bookmarkedQuests || [])[idx];
+            if (!q) return;
+            state.currentQuest = { ...q };
+            saveLocal();
+            document.getElementById('btn-home')?.click();
+            renderActiveQuest();
+            showToast('Quest attivata!');
+        };
+
+        window.removeSavedQuest = function(idx) {
+            if (!state.bookmarkedQuests) return;
+            state.bookmarkedQuests.splice(idx, 1);
+            saveState();
+            renderSavedQuestsTab();
+            showToast('Rimossa dai salvati');
+        };
 
         function renderCompleted() {
             if (state.completed.length === 0) {
@@ -3457,7 +3857,7 @@
             const last10 = state.completed.slice(-10).reverse();
             // We need original indices for edit
             const originalIndices = state.completed.map((_, i) => i).slice(-10).reverse();
-            
+
             completedCont.innerHTML = `<ul class="completed-list">${last10.map((q, idx) => {
                 const realIndex = originalIndices[idx];
                 let noteHtml = '';
@@ -3468,21 +3868,21 @@
                     noteHtml += `</div>`;
                 }
 
-                return `<li class="completed-item" style="flex-direction:column; align-items:flex-start; padding: 16px 0;">
+                return `<li class="completed-item">
                   <div style="display:flex; width: 100%; align-items: flex-start; justify-content: space-between; gap: 12px;">
-                      <div style="display:flex; align-items:center; flex:1;">
-                          <span class="completed-dot" style="margin-right: 12px;"></span>
+                      <div style="display:flex; align-items:center; flex:1; min-width:0;">
+                          <span class="completed-dot" style="margin-right: 10px; flex-shrink:0;"></span>
                           <span class="completed-name" style="margin-right:0; line-height: 1.3;">${escapeHtml(q.title)}</span>
                       </div>
-                      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0;">
                         <span class="completed-xp" style="margin-left:0;">+${q.xp.toLocaleString('it-IT')} XP</span>
-                        <button class="btn-ghost" onclick="promptQuestEdit(${realIndex})" style="padding:4px 8px; font-size:10px; border:1px solid var(--border);">Modifica</button>
+                        <button class="btn-ghost" onclick="promptQuestEdit(${realIndex})" style="padding:4px 8px; font-size:10px;">Modifica</button>
                       </div>
                   </div>
                   ${noteHtml}
                 </li>`;
             }).join('')}</ul>`;
-            
+
             // Expose function globally for onclick
             window.promptQuestEdit = promptQuestEdit;
         }
@@ -3551,8 +3951,13 @@
                 return;
             }
 
-            // Generate daily using deterministic seed
-            const pool = getFullPool().filter(q => !['winter', 'spring', 'summer', 'autumn', 'weekend'].includes(q.season) && q.difficulty !== 'boss');
+            // Generate daily using deterministic seed — exclude multi-day quests
+            const MULTI_DAY_KW = ['settimana', '7 giorni', 'sette giorni', '30 giorni', 'un mese', 'trenta giorni', 'tre giorni', 'due giorni', '3 giorni', '2 giorni', '5 giorni', '10 giorni', 'due notti', 'tre notti', '48 ore', '72 ore', 'ogni giorno per', 'ogni mattina per', 'consecutiv', 'per una settimana', 'per un mese', 'per 7', 'per 30', 'per tre', 'per due'];
+            const pool = getFullPool().filter(q => {
+                if (['winter', 'spring', 'summer', 'autumn', 'weekend'].includes(q.season) || q.difficulty === 'boss') return false;
+                const text = (q.title + ' ' + q.description).toLowerCase();
+                return !MULTI_DAY_KW.some(kw => text.includes(kw));
+            });
             if (pool.length === 0) {
                 $('daily-quest-zone').style.display = 'none';
                 return;
@@ -3593,8 +3998,9 @@
         }
 
         function completeDaily(q, note = null, photo = null) {
-            const totalXp = q.xp + 500;
-            state.xp += totalXp;
+            const DAILY_BONUS = 500;
+            const baseXp = Number(q.xp) || 1000;
+            const totalXp = baseXp + DAILY_BONUS;
 
             const today = new Date();
             const todayStr = today.toISOString().split('T')[0];
@@ -3610,26 +4016,45 @@
                 state.lastQuestDate = todayStr;
             }
 
+            state.questTimestamps.push(Date.now());
+            state.dailyCompleted = { date: todayStr, questTitle: q.title };
+
+            // Push completed PRIMA di ricalcolare XP
+            state.completed.push({
+                title: q.title,
+                xp: totalXp,
+                difficulty: q.difficulty,
+                category: q.category,
+                completedAt: today.toISOString(),
+                note,
+                photo,
+                _dailyBonus: DAILY_BONUS
+            });
+
+            // XP = somma di tutto l'array (fonte di verità unica)
+            state.xp = state.completed.reduce((sum, c) => sum + (Number(c.xp) || 0), 0);
+
             let todayHistory = state.xpHistory.find(h => h.date === todayStr);
-            if (todayHistory) todayHistory.xp += totalXp;
+            if (todayHistory) todayHistory.xp = (todayHistory.xp || 0) + totalXp;
             else state.xpHistory.push({ date: todayStr, xp: totalXp });
 
             if (state.stats[q.difficulty]) {
                 state.stats[q.difficulty].count++;
                 state.stats[q.difficulty].totalXp += totalXp;
             }
-            state.questTimestamps.push(Date.now());
 
-            state.dailyCompleted = { date: todayStr, questTitle: q.title };
-            state.completed.push({ title: q.title, xp: totalXp, difficulty: q.difficulty, category: q.category, completedAt: today.toISOString(), note, photo });
-
+            lastCompletedQuest = { ...q, xp: totalXp, _isDaily: true };
+            saveState(); // salva prima di tutto
             updateXPUI();
-            saveState();
             renderCompleted();
             initDailyQuest();
             checkAchievements();
 
-            showToast('Daily Quest completata! Bonus +500 XP');
+            modalXpText.textContent = `+ ${totalXp.toLocaleString('it-IT')} XP`;
+            modalQuestName.textContent = q.title;
+            const _dHypes = window.HYPES || ['Leggendario!', 'Mitico!', 'Epico!', 'Fenomenale!'];
+            modalHype.textContent = _dHypes[Math.floor(Math.random() * _dHypes.length)];
+            xpModal.classList.add('show');
         }
 
         function updateDailyCountdown() {
@@ -3659,23 +4084,24 @@
             }
             $('review-photo-upload').value = '';
             currentPhotoBase64 = null;
-            
+
             // Setup buttons
             $('btn-review-delete').style.display = 'none';
+            $('btn-review-share').style.display = 'none';
             $('btn-review-save').textContent = 'Ok';
-            
+
             $('quest-review-overlay').classList.add('show');
         }
 
         function promptQuestEdit(index) {
             const q = state.completed[index];
             if (!q) return;
-            
+
             pendingCompletion = { quest: q, type: 'edit', index: index };
-            
+
             const noteEl = $('review-note');
             if (noteEl) noteEl.value = q.note || '';
-            
+
             const previewEl = $('review-photo-preview');
             if (q.photo) {
                 previewEl.src = q.photo;
@@ -3686,13 +4112,14 @@
                 previewEl.src = '';
                 currentPhotoBase64 = null;
             }
-            
+
             $('review-photo-upload').value = '';
-            
+
             // Setup buttons for edit mode
             $('btn-review-delete').style.display = 'block';
+            $('btn-review-share').style.display = 'block';
             $('btn-review-save').textContent = 'Salva Modifiche';
-            
+
             $('quest-review-overlay').classList.add('show');
         }
 
@@ -3706,29 +4133,79 @@
             else if (pendingCompletion.type === 'daily') completeDaily(pendingCompletion.quest, note, photo);
             else if (pendingCompletion.type === 'edit') {
                 // Update existing quest
-                state.completed[pendingCompletion.index].note = note;
-                state.completed[pendingCompletion.index].photo = photo;
+                const editedQ = state.completed[pendingCompletion.index];
+                editedQ.note = note;
+                editedQ.photo = photo;
                 saveState();
                 renderCompleted();
-                if (state.profilePublic) syncToFirestore(); // Sync if public
-                showToast("Quest aggiornata");
+                if (state.profilePublic) syncToFirestore();
+                // Apre il modal XP per permettere ricondivisione
+                lastCompletedQuest = editedQ;
+                modalXpText.textContent = `+ ${(editedQ.xp || 0).toLocaleString('it-IT')} XP`;
+                modalQuestName.textContent = editedQ.title;
+                modalHype.textContent = 'Quest aggiornata!';
+                xpModal.classList.add('show');
             }
 
             $('quest-review-overlay').classList.remove('show');
             pendingCompletion = null;
         }
-        
+
         $('btn-review-delete').addEventListener('click', () => {
             if (pendingCompletion && pendingCompletion.type === 'edit') {
-                if(confirm("Vuoi davvero eliminare questa quest dalla cronologia? (XP rimarranno)")) {
-                    state.completed.splice(pendingCompletion.index, 1);
+                if (confirm("Vuoi davvero eliminare questa quest? Gli XP guadagnati verranno rimossi.")) {
+                    const removedQ = state.completed[pendingCompletion.index];
+                    if (removedQ) {
+                        // Rimuovi XP (ricalcola dalla somma reale)
+                        state.completed.splice(pendingCompletion.index, 1);
+                        state.xp = state.completed.reduce((sum, q) => sum + (q.xp || 0), 0);
+                        // Aggiorna xpHistory per il giorno corrispondente
+                        if (removedQ.completedAt) {
+                            const dStr = new Date(removedQ.completedAt).toISOString().split('T')[0];
+                            const hist = state.xpHistory.find(h => h.date === dStr);
+                            if (hist) hist.xp = Math.max(0, hist.xp - (removedQ.xp || 0));
+                        }
+                        // Aggiorna stats
+                        if (removedQ.difficulty && state.stats[removedQ.difficulty]) {
+                            state.stats[removedQ.difficulty].count = Math.max(0, state.stats[removedQ.difficulty].count - 1);
+                            state.stats[removedQ.difficulty].totalXp = Math.max(0, state.stats[removedQ.difficulty].totalXp - (removedQ.xp || 0));
+                        }
+                        // Azzera dailyCompleted se coincide
+                        if (state.dailyCompleted && state.dailyCompleted.questTitle === removedQ.title) {
+                            state.dailyCompleted = null;
+                        }
+                        // Rimuovi da bossCompleted se applicabile
+                        if (state.bossCompleted) {
+                            const bi = state.bossCompleted.findIndex(b => b.title === removedQ.title);
+                            if (bi !== -1) state.bossCompleted.splice(bi, 1);
+                        }
+                        // Rimuovi da bookmarkedQuests se lo slot era "completato"
+                        if (state.bookmarkedQuests) {
+                            const bki = state.bookmarkedQuests.findIndex(b => b.title === removedQ.title);
+                            // Non rimuovere il bookmark, la quest torna disponibile
+                        }
+                    }
+                    updateXPUI();
                     saveState();
                     renderCompleted();
+                    renderActiveQuest();
+                    initDailyQuest();
+                    initSeasonalCarousel();
+                    checkAchievements();
                     if (state.profilePublic) syncToFirestore();
                     $('quest-review-overlay').classList.remove('show');
                     pendingCompletion = null;
-                    showToast("Quest eliminata");
+                    showToast(`Quest eliminata — XP rimossi`);
                 }
+            }
+        });
+
+        $('btn-review-share').addEventListener('click', () => {
+            if (pendingCompletion) {
+                const q = pendingCompletion.quest;
+                challengeQuest(q);
+                $('quest-review-overlay').classList.remove('show');
+                pendingCompletion = null;
             }
         });
 
@@ -3828,6 +4305,8 @@
 
         function updateSeasonalCarouselPos() {
             const track = $('seasonal-carousel-track');
+            if (!track) return;
+            track.style.transition = 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
             track.style.transform = `translateX(-${seasonalIndex * 100}%)`;
         }
 
@@ -4022,6 +4501,11 @@
 
             state.currentQuest = null;
             lastCompletedQuest = q;
+            // Libera slot bookmark se questa quest era salvata
+            if (state.bookmarkedQuests) {
+                const _bi = state.bookmarkedQuests.findIndex(b => b.title === q.title);
+                if (_bi !== -1) state.bookmarkedQuests.splice(_bi, 1);
+            }
             saveState();
 
             if (statsScreen.style.display === 'flex') {
@@ -4045,8 +4529,10 @@
 
         function closeModal() {
             xpModal.classList.remove('show');
-            // Auto-generate next quest after 800ms
-            setTimeout(generateQuest, 800);
+            // Auto-generate next quest only for normal quests (not daily)
+            if (lastCompletedQuest && !lastCompletedQuest._isDaily) {
+                setTimeout(generateQuest, 800);
+            }
         }
 
         /* ── NAVIGATION & REALTIME ────────────────────────── */
@@ -4062,7 +4548,7 @@
             statsScreen.style.display = 'none';
             settingsScreen.style.display = 'none';
             myProfileScreen.style.display = 'none';
-            if(unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
+            if (unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
         });
 
         btnTabStats.addEventListener('click', () => {
@@ -4076,7 +4562,7 @@
             settingsScreen.style.display = 'none';
             myProfileScreen.style.display = 'none';
             renderStatsScreen();
-            if(unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
+            if (unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
         });
 
         // Profile Tab Handler
@@ -4094,7 +4580,7 @@
 
             renderProfileScreen();
             // If we are on comparison tab, restart listener
-            if($('sub-confronto').style.display === 'block') renderConfrontoTab();
+            if ($('sub-confronto').style.display === 'block') renderConfrontoTab();
         });
 
         function renderStatsScreen() {
@@ -4307,13 +4793,13 @@
                     `).join('')}
                 </div>
 
-                <div class="section-title" style="margin-bottom: 12px;">Attività Recente</div>
+                <div class="section-title" style="margin-bottom: 12px;">Attività recente</div>
                 <div class="xp-card" style="padding: 16px; margin-bottom: 24px; text-align: left;">
                     ${recentHTML}
                 </div>
 
                 <div style="display: flex; gap: 12px; margin-bottom: 32px;">
-                    <button id="btn-edit-profile" class="btn-ghost" style="flex: 1; padding: 12px; font-size: 14px; text-align: center;"><svg style="width:16px;height:16px;stroke:currentColor;fill:none;vertical-align:-3px;margin-right:6px"><use href="#ico-pen"/></svg>Modifica Profilo</button>
+                    <button id="btn-edit-profile" class="btn-ghost" style="flex: 1; padding: 12px; font-size: 14px; text-align: center;"><svg style="width:16px;height:16px;stroke:currentColor;fill:none;vertical-align:-3px;margin-right:6px"><use href="#ico-pen"/></svg>Modifica profilo</button>
                     ${state.profilePublic ? `<button id="btn-share-profile" class="btn-complete" style="flex: 1; padding: 12px; font-size: 14px; text-align: center;"><svg style="width:16px;height:16px;stroke:#0a0a0f;fill:none;vertical-align:-3px;margin-right:6px"><use href="#ico-share"/></svg>Condividi</button>` : `<button class="btn-complete disabled" style="flex: 1; padding: 12px; font-size: 14px; text-align: center; opacity: 0.5;" title="Rendi il profilo pubblico per condividerlo"><svg style="width:16px;height:16px;stroke:#0a0a0f;fill:none;vertical-align:-3px;margin-right:6px"><use href="#ico-share"/></svg>Privato</button>`}
                 </div>
             `;
@@ -4337,9 +4823,9 @@
                     if (navigator.share) {
                         navigator.share({
                             title: 'more - Il mio Profilo',
-                            text: 'Guarda i miei progressi su more!',
-                            url: url
-                        }).catch(console.error);
+                            text: 'Guarda i miei progressi su more! 🎮',
+                            url
+                        }).catch(() => navigator.clipboard.writeText(url).then(() => showToast('Link copiato!')));
                     } else {
                         navigator.clipboard.writeText(url).then(() => showToast('Link copiato!'));
                     }
@@ -4352,23 +4838,24 @@
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.pill-tab').forEach(b => {
                     b.classList.remove('active');
-                    b.style.color = 'var(--text-dim)';
+                    b.style.color = '';
                 });
                 const target = e.target.closest('.pill-tab');
                 target.classList.add('active');
-                target.style.color = 'var(--text)';
+                target.style.color = '';
 
                 const targetId = target.getAttribute('data-target');
                 document.querySelectorAll('.profile-sub-section').forEach(sec => sec.style.display = 'none');
                 $('sub-' + targetId).style.display = 'block';
 
                 if (targetId === 'confronto') renderConfrontoTab();
+                if (targetId === 'salvati') renderSavedQuestsTab();
                 if (targetId === 'amici') {
-                    if(unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
+                    if (unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
                     renderAmiciTab();
                 }
                 if (targetId === 'profilo') {
-                    if(unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
+                    if (unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
                 }
             });
         });
@@ -4377,7 +4864,7 @@
             if (!currentUser || !fb) return;
             const subConfronto = $('confronto-logged-view');
 
-            if(unsubscribeComparison) { unsubscribeComparison(); }
+            if (unsubscribeComparison) { unsubscribeComparison(); }
 
             subConfronto.innerHTML = '<div class="spinner"></div>';
 
@@ -4387,7 +4874,7 @@
                 const q1 = fb.query(reqsRef, fb.where("to", "==", currentUser.uid));
                 const q2 = fb.query(reqsRef, fb.where("from", "==", currentUser.uid));
                 const [snap1, snap2] = await Promise.all([fb.getDocs(q1), fb.getDocs(q2)]);
-                
+
                 const allReqs = [];
                 snap1.forEach(d => allReqs.push(d.data()));
                 snap2.forEach(d => allReqs.push(d.data()));
@@ -4399,14 +4886,14 @@
                 }
 
                 const friendUids = accepted.map(r => r.from === currentUser.uid ? r.to : r.from);
-                
+
                 // Real-time listener on Friend Users
                 const usersRef = fb.collection(fb.db, "more_users");
                 // Note: 'in' query supports max 10 values.
                 const qUsers = fb.query(usersRef, fb.where(fb.documentId(), 'in', friendUids.slice(0, 10)));
-                
+
                 unsubscribeComparison = fb.onSnapshot(qUsers, (userSnaps) => {
-                     updateConfrontoUI(userSnaps.docs, subConfronto);
+                    updateConfrontoUI(userSnaps.docs, subConfronto);
                 });
 
             } catch (err) {
@@ -4433,23 +4920,23 @@
                     }
                 });
             }
-            
+
             let htmlStr = '';
-            
+
             friendDocs.forEach(doc => {
                 const friendData = doc.data();
                 let friendWeeklyXp = 0;
                 let friendWeekQuests = [];
-                
+
                 if (friendData.completed) {
                     friendData.completed.forEach(c => {
-                         if (c.completedAt && new Date(c.completedAt).getTime() >= monday.getTime()) {
+                        if (c.completedAt && new Date(c.completedAt).getTime() >= monday.getTime()) {
                             friendWeeklyXp += (c.xp || 0);
                             friendWeekQuests.push({ ...c, owner: 'friend', ownerName: friendData.displayName, ownerInit: ((friendData.username || '').replace(/^@/, '').charAt(0) || '?').toUpperCase(), ownerColor: (friendData.avatarColor || '#333'), timestamp: c.completedAt });
                         }
                     });
                 }
-                
+
                 // Comparison Bar Logic
                 const totalXp = myWeeklyXp + friendWeeklyXp || 1;
                 const myPerc = Math.max(5, Math.min(95, (myWeeklyXp / totalXp) * 100));
@@ -4509,7 +4996,7 @@
                         <div style="width: ${friendPerc}%; height:100%; background: ${friendData.avatarColor || '#555'}; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);"></div>
                     </div>
                     
-                    <div class="section-title" style="font-size:12px; margin-bottom:0;">Feed Settimanale Comune</div>
+                    <div class="section-title" style="font-size:12px; margin-bottom:0;">Feed settimanale comune</div>
                     ${feedListHTML}
                 </div>
                 `;
@@ -4527,8 +5014,8 @@
             // Setup search handler
             if (btnSearch) {
                 btnSearch.onclick = async () => {
-                let searchStr = searchInput.value.trim().toLowerCase().replace(/^@+/, '');
-                if (!searchStr) return;
+                    let searchStr = searchInput.value.trim().toLowerCase().replace(/^@+/, '');
+                    if (!searchStr) return;
 
                     resultDiv.innerHTML = '<div class="spinner"></div>';
 
@@ -4573,7 +5060,7 @@
                         const color = userData.avatarColor || '#333';
 
                         let actionBtn = `<button class="btn-complete" id="btn-send-req-${targetUid}" style="padding:8px 12px; font-size:12px;">Richiedi</button>`;
-                        
+
                         // Check existing request status
                         const reqId1 = currentUser.uid + "_" + targetUid;
                         const reqId2 = targetUid + "_" + currentUser.uid;
@@ -4595,13 +5082,13 @@
                                 <div style="flex:1;">
                                     <div style="font-weight:700; font-family:var(--font-display); font-size:16px;">${userData.displayName || 'Utente'}</div>
                                     <div style="color:var(--text-dim); font-size:13px;">@${safeUsername}</div>
-                                    ${(userData.profilePublic) ? `<button onclick="showPublicProfile(window.lastFoundUser)" style="font-size:11px; color:var(--accent); text-decoration:underline; margin-top:4px; background:none; border:none; padding:0; cursor:pointer;">Vedi Profilo</button>` : ''}
+                                    ${(userData.profilePublic) ? `<button onclick="showPublicProfile(window.lastFoundUser)" style="font-size:11px; color:var(--accent); text-decoration:underline; margin-top:4px; background:none; border:none; padding:0; cursor:pointer;">Vedi profilo</button>` : ''}
                                 </div>
                                 ${actionBtn}
                             </div>
                         `;
 
-                        if(document.getElementById(`btn-send-req-${targetUid}`)) {
+                        if (document.getElementById(`btn-send-req-${targetUid}`)) {
                             document.getElementById(`btn-send-req-${targetUid}`).onclick = async () => {
                                 const reqId = currentUser.uid + "_" + targetUid;
                                 await fb.setDoc(fb.doc(fb.db, "comparison_requests", reqId), {
@@ -4713,7 +5200,7 @@
                                 <div style="color:var(--accent); font-weight:700; font-size:12px;">+${weeklyXp.toLocaleString('it-IT')} XP questa sett.</div>
                             </div>
                             <div style="display:flex; flex-direction:column; gap:6px;">
-                                <button class="btn-ghost" onclick="viewPublicProfile('${friendUid}')" style="padding:6px 10px; font-size:11px;">Vedi Profilo</button>
+                                <button class="btn-ghost" onclick="viewPublicProfile('${friendUid}')" style="padding:6px 10px; font-size:11px;">Vedi profilo</button>
                                 <button class="btn-ghost" onclick="replyRequest('${req.id}', 'declined')" style="padding:6px 10px; font-size:11px; color:var(--text-dim); border-color:var(--border);">Rimuovi</button>
                             </div>
                         </div>
@@ -4745,7 +5232,7 @@
         };
 
         window.viewPublicProfile = (uid) => {
-            alert("Vedi profilo per: " + uid);
+            loadPublicProfile(uid);
         }
 
         /* ── SETTINGS / QUESTS ─────────────────────────────────────── */
@@ -4828,9 +5315,19 @@
                 customQuestList.innerHTML = state.customQuests.map((cq, i) => `
                         <div class="custom-quest-item">
                         <span class="cq-title">${escapeHtml(cq.title)}</span>
-                        <button class="btn-delete-cq" data-idx="${i}">Elimina</button>
+                        <div style="display:flex; gap:6px;">
+                            <button class="btn-send-cq" data-idx="${i}" style="font-size:11px; padding:4px 10px; border:1px solid var(--accent); color:var(--accent); background:none; border-radius:var(--radius-sm); cursor:pointer;">Invia</button>
+                            <button class="btn-delete-cq" data-idx="${i}">Elimina</button>
+                        </div>
                     </div>
                             `).join('');
+                customQuestList.querySelectorAll('.btn-send-cq').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const idx = parseInt(btn.dataset.idx);
+                        const cq = state.customQuests[idx];
+                        if (cq) challengeQuest(cq);
+                    });
+                });
                 customQuestList.querySelectorAll('.btn-delete-cq').forEach(btn => {
                     btn.addEventListener('click', () => {
                         const idx = parseInt(btn.dataset.idx);
@@ -4981,7 +5478,7 @@
             saveState();
 
             if (navigator.share) {
-                navigator.share({ title: 'Sfida LifeQuest', text: `Ti sfido a completare: "${quest.title}"! 🎮`, url })
+                navigator.share({ title: 'Sfida more', text: `Ti sfido a completare: "${quest.title}"! 🎮`, url })
                     .catch(() => copyToClipboard(url));
             } else {
                 copyToClipboard(url);
@@ -4993,7 +5490,9 @@
         }
 
         function getCurrentUsername() {
-            return sheetUserName?.textContent || 'Ospite';
+            if (state.displayName && state.displayName !== 'UtenteSenzaNome' && state.displayName.trim()) return state.displayName;
+            if (state.username) return state.username.replace(/^@+/, '');
+            return 'Explorer';
         }
 
         function handleDeepLinks() {
@@ -5001,19 +5500,36 @@
             const challengeTitle = params.get('challenge');
             const fromUser = params.get('from');
             if (challengeTitle) {
-                challengeBannerCont.innerHTML = `
-                            <div class="challenge-banner">
-                                <svg><use href="#ico-send" /></svg>
-                        Sfidato da ${escapeHtml(decodeURIComponent(fromUser || 'qualcuno'))}
-                    </div> `;
-                // Try to load the challenged quest
+                const _decodedTitle = decodeURIComponent(challengeTitle);
+                const _decodedFrom = decodeURIComponent(fromUser || 'qualcuno');
                 const pool = getFullPool();
-                const quest = pool.find(q => q.title === decodeURIComponent(challengeTitle));
-                if (quest && !state.currentQuest) {
-                    state.currentQuest = quest;
-                    saveLocal();
-                    renderActiveQuest();
-                }
+                const quest = pool.find(q => q.title === _decodedTitle);
+
+                challengeBannerCont.innerHTML = `
+                    <div class="challenge-banner" style="flex-direction:column; align-items:flex-start; gap:8px; padding:14px 16px; background:rgba(79,163,255,0.08); border:1px solid rgba(79,163,255,0.2); border-radius:var(--radius-sm); margin-bottom:16px;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <svg style="width:16px;height:16px;stroke:var(--diff-easy);fill:none;flex-shrink:0;stroke-width:2;"><use href="#ico-send"/></svg>
+                            <span style="font-weight:700; color:var(--text); font-size:14px;">Sfida da <strong style="color:var(--diff-easy);">${escapeHtml(_decodedFrom)}</strong></span>
+                        </div>
+                        <div style="font-size:13px; color:var(--text-dim); padding-left:24px; font-style:italic;">"${escapeHtml(_decodedTitle)}"</div>
+                        <div style="display:flex; gap:8px; padding-left:24px; margin-top:4px;">
+                            <button id="btn-accept-challenge" class="btn-complete" style="padding:8px 16px; font-size:12px;">Accetta sfida</button>
+                            <button id="btn-reject-challenge" class="btn-ghost" style="padding:8px 16px; font-size:12px;">Genera altra</button>
+                        </div>
+                    </div>`;
+
+                const btnAccept = document.getElementById('btn-accept-challenge');
+                const btnReject = document.getElementById('btn-reject-challenge');
+                if (btnAccept) btnAccept.addEventListener('click', () => {
+                    if (quest) { state.currentQuest = quest; saveLocal(); renderActiveQuest(); showToast('Sfida accettata!'); }
+                    else { showToast('Quest non trovata, generandone una nuova...'); generateQuest(); }
+                    challengeBannerCont.innerHTML = '';
+                });
+                if (btnReject) btnReject.addEventListener('click', () => {
+                    challengeBannerCont.innerHTML = '';
+                    generateQuest();
+                });
+
                 // Clear URL params
                 history.replaceState(null, '', location.pathname);
             }
@@ -5093,6 +5609,20 @@
                 ctx.fillText(`🔥 ${state.streak} giorni di fila`, 40, 540);
             }
 
+            // Date in bottom-right
+            const dateStr = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.font = '600 16px DM Sans, sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText(dateStr, 760, 570);
+            // Date bottom right
+            const _shareDate = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.font = '600 16px DM Sans, sans-serif';
+            ctx.textAlign = 'right';
+            ctx.fillText(_shareDate, 760, 572);
+            ctx.textAlign = 'left';
+
             // Bottom border
             ctx.fillStyle = '#c8f135';
             ctx.fillRect(0, 590, 800, 10);
@@ -5100,16 +5630,16 @@
             try {
                 canvas.toBlob(async (blob) => {
                     if (!blob) { showToast('Errore generazione immagine'); return; }
-                    const file = new File([blob], 'lifequest-completion.png', { type: 'image/png' });
+                    const file = new File([blob], 'more-completion.png', { type: 'image/png' });
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
                         try {
-                            await navigator.share({ files: [file], title: 'LifeQuest', text: `Ho completato "${q.title}" e guadagnato ${q.xp} XP!` });
+                            await navigator.share({ files: [file], title: 'more', text: `Ho completato "${q.title}" e guadagnato ${q.xp} XP!` });
                         } catch { showToast('Condivisione annullata'); }
                     } else {
                         // Fallback: download
                         const a = document.createElement('a');
                         a.href = URL.createObjectURL(blob);
-                        a.download = 'lifequest-completion.png';
+                        a.download = 'more-completion.png';
                         a.click();
                         showToast('Immagine scaricata!');
                     }
