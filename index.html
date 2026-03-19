@@ -552,16 +552,16 @@
         .quest-xp {
             font-family: var(--font-display);
             font-weight: 800;
-            font-size: 15px;
+            font-size: 18px;
             color: var(--accent);
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
 
         .quest-xp svg {
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             fill: var(--accent);
             stroke: none
         }
@@ -668,7 +668,7 @@
             background: rgba(200, 241, 53, 0.03);
             border: 1px solid rgba(200, 241, 53, 0.15);
             border-radius: var(--radius);
-            padding: 20px 16px;
+            padding: 20px 20px 20px 20px;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             transition: transform .2s var(--spring);
@@ -1479,6 +1479,24 @@
             border-color: rgba(200, 241, 53, 0.3);
         }
 
+        .filter-pill[data-filter="easy"].active {
+            background: var(--diff-easy-bg);
+            color: var(--diff-easy);
+            border-color: var(--diff-easy-border);
+        }
+
+        .filter-pill[data-filter="medium"].active {
+            background: var(--diff-medium-bg);
+            color: var(--diff-medium);
+            border-color: var(--diff-medium-border);
+        }
+
+        .filter-pill[data-filter="hard"].active {
+            background: var(--diff-hard-bg);
+            color: var(--diff-hard);
+            border-color: var(--diff-hard-border);
+        }
+
         /* ── CUSTOM QUEST TAG ────────────────────────────── */
         .custom-tag {
             font-size: 9px;
@@ -1997,6 +2015,7 @@
         #my-profile-screen {
             padding-top: 0 !important;
         }
+
         #my-profile-screen .profile-tabs {
             padding-top: max(12px, env(safe-area-inset-top)) !important;
         }
@@ -2004,12 +2023,13 @@
         /* ── FIX: tab profilo compatte con 4 voci ── */
         .pill-segmented-control {
             display: flex;
-            background: rgba(255,255,255,0.06);
+            background: rgba(255, 255, 255, 0.06);
             border-radius: 24px;
             padding: 3px;
             gap: 0;
             overflow: hidden;
         }
+
         .pill-tab {
             padding: 6px 12px !important;
             border-radius: 20px !important;
@@ -2019,8 +2039,9 @@
             transition: all 0.2s !important;
             color: var(--text-dim) !important;
         }
+
         .pill-tab.active {
-            background: rgba(255,255,255,0.12) !important;
+            background: rgba(255, 255, 255, 0.12) !important;
             color: var(--text) !important;
         }
 
@@ -2071,6 +2092,7 @@
             cursor: pointer;
             letter-spacing: 0;
         }
+
         .btn-ghost:active,
         .btn-complete:active,
         .btn-quest-action:active,
@@ -2088,15 +2110,26 @@
             border: none;
             font-weight: 800;
         }
+
         .btn-complete svg {
-            width: 14px; height: 14px;
-            stroke: #0a0a0f; fill: none;
+            width: 14px;
+            height: 14px;
+            stroke: #0a0a0f;
+            fill: none;
             stroke-width: 2.5;
-            stroke-linecap: round; stroke-linejoin: round;
+            stroke-linecap: round;
+            stroke-linejoin: round;
             flex-shrink: 0;
         }
-        .btn-complete:hover { opacity: 0.9; }
-        .btn-complete.disabled { opacity: 0.4; pointer-events: none; }
+
+        .btn-complete:hover {
+            opacity: 0.9;
+        }
+
+        .btn-complete.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
 
         /* Variante SECONDARY — bordo sottile */
         .btn-ghost {
@@ -2104,70 +2137,108 @@
             color: var(--text-dim);
             border: 1px solid var(--border-light);
         }
-        .btn-ghost:hover { background: rgba(255,255,255,0.05); color: var(--text); }
-        .btn-ghost.disabled { opacity: 0.4; pointer-events: none; }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+
+        .btn-ghost.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
         .btn-ghost svg {
-            width: 14px; height: 14px;
-            stroke: currentColor; fill: none;
-            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
             flex-shrink: 0;
         }
 
         /* Variante DANGER — bordo rosso */
         .btn-sheet-danger {
-            background: rgba(255,79,79,0.07);
+            background: rgba(255, 79, 79, 0.07);
             color: var(--diff-hard);
-            border: 1px solid rgba(255,79,79,0.25);
+            border: 1px solid rgba(255, 79, 79, 0.25);
         }
-        .btn-sheet-danger:hover { background: rgba(255,79,79,0.13); }
+
+        .btn-sheet-danger:hover {
+            background: rgba(255, 79, 79, 0.13);
+        }
 
         /* Variante NEUTRAL — per modal close / share */
         .btn-modal-close {
-            background: rgba(255,255,255,0.07);
+            background: rgba(255, 255, 255, 0.07);
             color: var(--text);
             border: 1px solid var(--border-light);
         }
-        .btn-modal-close:hover { background: rgba(255,255,255,0.11); }
+
+        .btn-modal-close:hover {
+            background: rgba(255, 255, 255, 0.11);
+        }
 
         .btn-share {
             background: var(--accent-dim);
             color: var(--accent);
-            border: 1px solid rgba(200,241,53,0.25);
+            border: 1px solid rgba(200, 241, 53, 0.25);
         }
-        .btn-share:hover { background: rgba(200,241,53,0.18); }
+
+        .btn-share:hover {
+            background: rgba(200, 241, 53, 0.18);
+        }
+
         .btn-share svg {
-            width: 14px; height: 14px;
-            stroke: var(--accent); fill: none;
-            stroke-width: 2; flex-shrink: 0;
+            width: 14px;
+            height: 14px;
+            stroke: var(--accent);
+            fill: none;
+            stroke-width: 2;
+            flex-shrink: 0;
         }
 
         /* Quest actions: stile uniforme */
         .btn-quest-action {
-            background: rgba(255,255,255,0.04);
+            background: rgba(255, 255, 255, 0.04);
             color: var(--text-dim);
             border: 1px solid var(--border-light);
             padding: 8px 14px;
             font-size: 12px;
             font-weight: 600;
         }
-        .btn-quest-action:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+
+        .btn-quest-action:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text);
+        }
+
         .btn-quest-action svg {
-            width: 14px; height: 14px;
-            stroke: currentColor; fill: none;
-            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
             flex-shrink: 0;
         }
 
         /* Sheet buttons full-width */
         .btn-sheet {
             width: 100%;
-            background: rgba(255,255,255,0.06);
+            background: rgba(255, 255, 255, 0.06);
             color: var(--text);
             border: 1px solid var(--border-light);
             padding: 13px 16px;
             font-size: 14px;
         }
-        .btn-sheet:hover { background: rgba(255,255,255,0.1); }
+
+        .btn-sheet:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
 
         /* ── FIX: quest actions layout mobile ── */
         .quest-actions {
@@ -2176,13 +2247,16 @@
             margin-top: 10px;
             flex-wrap: wrap;
         }
+
         @media (max-width: 480px) {
             .quest-actions {
                 flex-wrap: nowrap;
             }
+
             .quest-actions .qa-label {
                 display: none;
             }
+
             .quest-actions .qa-small {
                 padding: 8px 12px;
                 flex: 1;
@@ -2197,6 +2271,7 @@
             flex-direction: column;
             gap: 8px;
         }
+
         .completed-item {
             display: flex;
             flex-direction: column;
@@ -2207,9 +2282,11 @@
             background: var(--surface);
             transition: border-color 0.2s;
         }
+
         .completed-item:hover {
             border-color: var(--border-light);
         }
+
         .completed-item:last-child {
             border-bottom: 1px solid var(--border);
         }
@@ -2241,7 +2318,10 @@
             cursor: pointer;
             transition: background .15s;
         }
-        .btn-send-cq:hover { background: rgba(200, 241, 53, 0.14); }
+
+        .btn-send-cq:hover {
+            background: rgba(200, 241, 53, 0.14);
+        }
     </style>
 </head>
 
@@ -2418,9 +2498,12 @@
             </symbol>
             <!-- Refresh -->
             <symbol id="ico-refresh" viewBox="0 0 24 24">
-                <polyline points="23 4 23 10 17 10" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
-                <polyline points="1 20 1 14 7 14" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
-                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/>
+                <polyline points="23 4 23 10 17 10"
+                    style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" />
+                <polyline points="1 20 1 14 7 14"
+                    style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" />
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
+                    style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" />
             </symbol>
         </defs>
     </svg>
@@ -2466,13 +2549,7 @@
                 <div id="daily-quest-container"></div>
             </div>
 
-            <!-- DIFFICULTY FILTER -->
-            <div class="filter-bar">
-                <button class="filter-pill active" data-filter="all">Tutte</button>
-                <button class="filter-pill" data-filter="easy">Facile</button>
-                <button class="filter-pill" data-filter="medium">Media</button>
-                <button class="filter-pill" data-filter="hard">Difficile</button>
-            </div>
+            <!-- DIFFICULTY FILTER MOVED DOWN -->
 
             <!-- SEASONAL CAROUSEL -->
             <div id="seasonal-zone" style="display:none; margin-bottom: 28px;">
@@ -2493,22 +2570,40 @@
                 </div>
                 <div id="seasonal-carousel-container"
                     style="overflow:hidden; border-radius:var(--radius); position:relative;">
-                    <div id="seasonal-carousel-track" style="display:flex; transition:transform 0.4s var(--ease);">
+                    <div id="seasonal-carousel-track"
+                        style="display:flex; align-items:flex-start; transition:transform 0.4s var(--ease);">
                     </div>
                 </div>
             </div>
 
             <!-- ACTIVE QUEST -->
-            <div class="section-header">
+            <div class="section-header" style="margin-bottom: 16px;">
                 <span class="section-title">Quest attiva</span>
-                <div style="display:flex;gap:8px">
-                    <button class="btn-ghost" id="btn-create-quest"><svg
-                            style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:-2px;margin-right:2px">
-                            <use href="#ico-plus" />
-                        </svg>Crea</button>
-                    <button class="btn-ghost" id="btn-new-quest"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:-2px;margin-right:4px"><use href="#ico-refresh"/></svg>Genera nuova</button>
-                </div>
             </div>
+
+            <div style="display:flex; flex-direction:row; gap:8px; margin-bottom: 16px;">
+                <button class="btn-ghost" id="btn-create-quest"
+                    style="flex:1; justify-content:center; padding:12px; font-size:14px;"><svg
+                        style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:-3px;margin-right:6px">
+                        <use href="#ico-plus" />
+                    </svg>Crea</button>
+                <button class="btn-ghost" id="btn-new-quest"
+                    style="flex:1; justify-content:center; padding:12px; font-size:14px;"><svg
+                        style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:-3px;margin-right:6px">
+                        <use href="#ico-refresh" />
+                    </svg>Genera nuova</button>
+            </div>
+
+            <!-- DIFFICULTY FILTER -->
+            <div class="filter-bar"
+                style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom: 24px; padding:0;">
+                <button class="filter-pill active" data-filter="all"
+                    style="width:100%; text-align:center;">Tutte</button>
+                <button class="filter-pill" data-filter="easy" style="width:100%; text-align:center;">Facile</button>
+                <button class="filter-pill" data-filter="medium" style="width:100%; text-align:center;">Media</button>
+                <button class="filter-pill" data-filter="hard" style="width:100%; text-align:center;">Difficile</button>
+            </div>
+
             <div id="challenge-banner-container"></div>
             <div id="quest-container"></div>
 
@@ -2619,7 +2714,9 @@
                 <div class="sheet-row" id="sheet-title-row"
                     style="flex-direction: column; align-items: flex-start; padding-bottom: 24px; padding-top: 16px; border-top: 1px solid var(--border); margin-top: 8px;">
                     <span class="settings-section-title">Personalizzazione</span>
-                    <span class="settings-section-title" style="letter-spacing:0; font-size:12px; text-transform:none; color:var(--text-dim); font-weight:600; margin-bottom:8px;">Titolo visibile in Home</span>
+                    <span class="settings-section-title"
+                        style="letter-spacing:0; font-size:12px; text-transform:none; color:var(--text-dim); font-weight:600; margin-bottom:8px;">Titolo
+                        visibile in Home</span>
                     <select id="select-active-title"
                         style="width: 100%; padding: 12px; border-radius: var(--radius); border: 2px solid var(--border); background: var(--bg); color: var(--text); font-family: var(--font); font-weight:600; font-size:16px;">
                     </select>
@@ -2752,7 +2849,8 @@
             </div>
 
             <!-- SUB-SECTION 4: SALVATI -->
-            <div id="sub-salvati" class="profile-sub-section" style="display:none; padding:24px 20px; padding-bottom:100px;">
+            <div id="sub-salvati" class="profile-sub-section"
+                style="display:none; padding:24px 20px; padding-bottom:100px;">
                 <div id="salvati-content"></div>
             </div>
         </main>
@@ -3161,6 +3259,22 @@
                     if (!Array.isArray(state.bookmarkedQuests)) state.bookmarkedQuests = [];
                 }
             } catch (e) { }
+
+            // Azzeramento streak se sono passate più di 24 ore dall'ultimo completamento
+            if (state.lastQuestDate) {
+                const today = new Date();
+                const todayStr = today.toISOString().split('T')[0];
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+                if (state.lastQuestDate !== todayStr && state.lastQuestDate !== yesterdayStr) {
+                    state.streak = 0;
+                }
+            } else {
+                state.streak = 0;
+            }
+
             computeLocalStats();
             checkAchievements();
             initDailyQuest();
@@ -3316,6 +3430,7 @@
             }, 50);
         }
 
+        let initialSnapshotDone = false;
         function completeLoginFlow(user, cloudState) {
             currentUser = user;
             isGuest = false;
@@ -3345,6 +3460,13 @@
                     customQuests: cloudState.customQuests ?? [],
                     challenges_sent: cloudState.challenges_sent ?? [],
                     profilePublic: cloudState.profilePublic ?? false,
+                    achievements: cloudState.achievements ?? [],
+                    bossCompleted: cloudState.bossCompleted ?? [],
+                    questsSinceBoss: cloudState.questsSinceBoss ?? 0,
+                    dailyCompleted: cloudState.dailyCompleted ?? null,
+                    notificationsEnabled: cloudState.notificationsEnabled ?? false,
+                    selectedTitle: cloudState.selectedTitle ?? null,
+                    bookmarkedQuests: cloudState.bookmarkedQuests ?? [],
                     displayName: cloudState.displayName ?? state.displayName ?? "",
                     username: cloudState.username ?? state.username ?? "",
                     bio: cloudState.bio ?? state.bio ?? "",
@@ -3393,46 +3515,72 @@
             setTimeout(requestNotificationPermission, 1500);
         }
 
+        let unsubSnapshot = null;
         function setupAuthVars() {
             fb.onAuthStateChanged(fb.auth, async (user) => {
                 if (user) {
                     try {
-                        const docSnap = await fb.getDoc(fb.doc(fb.db, 'more_users', user.uid));
-                        if (docSnap.exists()) {
-                            // MERGE IMMEDIATELY to avoid losing progress while waiting for signup
-                            const cloud = docSnap.data();
-                            state = {
-                                ...state,
-                                xp: cloud.xp ?? state.xp,
-                                currentQuest: cloud.currentQuest ?? state.currentQuest,
-                                completed: cloud.completed ?? state.completed,
-                                streak: cloud.streak ?? state.streak,
-                                lastQuestDate: cloud.lastQuestDate ?? state.lastQuestDate,
-                                xpHistory: cloud.xpHistory ?? state.xpHistory,
-                                stats: cloud.stats ?? state.stats,
-                                questTimestamps: cloud.questTimestamps ?? state.questTimestamps,
-                                customQuests: cloud.customQuests ?? state.customQuests,
-                                challenges_sent: cloud.challenges_sent ?? state.challenges_sent,
-                                profilePublic: cloud.profilePublic ?? state.profilePublic,
-                                displayName: cloud.displayName ?? state.displayName,
-                                username: cloud.username ?? state.username,
-                                bio: cloud.bio ?? state.bio,
-                                avatarColor: cloud.avatarColor ?? state.avatarColor,
-                                joinedAt: cloud.joinedAt ?? state.joinedAt,
-                                updatedAt: Math.max(state.updatedAt, cloud.updatedAt || 0)
-                            };
-                            localStorage.setItem('more_state', JSON.stringify(state));
-                            updateXPUI();
-                            renderActiveQuest();
-                            renderCompleted();
-                        }
+                        if (unsubSnapshot) unsubSnapshot();
 
-                        if (docSnap.exists() && docSnap.data().username) {
-                            completeLoginFlow(user, docSnap.data());
-                            if (!pendingGoogleCreds) showToast('Accesso effettuato');
-                        } else {
-                            // User authenticated via Google or legacy account missing username
-                            pendingGoogleCreds = user;
+                        unsubSnapshot = fb.onSnapshot(fb.doc(fb.db, 'more_users', user.uid), (docSnap) => {
+                            if (docSnap.exists()) {
+                                const cloud = docSnap.data();
+                                const cloudT = cloud.updatedAt || 0;
+                                const localT = state.updatedAt || 0;
+
+                                // Merge solo se i dati cloud sono più recenti
+                                if (cloudT > localT) {
+                                    state = {
+                                        ...state,
+                                        xp: cloud.xp ?? state.xp,
+                                        currentQuest: cloud.currentQuest ?? state.currentQuest,
+                                        completed: cloud.completed ?? state.completed,
+                                        streak: cloud.streak ?? state.streak,
+                                        lastQuestDate: cloud.lastQuestDate ?? state.lastQuestDate,
+                                        xpHistory: cloud.xpHistory ?? state.xpHistory,
+                                        stats: cloud.stats ?? state.stats,
+                                        questTimestamps: cloud.questTimestamps ?? state.questTimestamps,
+                                        customQuests: cloud.customQuests ?? state.customQuests,
+                                        challenges_sent: cloud.challenges_sent ?? state.challenges_sent,
+                                        profilePublic: cloud.profilePublic ?? state.profilePublic,
+                                        achievements: cloud.achievements ?? state.achievements,
+                                        bossCompleted: cloud.bossCompleted ?? state.bossCompleted,
+                                        questsSinceBoss: cloud.questsSinceBoss ?? state.questsSinceBoss,
+                                        dailyCompleted: cloud.dailyCompleted ?? state.dailyCompleted,
+                                        notificationsEnabled: cloud.notificationsEnabled ?? state.notificationsEnabled,
+                                        selectedTitle: cloud.selectedTitle ?? state.selectedTitle,
+                                        bookmarkedQuests: cloud.bookmarkedQuests ?? state.bookmarkedQuests,
+                                        displayName: cloud.displayName ?? state.displayName,
+                                        username: cloud.username ?? state.username,
+                                        bio: cloud.bio ?? state.bio,
+                                        avatarColor: cloud.avatarColor ?? state.avatarColor,
+                                        joinedAt: cloud.joinedAt ?? state.joinedAt,
+                                        updatedAt: Math.max(localT, cloudT)
+                                    };
+                                    localStorage.setItem('more_state', JSON.stringify(state));
+                                    updateXPUI();
+                                    renderActiveQuest();
+                                    renderCompleted();
+                                }
+
+                                if (cloud.username) {
+                                    completeLoginFlow(user, cloud);
+                                    if (!pendingGoogleCreds && !initialSnapshotDone) {
+                                        showToast('Accesso effettuato');
+                                        initialSnapshotDone = true;
+                                    }
+                                } else {
+                                    handleMissingUsername(user);
+                                }
+                            } else {
+                                handleMissingUsername(user);
+                            }
+                        }, (e) => {
+                            console.error("Snapshot error:", e);
+                        });
+
+                        function handleMissingUsername(u) {
+                            pendingGoogleCreds = u;
                             authScreen.classList.add('show');
                             authTitle.textContent = 'Quasi fatto!';
                             authSubtitle.textContent = 'Scegli un username per completare il profilo.';
@@ -3440,8 +3588,7 @@
                             btnAuthSubmit.style.display = 'block';
                             btnAuthSubmit.textContent = 'Completa registrazione';
 
-                            // Pre-fill from merging or Google
-                            const parts = (state.displayName || user.displayName || '').split(' ');
+                            const parts = (state.displayName || u.displayName || '').split(' ');
                             authName.value = parts[0] || '';
                             authSurname.value = parts.slice(1).join(' ') || '';
                             if (state.username) {
@@ -3454,6 +3601,9 @@
                     } catch (e) { console.error(e); }
                 }
                 else {
+                    if (unsubSnapshot) unsubSnapshot();
+                    unsubSnapshot = null;
+                    initialSnapshotDone = false;
                     currentUser = null;
                     sheetUserRow.style.display = 'none';
                     btnLogout.style.display = 'none';
@@ -3703,12 +3853,12 @@
                   ${warningHtml}
                   <div class="quest-footer">
                     <span class="quest-xp" style="color:var(--diff-hard); text-shadow:0 0 10px rgba(255, 79, 79, 0.5);"><svg style="fill:var(--diff-hard);"><use href="#ico-diamond"/></svg>+${q.xp.toLocaleString('it-IT')} XP</span>
-                    <button class="btn-complete" id="btn-complete-quest"><svg><use href="#ico-check"/></svg>Sconfitto</button>
                   </div>
                   <div class="quest-actions" style="margin-top:16px;">
                     <button class="btn-quest-action qa-small" id="btn-challenge-quest"><svg><use href="#ico-send"/></svg><span class="qa-label">Sfida un amico</span></button>
                     <button class="btn-quest-action qa-small" id="btn-bookmark-quest"><svg style="fill:none;stroke:currentColor;stroke-width:2;"><use href="#ico-bookmark"/></svg><span class="qa-label">Salva</span></button>
                   </div>
+                  <button class="btn-complete" id="btn-complete-quest" style="width:100%; margin-top:16px; padding:14px; font-size:15px; justify-content:center;"><svg><use href="#ico-check"/></svg>Sconfitto</button>
                 </div>`;
             } else {
                 const diffClass = q.difficulty === 'easy' ? 'diff-easy' : q.difficulty === 'medium' ? 'diff-medium' : 'diff-hard';
@@ -3731,12 +3881,12 @@
           ${warningHtml}
               <div class="quest-footer">
                 <span class="quest-xp"><svg><use href="#ico-diamond"/></svg>+${q.xp.toLocaleString('it-IT')} XP</span>
-                <button class="btn-complete" id="btn-complete-quest"><svg><use href="#ico-check"/></svg>Completata</button>
               </div>
-              <div class="quest-actions">
+              <div class="quest-actions" style="margin-top:16px;">
                 <button class="btn-quest-action qa-small" id="btn-challenge-quest"><svg><use href="#ico-send"/></svg><span class="qa-label">Sfida un amico</span></button>
                 <button class="btn-quest-action qa-small" id="btn-bookmark-quest"><svg style="fill:none;stroke:currentColor;stroke-width:2;"><use href="#ico-bookmark"/></svg><span class="qa-label">Salva</span></button>
               </div>
+              <button class="btn-complete" id="btn-complete-quest" style="width:100%; margin-top:16px; padding:14px; font-size:15px; justify-content:center;"><svg><use href="#ico-check"/></svg>Completata</button>
             </div>`;
             }
 
@@ -3814,9 +3964,9 @@
                             <span class="quest-xp"><svg><use href="#ico-diamond"/></svg>+${(q.xp || 0).toLocaleString('it-IT')} XP</span>
                             <div style="display:flex;gap:8px;">
                                 ${done
-                                    ? `<span style="font-size:12px; color:var(--diff-easy); font-weight:600;">✓ Completata</span>`
-                                    : `<button class="btn-complete" style="font-size:12px;padding:6px 12px;" onclick="useSavedQuest(${i})">Usa questa</button>`
-                                }
+                        ? `<span style="font-size:12px; color:var(--diff-easy); font-weight:600;">✓ Completata</span>`
+                        : `<button class="btn-complete" style="font-size:12px;padding:6px 12px;" onclick="useSavedQuest(${i})">Usa questa</button>`
+                    }
                                 <button class="btn-ghost" style="font-size:12px;padding:6px 10px; border-color:rgba(255,79,79,0.3);color:var(--diff-hard);" onclick="removeSavedQuest(${i})">Rimuovi</button>
                             </div>
                         </div>
@@ -3828,7 +3978,7 @@
                 <div style="display:flex; flex-direction:column; gap:12px;">${slotsHtml}</div>`;
         }
 
-        window.useSavedQuest = function(idx) {
+        window.useSavedQuest = function (idx) {
             const q = (state.bookmarkedQuests || [])[idx];
             if (!q) return;
             state.currentQuest = { ...q };
@@ -3838,7 +3988,7 @@
             showToast('Quest attivata!');
         };
 
-        window.removeSavedQuest = function(idx) {
+        window.removeSavedQuest = function (idx) {
             if (!state.bookmarkedQuests) return;
             state.bookmarkedQuests.splice(idx, 1);
             saveState();
@@ -3984,8 +4134,8 @@
                   <p class="quest-desc">${escapeHtml(dailyQuest.description)}</p>
                   <div class="quest-footer">
                     <span class="quest-xp"><svg><use href="#ico-diamond"/></svg>+${(dailyQuest.xp + 500).toLocaleString('it-IT')} XP</span>
-                    <button class="btn-complete" id="btn-complete-daily"><svg><use href="#ico-check"/></svg>Completata</button>
                   </div>
+                  <button class="btn-complete" id="btn-complete-daily" style="width:100%; margin-top:16px; padding:14px; font-size:15px; justify-content:center;"><svg><use href="#ico-check"/></svg>Completata</button>
                 </div>`;
 
             $('btn-complete-daily').addEventListener('click', () => promptQuestReview(dailyQuest, 'daily'));
@@ -4031,8 +4181,10 @@
                 _dailyBonus: DAILY_BONUS
             });
 
-            // XP = somma di tutto l'array (fonte di verità unica)
-            state.xp = state.completed.reduce((sum, c) => sum + (Number(c.xp) || 0), 0);
+            // Ricalcolo totale di tutto l'XP recuperando eventuali salvataggi e Boss
+            const baseXP = state.completed.reduce((sum, c) => sum + (Number(c.xp) || 0), 0);
+            const bossXP = state.bossCompleted.reduce((sum, c) => sum + (Number(c.xp) || 0), 0);
+            state.xp = baseXP + bossXP;
 
             let todayHistory = state.xpHistory.find(h => h.date === todayStr);
             if (todayHistory) todayHistory.xp = (todayHistory.xp || 0) + totalXp;
@@ -4158,7 +4310,10 @@
                     if (removedQ) {
                         // Rimuovi XP (ricalcola dalla somma reale)
                         state.completed.splice(pendingCompletion.index, 1);
-                        state.xp = state.completed.reduce((sum, q) => sum + (q.xp || 0), 0);
+                        const baseXP = state.completed.reduce((sum, q) => sum + (Number(q.xp) || 0), 0);
+                        const bossXP = state.bossCompleted.reduce((sum, q) => sum + (Number(q.xp) || 0), 0);
+                        state.xp = baseXP + bossXP;
+
                         // Aggiorna xpHistory per il giorno corrispondente
                         if (removedQ.completedAt) {
                             const dStr = new Date(removedQ.completedAt).toISOString().split('T')[0];
@@ -4170,21 +4325,22 @@
                             state.stats[removedQ.difficulty].count = Math.max(0, state.stats[removedQ.difficulty].count - 1);
                             state.stats[removedQ.difficulty].totalXp = Math.max(0, state.stats[removedQ.difficulty].totalXp - (removedQ.xp || 0));
                         }
-                        // Azzera dailyCompleted se coincide
-                        if (state.dailyCompleted && state.dailyCompleted.questTitle === removedQ.title) {
-                            state.dailyCompleted = null;
-                        }
-                        // Rimuovi da bossCompleted se applicabile
-                        if (state.bossCompleted) {
-                            const bi = state.bossCompleted.findIndex(b => b.title === removedQ.title);
-                            if (bi !== -1) state.bossCompleted.splice(bi, 1);
-                        }
                         // Rimuovi da bookmarkedQuests se lo slot era "completato"
                         if (state.bookmarkedQuests) {
                             const bki = state.bookmarkedQuests.findIndex(b => b.title === removedQ.title);
                             // Non rimuovere il bookmark, la quest torna disponibile
                         }
                     }
+
+                    // Ricalcolo globale delle statistiche per garantire correttezza
+                    state.stats = { easy: { count: 0, totalXp: 0 }, medium: { count: 0, totalXp: 0 }, hard: { count: 0, totalXp: 0 } };
+                    state.completed.concat(state.bossCompleted).forEach(q => {
+                        if (q.difficulty && state.stats[q.difficulty]) {
+                            state.stats[q.difficulty].count++;
+                            state.stats[q.difficulty].totalXp += (Number(q.xp) || 0);
+                        }
+                    });
+
                     updateXPUI();
                     saveState();
                     renderCompleted();
@@ -4192,6 +4348,8 @@
                     initDailyQuest();
                     initSeasonalCarousel();
                     checkAchievements();
+                    renderStatsScreen();
+                    renderProfileScreen();
                     if (state.profilePublic) syncToFirestore();
                     $('quest-review-overlay').classList.remove('show');
                     pendingCompletion = null;
@@ -4281,8 +4439,8 @@
                 const iconClass = `icon-${q.difficulty}`;
 
                 let actionBtn = isCompleted
-                    ? `<button class="btn-ghost disabled"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;vertical-align:-2px;margin-right:2px"><use href="#ico-check"/></svg>Completata</button>`
-                    : `<button class="btn-complete" onclick="promptQuestReview(currentSeasonalQuests[${i}], 'seasonal', ${i})"><svg><use href="#ico-check"/></svg>Completata</button>`;
+                    ? `<button class="btn-ghost disabled" style="width:100%; justify-content:center; padding:12px; font-size:15px; margin-top:16px;"><svg style="width:16px;height:16px;stroke:currentColor;fill:none;vertical-align:-3px;margin-right:6px"><use href="#ico-check"/></svg>Completata</button>`
+                    : `<button class="btn-complete" style="width:100%; justify-content:center; padding:12px; font-size:15px; margin-top:16px;" onclick="promptQuestReview(currentSeasonalQuests[${i}], 'seasonal', ${i})"><svg><use href="#ico-check"/></svg>Completata</button>`;
 
                 return `
                     <div class="seasonal-card ${isCompleted ? 'completed' : ''}" style="border: 2px solid ${isCompleted ? 'var(--border)' : info.color}; box-shadow: ${isCompleted ? 'none' : `0 0 15px ${info.color}33`};">
@@ -4291,11 +4449,11 @@
                         <span class="diff-badge ${diffClass}"><span class="dot dot-${q.difficulty}"></span>${diffLabel}</span>
                         <span class="quest-title">${escapeHtml(q.title)}</span>
                       </div>
-                      <p class="quest-desc">${escapeHtml(q.description)}</p>
+                      <p class="quest-desc" style="margin-bottom:12px;">${escapeHtml(q.description)}</p>
                       <div class="quest-footer">
                         <span class="quest-xp"><svg><use href="#ico-diamond"/></svg>+${q.xp.toLocaleString('it-IT')} XP</span>
-                        ${actionBtn}
                       </div>
+                      ${actionBtn}
                     </div>`;
             }).join('');
 
@@ -4397,7 +4555,7 @@
                 const bossAvailable = BOSS_QUESTS.filter(b => !state.bossCompleted.some(c => c.title === b.title));
                 if (bossAvailable.length > 0) {
                     const bossQuest = bossAvailable[Math.floor(Math.random() * bossAvailable.length)];
-                    state.currentQuest = bossQuest;
+                    state.currentQuest = { ...bossQuest };
                     state.currentQuest.isBoss = true;
                     state.questsSinceBoss = 0;
                     state.currentQuestGeneratedAt = Date.now();
@@ -4452,7 +4610,7 @@
             }
 
             const quest = available[Math.floor(Math.random() * available.length)];
-            state.currentQuest = quest;
+            state.currentQuest = { ...quest };
             state.currentQuestGeneratedAt = Date.now();
             saveState();
             renderActiveQuest();
