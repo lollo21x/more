@@ -23,7 +23,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Syne:wght@700;800&display=swap"
-        rel="stylesheet">
+        rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+        <link
+            href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Syne:wght@700;800&display=swap"
+            rel="stylesheet">
+    </noscript>
     <style>
         /* ── CSS VARIABLES ────────────────────────────────── */
         :root {
@@ -54,8 +59,8 @@
             --radius: 20px;
             --radius-sm: 14px;
             --radius-xs: 10px;
-            --font-display: 'Syne', sans-serif;
-            --font-body: 'DM Sans', sans-serif;
+            --font-display: 'Syne', 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             --ease: cubic-bezier(0.22, 1, 0.36, 1);
             --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
             --safe-top: env(safe-area-inset-top, 0px);
@@ -267,6 +272,11 @@
 
         .tab-btn.active {
             color: var(--accent);
+            transition: color 0.2s var(--ease);
+        }
+
+        .tab-btn {
+            transition: color 0.2s var(--ease), transform 0.1s;
         }
 
         .tab-btn svg {
@@ -315,7 +325,7 @@
         .xp-number {
             font-family: var(--font-display);
             font-weight: 800;
-            font-size: clamp(40px, 12vw, 64px);
+            font-size: clamp(28px, 10vw, 64px);
             letter-spacing: -2px;
             color: var(--accent);
             text-shadow:
@@ -329,11 +339,13 @@
 
         @keyframes glow-pulse {
             0% {
-                text-shadow: 0 0 10px var(--accent-glow), 0 0 30px var(--accent-glow), 0 0 60px rgba(200, 241, 53, 0.20)
+                text-shadow: 0 0 8px var(--accent-glow), 0 0 24px var(--accent-glow);
+                opacity: 0.92;
             }
 
             100% {
-                text-shadow: 0 0 15px var(--accent-glow), 0 0 45px var(--accent-glow), 0 0 80px rgba(200, 241, 53, 0.28)
+                text-shadow: 0 0 14px var(--accent-glow), 0 0 42px var(--accent-glow), 0 0 72px rgba(200, 241, 53, 0.22);
+                opacity: 1;
             }
         }
 
@@ -415,7 +427,8 @@
         }
 
         .quest-card:active {
-            transform: scale(0.985)
+            transform: scale(0.985);
+            transition: transform 0.1s var(--ease);
         }
 
         .quest-top {
@@ -767,12 +780,25 @@
             justify-content: center;
             padding: 24px;
             opacity: 0;
+            pointer-events: none;
             transition: opacity .25s var(--ease);
         }
 
         .modal-overlay.show {
             display: flex;
-            opacity: 1
+            opacity: 1;
+            pointer-events: auto;
+            animation: fadeOverlay 0.2s var(--ease) forwards;
+        }
+
+        @keyframes fadeOverlay {
+            from {
+                background: rgba(0, 0, 0, 0);
+            }
+
+            to {
+                background: rgba(0, 0, 0, 0.65);
+            }
         }
 
         .modal-content {
@@ -862,7 +888,7 @@
 
         .sheet-overlay.show {
             display: block;
-            opacity: 1
+            opacity: 1;
         }
 
         .sheet {
@@ -1001,7 +1027,8 @@
 
         .confirm-overlay.show {
             display: flex;
-            opacity: 1
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .confirm-box {
@@ -1318,6 +1345,17 @@
             margin-top: 10px;
             margin-bottom: 5px;
             border: 1px solid rgba(255, 179, 71, 0.25);
+            animation: streakPulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes streakPulse {
+            from {
+                box-shadow: 0 0 0 rgba(255, 179, 71, 0);
+            }
+
+            to {
+                box-shadow: 0 0 10px rgba(255, 179, 71, 0.25);
+            }
         }
 
         .streak-badge svg {
@@ -1805,6 +1843,7 @@
 
         #profile-screen.show {
             display: flex;
+            animation: tabFadeIn 0.25s var(--ease) forwards;
         }
 
         .profile-card {
@@ -1905,79 +1944,6 @@
             color: var(--text);
         }
 
-        function showPublicProfile(userData) {
-            const screen=document.getElementById('profile-screen');
-            const cleanUsername=(userData.username || 'utente').replace(/^@+/, '');
-
-            const totalQuests=userData.completed ? userData.completed.length: 0;
-            const streak=userData.streak || 0;
-
-            // Build recent activity
-            let recentHTML='<div class="quest-empty" style="font-size:13px;">Nessuna attività recente</div>';
-
-            if (userData.completed && userData.completed.length > 0) {
-                const recent=[...userData.completed].sort((a, b)=> new Date(b.completedAt) - new Date(a.completedAt)).slice(0, 5);
-                recentHTML='<ul class="completed-list" style="margin-top:0;">';
-
-                recent.forEach(q=> {
-                        const diffDot=`dot-$ {
-                            q.difficulty || 'easy'
-                        }
-
-                        `;
-
-                        recentHTML +=` <li class="completed-item" style="display:flex; align-items:center; gap:12px; margin-bottom:12px; border-bottom:1px solid var(--border-light); padding-bottom:8px;" > <div class="completed-dot ${diffDot}" style="margin-top:0;" ></div> <div style="flex:1;" > <div class="completed-name" style="font-size:13px; font-weight:700;" >$ {
-                            q.title
-                        }
-
-                        </div> <div style="font-size:11px; color:var(--text-dim);" >+$ {
-                            (q.xp || 0).toLocaleString('it-IT')
-                        }
-
-                        XP</div> </div> </li>`;
-                    });
-                recentHTML+='</ul>';
-            }
-
-            screen.innerHTML=` <div style="width:100%; max-width:400px; margin:auto; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:24px; position:relative; max-height:90vh; overflow-y:auto;"><button class="btn-icon" onclick="document.getElementById('profile-screen').classList.remove('show')" style="position:absolute; top:12px; right:12px; background:transparent; border:none;"><svg style="width:24px;height:24px;"><use href="#ico-plus" style="transform:rotate(45deg);transform-origin:center;" /></svg></button><div style="text-align: center; margin-bottom: 24px;"><div style="width: 80px; height: 80px; border-radius: 50%; background: ${userData.avatarColor || '#333'}; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 32px; color: #fff;">$ {
-                cleanUsername.charAt(0).toUpperCase()
-            }
-
-            </div><div style="font-family: var(--font-display); font-weight: 800; font-size: 22px; margin-bottom: 4px;">$ {
-                userData.displayName || cleanUsername
-            }
-
-            </div><div style="color: var(--text-dim); font-size: 14px; margin-bottom: 12px;">@$ {
-                cleanUsername
-            }
-
-            </div><div class="xp-level-badge" style="margin-bottom: 12px;"><svg><use href="#ico-crown" /></svg>LVL $ {
-                Math.floor(Math.sqrt((userData.xp||0) / 1500))+1
-            }
-
-            </div>$ {
-                userData.bio ? `<div style="font-size: 14px; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin: 0 auto; max-width: 280px; font-style:italic;">"${userData.bio}" </div>`: ''
-            }
-
-            </div><div class="xp-card" style="display: flex; justify-content: space-around; padding: 16px; margin-bottom: 24px;"><div style="text-align: center;"><div style="font-family: var(--font-display); font-weight: 800; font-size: 18px; color: var(--accent);">$ {
-                (userData.xp||0).toLocaleString()
-            }
-
-            </div><div style="font-size: 10px; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">XP</div></div><div style="text-align: center;"><div style="font-family: var(--font-display); font-weight: 800; font-size: 18px; color: var(--text);">$ {
-                totalQuests
-            }
-
-            </div><div style="font-size: 10px; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">Quest</div></div><div style="text-align: center;"><div style="font-family: var(--font-display); font-weight: 800; font-size: 18px; color: #ffb347;">$ {
-                streak
-            }
-
-            </div><div style="font-size: 10px; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">Streak</div></div></div><div class="section-title" style="font-size:14px; margin-bottom:12px;">Ultime Attività</div>$ {
-                recentHTML
-            }
-
-            </div>`;
-            screen.classList.add('show');
-        }
 
         /* ── TOGGLE SWITCH ───────────────────────────────── */
         .toggle-switch {
@@ -2122,8 +2088,11 @@
             flex-shrink: 0;
         }
 
-        .btn-complete:hover {
-            opacity: 0.9;
+        @media (hover: hover) {
+            .btn-complete:hover {
+                background: #d4f548;
+                box-shadow: 0 4px 14px rgba(200, 241, 53, 0.4);
+            }
         }
 
         .btn-complete.disabled {
@@ -2536,6 +2505,116 @@
             border-radius: 20px;
             margin-bottom: 12px;
         }
+
+        /* ── PERFORMANCE: GPU PROMOTION ─────────────────── */
+        .modal-content,
+        .create-modal,
+        .confirm-box {
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .sheet {
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        #seasonal-carousel-track {
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        /* CSS containment on quest cards to limit layout scope */
+        .quest-card,
+        .seasonal-card,
+        .completed-item,
+        .stats-card {
+            contain: layout style;
+        }
+
+        /* Smoother tab transitions */
+        .content {
+            will-change: auto;
+        }
+
+        /* Better touch scrolling */
+        .content,
+        .profile-sub-section,
+        #settings-screen {
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-y: contain;
+        }
+
+        /* Prevent filter-bar from layout-thrashing */
+        .filter-bar {
+            contain: layout;
+        }
+
+
+        /* ── TAB CONTENT TRANSITIONS ────────────────────── */
+        @keyframes tabFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tab-content-enter {
+            animation: tabFadeIn 0.22s var(--ease) forwards;
+        }
+
+
+        /* ── PREVENT iOS DOUBLE-TAP ZOOM ────────────────── */
+        button,
+        a,
+        input,
+        select,
+        textarea {
+            touch-action: manipulation;
+        }
+
+        /* Better tap highlight */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        /* ── REDUCED MOTION ─────────────────────────────── */
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            .xp-number {
+                animation: none;
+            }
+
+            .streak-badge {
+                animation: none;
+            }
+        }
+
+
+        /* ── CONTENT VISIBILITY (off-screen optimization) ── */
+        #stats-screen,
+        #settings-screen,
+        #my-profile-screen {
+            content-visibility: auto;
+            contain-intrinsic-size: 0 800px;
+        }
     </style>
 </head>
 
@@ -2718,6 +2797,11 @@
                     style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" />
                 <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
                     style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" />
+            </symbol>
+            <!-- Pen/Edit -->
+            <symbol id="ico-pen" viewBox="0 0 24 24">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
             </symbol>
         </defs>
     </svg>
@@ -3356,18 +3440,23 @@
     <script src="questpool.js"></script>
 
     <script>
-        window.addEventListener('error', function (e) {
-            const errDiv = document.createElement('div');
-            errDiv.style.cssText = 'position:fixed;top:0;left:0;z-index:9999;background:red;color:white;padding:20px;font-size:16px;font-family:monospace;pointer-events:none;';
-            errDiv.innerText = 'JS_ERR: ' + e.message + ' (Line ' + e.lineno + ')';
-            document.body.appendChild(errDiv);
-        });
-        window.addEventListener('unhandledrejection', function (e) {
-            const errDiv = document.createElement('div');
-            errDiv.style.cssText = 'position:fixed;top:50px;left:0;z-index:9999;background:orange;color:white;padding:20px;font-size:16px;font-family:monospace;pointer-events:none;';
-            errDiv.innerText = 'UNHANDLED_PROMISE: ' + (e.reason ? (e.reason.message || e.reason) : 'Unknown');
-            document.body.appendChild(errDiv);
-        });
+        // Dev-mode error overlay (auto-dismissed in production)
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+            window.addEventListener('error', function (e) {
+                const errDiv = document.createElement('div');
+                errDiv.style.cssText = 'position:fixed;top:0;left:0;z-index:9999;background:#cc0000;color:white;padding:12px 20px;font-size:14px;font-family:monospace;pointer-events:none;max-width:100%;word-break:break-all;';
+                errDiv.innerText = 'JS_ERR: ' + e.message + ' (Line ' + e.lineno + ')';
+                document.body.appendChild(errDiv);
+                setTimeout(() => errDiv.remove(), 8000);
+            });
+            window.addEventListener('unhandledrejection', function (e) {
+                const errDiv = document.createElement('div');
+                errDiv.style.cssText = 'position:fixed;top:50px;left:0;z-index:9999;background:#c87000;color:white;padding:12px 20px;font-size:14px;font-family:monospace;pointer-events:none;max-width:100%;word-break:break-all;';
+                errDiv.innerText = 'PROMISE_ERR: ' + (e.reason ? (e.reason.message || String(e.reason)) : 'Unknown');
+                document.body.appendChild(errDiv);
+                setTimeout(() => errDiv.remove(), 8000);
+            });
+        }
         /* ──────────────────────────────────────────────────
            MORE — VANILLA JS APP
            ────────────────────────────────────────────────── */
@@ -3445,7 +3534,6 @@
         let fb = null;
         let currentUser = null;
         let isGuest = localStorage.getItem('more_guest') === 'true';
-        let isLoginMode = true;
         let currentFilter = 'all';
         let lastCompletedQuest = null;
 
@@ -3710,8 +3798,7 @@
         const headerWelcomeMsg = $('header-welcome-msg');
         const authSubtitle = $('auth-subtitle');
         const signupFields = $('signup-fields');
-        const emailGroup = $('email-group');
-        const passwordGroup = $('password-group');
+        // email/password auth refs (legacy, kept for compat)
         const authName = $('auth-name');
         const authSurname = $('auth-surname');
         const authUsername = $('auth-username');
@@ -4102,18 +4189,28 @@
             };
         }
 
+        function animateNumber(el, target, duration = 600) {
+            if (!el || typeof target !== 'number' || isNaN(target)) return;
+            const start = parseInt((el.textContent || '').replace(/[^0-9]/g, '')) || 0;
+            if (start === target) return;
+            const startTime = performance.now();
+            const diff = target - start;
+            function tick(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+                el.textContent = Math.round(start + diff * eased).toLocaleString('it-IT');
+                if (progress < 1) requestAnimationFrame(tick);
+                else el.textContent = target.toLocaleString('it-IT');
+            }
+            requestAnimationFrame(tick);
+        }
+
         function updateXPUI() {
             const info = getLevelInfo(state.xp);
-            xpDisplay.textContent = state.xp.toLocaleString('it-IT');
+            animateNumber(xpDisplay, state.xp);
 
-            // Responsive font-sizing for large XP
-            if (state.xp >= 1000000) {
-                xpDisplay.style.fontSize = '32px';
-            } else if (state.xp >= 100000) {
-                xpDisplay.style.fontSize = '40px';
-            } else {
-                xpDisplay.style.fontSize = ''; // Use CSS default clamp
-            }
+            // Responsive font-sizing handled via CSS clamp
 
             const unlocked = getUnlockedTitles();
             let highestDefault = 'Novice';
@@ -4124,7 +4221,7 @@
 
             if (info.nextLevelXP) {
                 const progress = ((state.xp - info.prevLevelXP) / (info.nextLevelXP - info.prevLevelXP)) * 100;
-                xpBar.style.width = Math.min(progress, 100) + '%';
+                requestAnimationFrame(() => { xpBar.style.width = Math.min(progress, 100) + '%'; });
                 const needed = info.nextLevelXP - info.prevLevelXP;
                 const current = state.xp - info.prevLevelXP;
                 xpLabel.textContent = `${current.toLocaleString('it-IT')} / ${needed.toLocaleString('it-IT')} XP al prossimo livello`;
@@ -4347,7 +4444,7 @@
                           <span class="completed-name" style="margin-right:0; line-height: 1.3;">${escapeHtml(q.title)}</span>
                       </div>
                       <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0;">
-                        <span class="completed-xp" style="margin-left:0;">+${q.xp.toLocaleString('it-IT')} XP</span>
+                        <span class="completed-xp" style="margin-left:0;">+${(q.xp || 0).toLocaleString('it-IT')} XP</span>
                         <button class="btn-ghost" onclick="promptQuestEdit(${realIndex})" style="padding:4px 8px; font-size:10px;">Modifica</button>
                       </div>
                   </div>
@@ -4355,8 +4452,6 @@
                 </li>`;
             }).join('')}</ul>`;
 
-            // Expose function globally for onclick
-            window.promptQuestEdit = promptQuestEdit;
         }
 
         /* ── SEASONAL HELPER ──────────────────────────────── */
@@ -4784,7 +4879,6 @@
         function updateSeasonalCarouselPos() {
             const track = $('seasonal-carousel-track');
             if (!track) return;
-            track.style.transition = 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
             track.style.transform = `translateX(-${seasonalIndex * 100}%)`;
         }
 
@@ -4804,7 +4898,7 @@
 
         function completeSeasonal(index, note = null, photo = null) {
             const q = currentSeasonalQuests[index];
-            state.xp += q.xp;
+            if (!q) return;
 
             const today = new Date();
             const todayStr = today.toISOString().split('T')[0];
@@ -4832,6 +4926,10 @@
 
             state.completed.push({ title: q.title, xp: q.xp, difficulty: q.difficulty, category: q.category, completedAt: today.toISOString(), note, photo });
 
+            // Recalculate XP from full history for consistency
+            state.xp = state.completed.reduce((s, c) => s + (Number(c.xp) || 0), 0)
+                + (state.bossCompleted || []).reduce((s, c) => s + (Number(c.xp) || 0), 0);
+
             // clear active quest if it happens to match (sanity check)
             if (state.currentQuest && state.currentQuest.title === q.title) {
                 state.currentQuest = null;
@@ -4857,7 +4955,7 @@
 
             modalXpText.textContent = `+ ${q.xp.toLocaleString('it-IT')} XP`;
             modalQuestName.textContent = q.title;
-            const hypes = window.HYPES || ['Leggendario!', 'Mitico!', 'Epico!'];
+            const hypes = HYPES;
             modalHype.textContent = hypes[Math.floor(Math.random() * hypes.length)];
             xpModal.classList.add('show');
         }
@@ -4866,6 +4964,7 @@
         btnNewQuest.addEventListener('click', generateQuest);
 
         function getFullPool() {
+            if (!window.QUESTS_POOL) return [];
             const custom = (state.customQuests || []).map(q => ({ ...q, isCustom: true }));
             return [...QUESTS_POOL, ...custom];
         }
@@ -4946,13 +5045,17 @@
             state.currentQuestGeneratedAt = Date.now();
             saveState();
             renderActiveQuest();
+            if (document.getElementById('home-screen').style.display !== 'none') {
+                homeScreen.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
 
         /* ── QUEST COMPLETION ─────────────────────────────── */
         function completeQuest(note = null, photo = null) {
             if (!state.currentQuest) return;
             const q = state.currentQuest;
-            state.xp += q.xp;
+            if (!state.bossCompleted) state.bossCompleted = [];
+            if (!state.completed) state.completed = [];
             const today = new Date();
 
             if (q.isBoss) {
@@ -4961,6 +5064,10 @@
                 state.questsSinceBoss = (state.questsSinceBoss || 0) + 1;
                 state.completed.push({ title: q.title, xp: q.xp, difficulty: q.difficulty, category: q.category, completedAt: today.toISOString(), note, photo });
             }
+
+            // Recalculate XP from source of truth
+            state.xp = state.completed.reduce((s, c) => s + (Number(c.xp) || 0), 0)
+                + state.bossCompleted.reduce((s, c) => s + (Number(c.xp) || 0), 0);
 
             const todayStr = today.toISOString().split('T')[0];
             const yesterday = new Date(today);
@@ -5003,10 +5110,10 @@
             }
 
             // Show XP modal
-            modalXpText.textContent = `+ ${q.xp.toLocaleString('it-IT')} XP`;
-            modalQuestName.textContent = q.title;
-            modalHype.textContent = HYPES[Math.floor(Math.random() * HYPES.length)];
-            xpModal.classList.add('show');
+            if (modalXpText) modalXpText.textContent = `+ ${(q.xp || 0).toLocaleString('it-IT')} XP`;
+            if (modalQuestName) modalQuestName.textContent = q.title || '';
+            if (modalHype) modalHype.textContent = HYPES[Math.floor(Math.random() * HYPES.length)];
+            if (xpModal) xpModal.classList.add('show');
 
             updateXPUI();
             renderCompleted();
@@ -5025,6 +5132,14 @@
             }
         }
 
+
+        function switchToScreen(screenEl) {
+            screenEl.style.display = screenEl.tagName === 'MAIN' ? 'flex' : 'block';
+            screenEl.classList.remove('tab-content-enter');
+            void screenEl.offsetWidth; // force reflow
+            screenEl.classList.add('tab-content-enter');
+        }
+
         /* ── NAVIGATION & REALTIME ────────────────────────── */
         let unsubscribeComparison = null;
 
@@ -5034,10 +5149,10 @@
             btnTabStats.classList.remove('active');
             btnSettings.classList.remove('active');
             btnTabProfile.classList.remove('active');
-            homeScreen.style.display = 'block';
             statsScreen.style.display = 'none';
             settingsScreen.style.display = 'none';
             myProfileScreen.style.display = 'none';
+            switchToScreen(homeScreen);
             if (unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
         });
 
@@ -5048,9 +5163,9 @@
             btnSettings.classList.remove('active');
             btnTabProfile.classList.remove('active');
             homeScreen.style.display = 'none';
-            statsScreen.style.display = 'flex';
             settingsScreen.style.display = 'none';
             myProfileScreen.style.display = 'none';
+            switchToScreen(statsScreen);
             renderStatsScreen();
             if (unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
         });
@@ -5066,7 +5181,7 @@
             homeScreen.style.display = 'none';
             statsScreen.style.display = 'none';
             settingsScreen.style.display = 'none';
-            myProfileScreen.style.display = 'flex';
+            switchToScreen(myProfileScreen);
 
             renderProfileScreen();
             // If we are on comparison tab, restart listener
@@ -5074,12 +5189,13 @@
         });
 
         function renderStatsScreen() {
-            statEasyCnt.textContent = state.stats.easy.count;
-            statEasyXp.textContent = state.stats.easy.totalXp.toLocaleString('it-IT');
-            statMedCnt.textContent = state.stats.medium.count;
-            statMedXp.textContent = state.stats.medium.totalXp.toLocaleString('it-IT');
-            statHardCnt.textContent = state.stats.hard.count;
-            statHardXp.textContent = state.stats.hard.totalXp.toLocaleString('it-IT');
+            const _stats = state.stats || { easy: { count: 0, totalXp: 0 }, medium: { count: 0, totalXp: 0 }, hard: { count: 0, totalXp: 0 } };
+            statEasyCnt.textContent = (_stats.easy || { count: 0 }).count || 0;
+            statEasyXp.textContent = ((_stats.easy || { totalXp: 0 }).totalXp || 0).toLocaleString('it-IT');
+            statMedCnt.textContent = (_stats.medium || { count: 0 }).count || 0;
+            statMedXp.textContent = ((_stats.medium || { totalXp: 0 }).totalXp || 0).toLocaleString('it-IT');
+            statHardCnt.textContent = (_stats.hard || { count: 0 }).count || 0;
+            statHardXp.textContent = ((_stats.hard || { totalXp: 0 }).totalXp || 0).toLocaleString('it-IT');
 
             if (state.questTimestamps && state.questTimestamps.length > 1) {
                 const sorted = [...state.questTimestamps].sort((a, b) => a - b);
@@ -5094,7 +5210,6 @@
                 avgTime.textContent = `Media: --ore tra le quest`;
             }
 
-            xpGraph.innerHTML = '';
             const historyMap = {};
             if (state.xpHistory) {
                 state.xpHistory.forEach(h => { historyMap[h.date] = h.xp; });
@@ -5104,25 +5219,28 @@
             const currentDayOfWeek = today.getDay();
             const totalDaysToRender = (15 * 7) + (currentDayOfWeek + 1);
 
-            let html = '';
+            const frag = document.createDocumentFragment();
             for (let i = totalDaysToRender - 1; i >= 0; i--) {
                 const d = new Date(today);
                 d.setDate(d.getDate() - i);
                 const dStr = d.toISOString().split('T')[0];
                 const xp = historyMap[dStr] || 0;
-
-                let colorClass = '';
-                if (xp > 0 && xp < 1000) colorClass = 'style="background: rgba(79,163,255,0.4);"';
-                else if (xp >= 1000 && xp < 2000) colorClass = 'style="background: #4fa3ff;"';
-                else if (xp >= 2000 && xp < 5000) colorClass = 'style="background: #ffb347;"';
-                else if (xp >= 5000) colorClass = 'style="background: #ff4f4f;"';
-
-                html += `<div class="xp-cell" ${colorClass} title="${dStr}: ${xp} XP"></div>`;
+                const cell = document.createElement('div');
+                cell.className = 'xp-cell';
+                cell.title = `${dStr}: ${xp} XP`;
+                if (xp > 0 && xp < 1000) cell.style.background = 'rgba(79,163,255,0.4)';
+                else if (xp >= 1000 && xp < 2000) cell.style.background = '#4fa3ff';
+                else if (xp >= 2000 && xp < 5000) cell.style.background = '#ffb347';
+                else if (xp >= 5000) cell.style.background = '#ff4f4f';
+                frag.appendChild(cell);
             }
-            xpGraph.innerHTML = html;
+            xpGraph.innerHTML = '';
+            xpGraph.appendChild(frag);
 
-            const wrapper = document.querySelector('.xp-graph-wrapper');
-            if (wrapper) wrapper.scrollLeft = wrapper.scrollWidth;
+            requestAnimationFrame(() => {
+                const wrapper = document.querySelector('.xp-graph-wrapper');
+                if (wrapper) wrapper.scrollLeft = wrapper.scrollWidth;
+            });
         }
 
         /* ── ACHIEVEMENT LOGIC ────────────────────────────────── */
@@ -5206,7 +5324,7 @@
             // Ensure baseline data
             if (!state.avatarColor && state.username) {
                 const hue = stringHashCode(state.username) % 360;
-                state.avatarColor = `hsl(${hue}, 60%, 40%)`;
+                state.avatarColor = `hsl(${hue},60%,45%)`;
                 saveState();
             } else if (!state.avatarColor) {
                 state.avatarColor = `hsl(0, 0%, 20%)`; // Placeholder
@@ -5218,7 +5336,7 @@
             const cleanUsername = state.username ? state.username.replace(/^@+/, '') : '';
             const username = cleanUsername ? `@${cleanUsername}` : "@nessun_username";
             const bio = state.bio || "";
-            const initial = cleanUsername ? cleanUsername.charAt(0).toUpperCase() : displayName.charAt(0).toUpperCase();
+            const initial = (cleanUsername || displayName || 'U').charAt(0).toUpperCase();
 
             // Render Recent Quests 
             let recentHTML = '<div class="quest-empty"><svg><use href="#ico-sword"/></svg>Nessuna quest recente</div>';
@@ -5336,7 +5454,13 @@
 
                 const targetId = target.getAttribute('data-target');
                 document.querySelectorAll('.profile-sub-section').forEach(sec => sec.style.display = 'none');
-                $('sub-' + targetId).style.display = 'block';
+                const targetSec = $('sub-' + targetId);
+                if (targetSec) {
+                    targetSec.style.display = 'block';
+                    targetSec.classList.remove('tab-content-enter');
+                    void targetSec.offsetWidth;
+                    targetSec.classList.add('tab-content-enter');
+                }
 
                 if (targetId === 'confronto') renderConfrontoTab();
                 if (targetId === 'salvati') renderSavedQuestsTab();
@@ -5351,7 +5475,7 @@
         });
 
         async function renderConfrontoTab() {
-            if (!currentUser || !fb) return;
+            if (!currentUser || !fb) { $('confronto-logged-view').innerHTML = '<div class="spinner"></div>'; return; }
             const subConfronto = $('confronto-logged-view');
 
             if (unsubscribeComparison) { unsubscribeComparison(); }
@@ -5737,7 +5861,7 @@
             homeScreen.style.display = 'none';
             statsScreen.style.display = 'none';
             myProfileScreen.style.display = 'none';
-            settingsScreen.style.display = 'flex';
+            switchToScreen(settingsScreen);
         });
 
         const selectActiveTitle = $('select-active-title');
@@ -5854,7 +5978,7 @@
                 if (newUsername !== state.username && newUsername.length > 0) {
                     state.username = newUsername;
                     const hue = stringHashCode(state.username) % 360;
-                    state.avatarColor = `hsl(${hue}, 60 %, 40 %)`;
+                    state.avatarColor = `hsl(${hue},60%,45%)`;
                 } else if (newUsername.length > 0) {
                     state.username = newUsername;
                 }
@@ -5911,7 +6035,8 @@
         /* ── TOAST ────────────────────────────────────────── */
         let toastTimer = null;
         function showToast(msg) {
-            toast.textContent = msg;
+            if (!toast || !msg) return;
+            toast.textContent = String(msg);
             toast.classList.add('show');
             clearTimeout(toastTimer);
             toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
@@ -5922,6 +6047,63 @@
             const div = document.createElement('div');
             div.textContent = str;
             return div.innerHTML;
+        }
+
+
+        /* ── PUBLIC PROFILE QUICK VIEW ────────────────────── */
+        function showPublicProfile(userData) {
+            const screen = document.getElementById('profile-screen');
+            if (!screen || !userData) return;
+            const cleanUsername = (userData.username || 'utente').replace(/^@+/, '');
+            const totalQuests = userData.completed ? userData.completed.length : 0;
+            const streak = userData.streak || 0;
+
+            let recentHTML = '<div class="quest-empty" style="font-size:13px;">Nessuna attività recente</div>';
+            if (userData.completed && userData.completed.length > 0) {
+                const recent = [...userData.completed]
+                    .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt))
+                    .slice(0, 5);
+                recentHTML = '<ul class="completed-list" style="margin-top:0;">';
+                recent.forEach(q => {
+                    const diffDot = `dot-${q.difficulty || 'easy'}`;
+                    recentHTML += `<li class="completed-item" style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                        <div class="completed-dot ${diffDot}" style="margin-top:0;"></div>
+                        <div style="flex:1;">
+                            <div class="completed-name" style="font-size:13px;font-weight:700;">${escapeHtml(q.title)}</div>
+                            <div style="font-size:11px;color:var(--text-dim);">+${(q.xp || 0).toLocaleString('it-IT')} XP</div>
+                        </div>
+                    </li>`;
+                });
+                recentHTML += '</ul>';
+            }
+
+            const pInfo = getLevelInfo(userData.xp || 0);
+            const initial = cleanUsername.charAt(0).toUpperCase() || '?';
+            const avatarBg = userData.avatarColor || '#333';
+
+            screen.innerHTML = `
+                <div style="width:100%;max-width:400px;margin:auto;background:rgba(18,18,28,0.98);border:1px solid var(--border-light);border-radius:var(--radius);padding:24px;position:relative;max-height:90vh;overflow-y:auto;">
+                    <button class="btn-icon" onclick="document.getElementById('profile-screen').classList.remove('show')" style="position:absolute;top:12px;right:12px;">
+                        <svg style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;">
+                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                    <div style="text-align:center;margin-bottom:24px;">
+                        <div style="width:72px;height:72px;border-radius:50%;background:${avatarBg};margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:28px;color:#fff;">${initial}</div>
+                        <div style="font-family:var(--font-display);font-weight:800;font-size:20px;margin-bottom:4px;">${escapeHtml(userData.displayName || cleanUsername)}</div>
+                        <div style="color:var(--text-dim);font-size:14px;margin-bottom:12px;">@${escapeHtml(cleanUsername)}</div>
+                        <div class="xp-level-badge" style="margin-bottom:12px;"><svg><use href="#ico-crown"/></svg>LVL ${pInfo.level} &middot; ${pInfo.name.toUpperCase()}</div>
+                        ${userData.bio ? `<div style="font-size:14px;background:rgba(255,255,255,0.03);padding:12px;border-radius:12px;font-style:italic;">"${escapeHtml(userData.bio)}"</div>` : ''}
+                    </div>
+                    <div class="xp-card" style="display:flex;justify-content:space-around;padding:16px;margin-bottom:24px;">
+                        <div style="text-align:center;"><div style="font-family:var(--font-display);font-weight:800;font-size:18px;color:var(--accent);">${(userData.xp || 0).toLocaleString('it-IT')}</div><div style="font-size:10px;text-transform:uppercase;color:var(--text-dim);font-weight:700;">XP</div></div>
+                        <div style="text-align:center;"><div style="font-family:var(--font-display);font-weight:800;font-size:18px;">${totalQuests}</div><div style="font-size:10px;text-transform:uppercase;color:var(--text-dim);font-weight:700;">Quest</div></div>
+                        <div style="text-align:center;"><div style="font-family:var(--font-display);font-weight:800;font-size:18px;color:#ffb347;">${streak}</div><div style="font-size:10px;text-transform:uppercase;color:var(--text-dim);font-weight:700;">Streak</div></div>
+                    </div>
+                    <div class="section-title" style="font-size:14px;margin-bottom:12px;">Ultime Attività</div>
+                    ${recentHTML}
+                </div>`;
+            screen.classList.add('show');
         }
 
         /* ── DIFFICULTY FILTER ─────────────────────────────── */
@@ -5990,8 +6172,9 @@
             const challengeTitle = params.get('challenge');
             const fromUser = params.get('from');
             if (challengeTitle) {
-                const _decodedTitle = decodeURIComponent(challengeTitle);
-                const _decodedFrom = decodeURIComponent(fromUser || 'qualcuno');
+                let _decodedTitle, _decodedFrom;
+                try { _decodedTitle = decodeURIComponent(challengeTitle); } catch (e) { _decodedTitle = challengeTitle; }
+                try { _decodedFrom = decodeURIComponent(fromUser || 'qualcuno'); } catch (e) { _decodedFrom = 'qualcuno'; }
                 const pool = getFullPool();
                 const quest = pool.find(q => q.title === _decodedTitle);
 
@@ -6100,17 +6283,10 @@
             }
 
             // Date in bottom-right
-            const dateStr = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
             ctx.fillStyle = 'rgba(255,255,255,0.4)';
             ctx.font = '600 16px DM Sans, sans-serif';
             ctx.textAlign = 'right';
-            ctx.fillText(dateStr, 760, 570);
-            // Date bottom right
-            const _shareDate = new Date().toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            ctx.fillStyle = 'rgba(255,255,255,0.4)';
-            ctx.font = '600 16px DM Sans, sans-serif';
-            ctx.textAlign = 'right';
-            ctx.fillText(_shareDate, 760, 572);
+            ctx.fillText(new Date().toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' }), 760, 570);
             ctx.textAlign = 'left';
 
             // Bottom border
@@ -6180,9 +6356,12 @@
         }
         window.addEventListener('hashchange', checkProfileRoute);
 
+        let _loadingProfileUid = null;
         async function loadPublicProfile(uid) {
+            if (!uid || _loadingProfileUid === uid) return;
+            _loadingProfileUid = uid;
             profileScreen.classList.add('show');
-            profileContent.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-dim);animation:fadeInScale 0.4s var(--spring);"><div class="spinner"></div>Caricamento...</div>';
+            profileContent.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-dim);"><div class="spinner"></div><div style="margin-top:8px;font-size:13px;">Caricamento...</div></div>';
 
             const checkFbReady = () => {
                 if (!fb) { setTimeout(checkFbReady, 100); return; }
@@ -6229,13 +6408,20 @@
 
         function closeProfile() {
             profileScreen.classList.remove('show');
+            _loadingProfileUid = null;
             location.hash = '';
         }
 
         /* ── INIT ─────────────────────────────────────────── */
         loadState();
         updateXPUI();
-        renderActiveQuest();
+
+        // Generate initial quest if needed (after pool is confirmed available)
+        if (!state.currentQuest && window.QUESTS_POOL && window.QUESTS_POOL.length > 0) {
+            generateQuest();
+        } else {
+            renderActiveQuest();
+        }
         renderCompleted();
         initSeasonalCarousel();
         initAuth();
@@ -6325,6 +6511,32 @@
             // Mostra dopo 1.5s per non interrompere il caricamento
             setTimeout(showInstallPrompt, 1500);
         })();
+
+
+        /* ── PAGE VISIBILITY: pause intervals when hidden ── */
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                if (window.dailyInterval) { clearInterval(window.dailyInterval); window.dailyInterval = null; }
+                if (window.seasonalInterval) { clearInterval(window.seasonalInterval); window.seasonalInterval = null; }
+            } else {
+                // Resume intervals on page focus
+                if (!window.dailyInterval) {
+                    window.dailyInterval = setInterval(updateDailyCountdown, 60000);
+                    updateDailyCountdown();
+                }
+                if (!window.seasonalInterval) {
+                    window.seasonalInterval = setInterval(updateSeasonalCountdown, 60000);
+                    updateSeasonalCountdown();
+                }
+                // Re-init daily quest in case date changed while page was hidden
+                const todayStr = new Date().toISOString().split('T')[0];
+                if (state.dailyCompleted && state.dailyCompleted.date !== todayStr) {
+                    state.dailyCompleted = null;
+                    saveLocal();
+                    initDailyQuest();
+                }
+            }
+        });
 
         /* ── SERVICE WORKER ──────────────────────────────── */
         if ('serviceWorker' in navigator) {
