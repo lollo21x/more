@@ -2322,6 +2322,220 @@
         .btn-send-cq:hover {
             background: rgba(200, 241, 53, 0.14);
         }
+
+        /* ── INSTALL PROMPT ───────────────────────────────── */
+        #install-prompt {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9990;
+            background: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            align-items: flex-end;
+            justify-content: center;
+            padding: 0 0 calc(20px + var(--safe-bottom));
+            opacity: 0;
+            transition: opacity 0.35s var(--ease);
+        }
+
+        #install-prompt.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .install-sheet {
+            background: rgba(18, 18, 28, 0.97);
+            border: 1px solid var(--border-light);
+            border-radius: 24px 24px 20px 20px;
+            padding: 28px 24px 24px;
+            max-width: 420px;
+            width: calc(100% - 32px);
+            position: relative;
+            transform: translateY(32px);
+            opacity: 0;
+            transition: transform 0.45s var(--spring), opacity 0.35s var(--ease);
+        }
+
+        #install-prompt.show .install-sheet {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .install-handle {
+            width: 36px;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.15);
+            margin: 0 auto 20px;
+        }
+
+        .install-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .install-app-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 1px solid var(--border-light);
+        }
+
+        .install-app-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .install-app-info h3 {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 20px;
+            letter-spacing: -0.3px;
+            margin-bottom: 4px;
+        }
+
+        .install-app-info p {
+            font-size: 13px;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        .install-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 24px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+        }
+
+        .install-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .install-step-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent-dim);
+            border: 1px solid rgba(200, 241, 53, 0.3);
+            color: var(--accent);
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .install-step-text {
+            font-size: 14px;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        .install-step-text strong {
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .install-step-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: -4px;
+            margin: 0 2px;
+        }
+
+        .install-step-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: var(--text);
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .install-cta {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-install-primary {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: #0a0a0f;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 14px;
+            border-radius: var(--radius-sm);
+            transition: transform 0.15s var(--spring), opacity 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            letter-spacing: 0.2px;
+        }
+
+        .btn-install-primary:active {
+            transform: scale(0.97);
+        }
+
+        .btn-install-primary svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: #0a0a0f;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .btn-install-dismiss {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            transition: color 0.15s;
+            text-align: center;
+        }
+
+        .btn-install-dismiss:hover {
+            color: var(--text-dim);
+        }
+
+        .install-os-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--accent);
+            background: var(--accent-dim);
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
     </style>
 </head>
 
@@ -2507,6 +2721,113 @@
             </symbol>
         </defs>
     </svg>
+
+    <!-- ────────── INSTALL PROMPT ────────── -->
+    <div id="install-prompt">
+        <div class="install-sheet">
+            <div class="install-handle"></div>
+
+            <div class="install-header">
+                <div class="install-app-icon">
+                    <img src="logo.png" alt="more">
+                </div>
+                <div class="install-app-info">
+                    <h3>Installa more</h3>
+                    <p>Aggiungila alla Home Screen per un'esperienza completa</p>
+                </div>
+            </div>
+
+            <!-- iOS instructions -->
+            <div id="install-ios" style="display:none;">
+                <div class="install-os-indicator">
+                    <svg style="width:12px;height:12px;fill:var(--accent);stroke:none;" viewBox="0 0 24 24">
+                        <path
+                            d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+                    </svg>
+                    iOS / iPadOS
+                </div>
+                <div class="install-steps">
+                    <div class="install-step">
+                        <div class="install-step-num">1</div>
+                        <div class="install-step-text">Tocca il tasto <strong>Condividi</strong>
+                            <span class="install-step-icon"><svg viewBox="0 0 24 24">
+                                    <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" />
+                                    <polyline points="16 6 12 2 8 6" />
+                                    <line x1="12" y1="2" x2="12" y2="15" />
+                                </svg></span>
+                            nella barra in basso di Safari
+                        </div>
+                    </div>
+                    <div class="install-step">
+                        <div class="install-step-num">2</div>
+                        <div class="install-step-text">Scorri e seleziona <strong>"Aggiungi a schermata Home"</strong>
+                        </div>
+                    </div>
+                    <div class="install-step">
+                        <div class="install-step-num">3</div>
+                        <div class="install-step-text">Tocca <strong>Aggiungi</strong> in alto a destra</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Android instructions -->
+            <div id="install-android" style="display:none;">
+                <div class="install-os-indicator">
+                    <svg style="width:12px;height:12px;fill:var(--accent);stroke:none;" viewBox="0 0 24 24">
+                        <path
+                            d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z" />
+                    </svg>
+                    Android
+                </div>
+                <div id="install-android-native" style="display:none;">
+                    <div class="install-steps" style="margin-bottom:16px;">
+                        <div class="install-step">
+                            <div class="install-step-num">1</div>
+                            <div class="install-step-text">Tocca <strong>"Installa"</strong> qui sotto — il browser ti
+                                chiederà conferma</div>
+                        </div>
+                    </div>
+                    <button class="btn-install-primary" id="btn-android-install">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        Installa app
+                    </button>
+                </div>
+                <div id="install-android-manual">
+                    <div class="install-steps">
+                        <div class="install-step">
+                            <div class="install-step-num">1</div>
+                            <div class="install-step-text">Tocca il menu
+                                <span class="install-step-icon"><svg viewBox="0 0 24 24">
+                                        <circle cx="12" cy="5" r="1" />
+                                        <circle cx="12" cy="12" r="1" />
+                                        <circle cx="12" cy="19" r="1" />
+                                    </svg></span>
+                                in alto a destra di Chrome
+                            </div>
+                        </div>
+                        <div class="install-step">
+                            <div class="install-step-num">2</div>
+                            <div class="install-step-text">Seleziona <strong>"Aggiungi a schermata Home"</strong> o
+                                <strong>"Installa app"</strong>
+                            </div>
+                        </div>
+                        <div class="install-step">
+                            <div class="install-step-num">3</div>
+                            <div class="install-step-text">Conferma toccando <strong>Installa</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="install-cta">
+                <button class="btn-install-dismiss" id="btn-install-dismiss">Non ora, continua nel browser</button>
+            </div>
+        </div>
+    </div>
 
     <!-- ────────── MAIN SCREEN ────────── -->
     <div id="main-screen">
@@ -3529,7 +3850,8 @@
                                 const localT = state.updatedAt || 0;
 
                                 // Merge solo se i dati cloud sono più recenti
-                                if (cloudT > localT) {
+                                // NON sovrascrivere se l'XP cloud è minore di quello locale (evita rollback post-completamento)
+                                if (cloudT > localT && (cloud.xp ?? 0) >= state.xp) {
                                     state = {
                                         ...state,
                                         xp: cloud.xp ?? state.xp,
@@ -4182,9 +4504,8 @@
             });
 
             // Ricalcolo totale di tutto l'XP recuperando eventuali salvataggi e Boss
-            const baseXP = state.completed.reduce((sum, c) => sum + (Number(c.xp) || 0), 0);
-            const bossXP = state.bossCompleted.reduce((sum, c) => sum + (Number(c.xp) || 0), 0);
-            state.xp = baseXP + bossXP;
+            // Incremento diretto, coerente con completeQuest e completeSeasonal
+            state.xp += totalXp;
 
             let todayHistory = state.xpHistory.find(h => h.date === todayStr);
             if (todayHistory) todayHistory.xp = (todayHistory.xp || 0) + totalXp;
@@ -4196,16 +4517,15 @@
             }
 
             lastCompletedQuest = { ...q, xp: totalXp, _isDaily: true };
-            saveState(); // salva prima di tutto
+            saveState();
             updateXPUI();
             renderCompleted();
-            initDailyQuest();
             checkAchievements();
+            initDailyQuest();
 
             modalXpText.textContent = `+ ${totalXp.toLocaleString('it-IT')} XP`;
-            modalQuestName.textContent = q.title;
-            const _dHypes = window.HYPES || ['Leggendario!', 'Mitico!', 'Epico!', 'Fenomenale!'];
-            modalHype.textContent = _dHypes[Math.floor(Math.random() * _dHypes.length)];
+            modalQuestName.innerHTML = `${escapeHtml(q.title)}<br><span style="display:inline-block;margin-top:6px;font-size:11px;color:var(--accent);background:var(--accent-dim);padding:3px 12px;border-radius:20px;font-weight:800;letter-spacing:.5px;">✦ +500 XP BONUS GIORNALIERO</span>`;
+            modalHype.textContent = HYPES[Math.floor(Math.random() * HYPES.length)];
             xpModal.classList.add('show');
         }
 
@@ -4549,7 +4869,19 @@
             const custom = (state.customQuests || []).map(q => ({ ...q, isCustom: true }));
             return [...QUESTS_POOL, ...custom];
         }
-
+        function getTodaysDailyTitle() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            if (state.dailyCompleted && state.dailyCompleted.date === todayStr) return null;
+            const MULTI_DAY_KW = ['settimana', '7 giorni', 'sette giorni', '30 giorni', 'un mese', 'tre giorni', 'due giorni', '3 giorni', '2 giorni', '5 giorni', '10 giorni', 'due notti', 'tre notti', '48 ore', '72 ore', 'consecutiv'];
+            const dailyPool = getFullPool().filter(q => {
+                if (['winter', 'spring', 'summer', 'autumn', 'weekend'].includes(q.season) || q.difficulty === 'boss') return false;
+                const text = (q.title + ' ' + q.description).toLowerCase();
+                return !MULTI_DAY_KW.some(kw => text.includes(kw));
+            });
+            if (!dailyPool.length) return null;
+            const seed = parseInt(todayStr.replace(/-/g, ''));
+            return dailyPool[seed % dailyPool.length].title;
+        }
         function generateQuest() {
             if (state.questsSinceBoss >= 10) {
                 const bossAvailable = BOSS_QUESTS.filter(b => !state.bossCompleted.some(c => c.title === b.title));
@@ -5316,7 +5648,7 @@
                             </div>
                             <div style="display:flex; gap:8px;">
                                 <button class="btn-ghost" onclick="replyRequest('${req.id}', 'declined')" style="padding:6px; color:var(--diff-hard); border-color:rgba(255,79,79,0.3);"><svg style="width:16px;height:16px;stroke:currentColor;fill:none;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-                                <button class="btn-complete" onclick="replyRequest('${req.id}', 'accepted')" style="padding:6px;"><svg style="width:16px;height:16px;stroke:#0a0a0f;fill:none;stroke-width:3"><polyline points="20 6 9 17 4 12"></polyline></svg></button>
+                                <button class="btn-complete" onclick="replyRequest('${req.id}', 'accepted')" style="padding:6px;"><svg style="width:16px;height:16px;stroke:#0a0a0f;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><polyline points="4 12 9 17 20 6"></polyline></svg></button>
                             </div>
                         </div>
                         `;
@@ -5909,6 +6241,90 @@
         initAuth();
         initFilterBar();
         handleDeepLinks();
+
+        /* ── INSTALL PROMPT ──────────────────────────────── */
+        (function initInstallPrompt() {
+            // Non mostrare se: già installata come PWA, già ignorata, o non mobile
+            const STORAGE_KEY = 'more_install_dismissed';
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                || window.navigator.standalone === true;
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+            if (isStandalone || !isMobile || localStorage.getItem(STORAGE_KEY)) return;
+
+            const prompt = document.getElementById('install-prompt');
+            const iosEl = document.getElementById('install-ios');
+            const androidEl = document.getElementById('install-android');
+            const androidNative = document.getElementById('install-android-native');
+            const androidManual = document.getElementById('install-android-manual');
+            const dismissBtn = document.getElementById('btn-install-dismiss');
+            const androidInstallBtn = document.getElementById('btn-android-install');
+
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            const isAndroid = /Android/i.test(navigator.userAgent);
+
+            let deferredPrompt = null;
+
+            // Cattura evento beforeinstallprompt (Android/Chrome)
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                if (isAndroid || !isIOS) {
+                    androidNative.style.display = 'block';
+                    androidManual.style.display = 'none';
+                }
+            });
+
+            function showInstallPrompt() {
+                if (isIOS) {
+                    iosEl.style.display = 'block';
+                } else if (isAndroid) {
+                    androidEl.style.display = 'block';
+                    // Se non c'è il deferredPrompt, mostra istruzioni manuali
+                    if (!deferredPrompt) {
+                        androidNative.style.display = 'none';
+                        androidManual.style.display = 'block';
+                    }
+                } else {
+                    return; // Desktop: non mostrare
+                }
+
+                prompt.style.display = 'flex';
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        prompt.classList.add('show');
+                    });
+                });
+            }
+
+            function dismissPrompt() {
+                prompt.classList.remove('show');
+                localStorage.setItem(STORAGE_KEY, '1');
+                setTimeout(() => { prompt.style.display = 'none'; }, 400);
+            }
+
+            // Dismiss
+            if (dismissBtn) dismissBtn.addEventListener('click', dismissPrompt);
+            prompt.addEventListener('click', (e) => {
+                if (e.target === prompt) dismissPrompt();
+            });
+
+            // Pulsante installa nativo Android
+            if (androidInstallBtn) {
+                androidInstallBtn.addEventListener('click', async () => {
+                    if (!deferredPrompt) return;
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    deferredPrompt = null;
+                    if (outcome === 'accepted') {
+                        dismissPrompt();
+                    }
+                });
+            }
+
+            // Mostra dopo 1.5s per non interrompere il caricamento
+            setTimeout(showInstallPrompt, 1500);
+        })();
 
         /* ── SERVICE WORKER ──────────────────────────────── */
         if ('serviceWorker' in navigator) {
