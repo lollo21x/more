@@ -5133,8 +5133,16 @@
         }
 
 
+        const SCREEN_DISPLAY = {
+            'home-screen': 'block',
+            'stats-screen': 'flex',
+            'settings-screen': 'flex',
+            'my-profile-screen': 'flex',
+        };
+
         function switchToScreen(screenEl) {
-            screenEl.style.display = screenEl.tagName === 'MAIN' ? 'flex' : 'block';
+            const displayType = SCREEN_DISPLAY[screenEl.id] || 'block';
+            screenEl.style.display = displayType;
             screenEl.classList.remove('tab-content-enter');
             void screenEl.offsetWidth; // force reflow
             screenEl.classList.add('tab-content-enter');
