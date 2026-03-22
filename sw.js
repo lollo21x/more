@@ -27,7 +27,9 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+    if (event.request.method !== 'GET') return;
     const url = new URL(event.request.url);
+    if (!url.protocol.startsWith('http')) return;
 
     // Network-first for HTML (always get latest app)
     if (event.request.mode === 'navigate' || url.pathname.endsWith('.html')) {
