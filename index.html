@@ -146,7 +146,8 @@
         #main-screen {
             display: flex;
             flex-direction: column;
-            min-height: 100dvh;
+            height: 100dvh;
+            overflow: hidden;
             position: relative;
             z-index: 1;
         }
@@ -188,9 +189,6 @@
             transform: scale(0.92)
         }
 
-        .btn-icon:hover {
-            background: var(--surface-hover)
-        }
 
         .btn-icon svg {
             width: 20px;
@@ -403,9 +401,6 @@
             transform: scale(0.96)
         }
 
-        .btn-ghost:hover {
-            background: var(--accent-dim)
-        }
 
         .btn-ghost.disabled {
             opacity: 0.4;
@@ -717,9 +712,6 @@
             transition: border-color 0.2s;
         }
 
-        .completed-item:hover {
-            border-color: var(--border-light);
-        }
 
         .completed-item:last-child {
             border-bottom: 1px solid var(--border);
@@ -871,9 +863,6 @@
             transform: scale(0.96)
         }
 
-        .btn-modal-close:hover {
-            background: rgba(255, 255, 255, 0.1)
-        }
 
         /* ── SETTINGS SHEET ───────────────────────────────── */
         .sheet-overlay {
@@ -977,9 +966,7 @@
             background: rgba(255, 79, 79, 0.06);
         }
 
-        .btn-sheet-danger:hover {
-            background: rgba(255, 79, 79, 0.1)
-        }
+
 
         /* ── TOAST ────────────────────────────────────────── */
         .toast {
@@ -1312,9 +1299,7 @@
             border: 1px solid var(--border);
         }
 
-        .btn-sheet-ghost:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
+
 
         /* ── STATS SCREEN ─────────────────────────────────── */
         #stats-screen {
@@ -1626,9 +1611,7 @@
             transform: scale(0.95);
         }
 
-        .btn-quest-action:hover {
-            background: var(--surface-hover);
-        }
+
 
         .btn-quest-action svg {
             width: 14px;
@@ -2088,12 +2071,7 @@
             flex-shrink: 0;
         }
 
-        @media (hover: hover) {
-            .btn-complete:hover {
-                background: #d4f548;
-                box-shadow: 0 4px 14px rgba(200, 241, 53, 0.4);
-            }
-        }
+        @media (hover: hover) {}
 
         .btn-complete.disabled {
             opacity: 0.4;
@@ -2107,10 +2085,7 @@
             border: 1px solid var(--border-light);
         }
 
-        .btn-ghost:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text);
-        }
+
 
         .btn-ghost.disabled {
             opacity: 0.4;
@@ -2135,9 +2110,7 @@
             border: 1px solid rgba(255, 79, 79, 0.25);
         }
 
-        .btn-sheet-danger:hover {
-            background: rgba(255, 79, 79, 0.13);
-        }
+
 
         /* Variante NEUTRAL — per modal close / share */
         .btn-modal-close {
@@ -2146,9 +2119,7 @@
             border: 1px solid var(--border-light);
         }
 
-        .btn-modal-close:hover {
-            background: rgba(255, 255, 255, 0.11);
-        }
+
 
         .btn-share {
             background: var(--accent-dim);
@@ -2156,9 +2127,7 @@
             border: 1px solid rgba(200, 241, 53, 0.25);
         }
 
-        .btn-share:hover {
-            background: rgba(200, 241, 53, 0.18);
-        }
+
 
         .btn-share svg {
             width: 14px;
@@ -2179,10 +2148,7 @@
             font-weight: 600;
         }
 
-        .btn-quest-action:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--text);
-        }
+
 
         .btn-quest-action svg {
             width: 14px;
@@ -2205,9 +2171,7 @@
             font-size: 14px;
         }
 
-        .btn-sheet:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
+
 
         /* ── FIX: quest actions layout mobile ── */
         .quest-actions {
@@ -2252,9 +2216,7 @@
             transition: border-color 0.2s;
         }
 
-        .completed-item:hover {
-            border-color: var(--border-light);
-        }
+
 
         .completed-item:last-child {
             border-bottom: 1px solid var(--border);
@@ -2288,9 +2250,7 @@
             transition: background .15s;
         }
 
-        .btn-send-cq:hover {
-            background: rgba(200, 241, 53, 0.14);
-        }
+
 
         /* ── INSTALL PROMPT ───────────────────────────────── */
         #install-prompt {
@@ -2487,9 +2447,7 @@
             text-align: center;
         }
 
-        .btn-install-dismiss:hover {
-            color: var(--text-dim);
-        }
+
 
         .install-os-indicator {
             display: inline-flex;
@@ -3156,12 +3114,22 @@
                 </div>
             </div>
             <div class="stats-card" style="margin-top: 12px; background: transparent; border: none; padding: 0;">
-                <div class="sheet-actions">
+                <div class="sheet-actions" style="display:flex; flex-direction:column; gap:8px;">
                     <button class="btn-sheet" id="btn-logout"
                         style="display: none; background: rgba(255, 255, 255, 0.1);">Disconnetti</button>
                     <button class="btn-sheet btn-sheet-ghost" id="btn-login-prompt" style="display: none;">Accedi per
                         salvare</button>
-                    <button class="btn-sheet btn-sheet-danger" id="btn-reset">Reset progressi locali</button>
+
+                    <button class="btn-sheet btn-sheet-ghost" id="btn-backup-local">Salva progressi locali</button>
+                    <label class="btn-sheet btn-sheet-ghost" style="text-align: center; cursor:pointer;"
+                        id="btn-restore-local-label">
+                        Riprendi progressi
+                        <input type="file" id="input-restore-local" accept=".json" style="display:none;">
+                    </label>
+
+                    <button class="btn-sheet" id="btn-reset"
+                        style="background: rgba(255, 79, 79, 0.1); border: 1px solid rgba(255, 79, 79, 0.2); color: var(--diff-hard);">Reset
+                        progressi locali</button>
                 </div>
             </div>
         </main>
@@ -3312,13 +3280,15 @@
             <textarea id="review-note" maxlength="500" placeholder="Scrivi una nota (opzionale)..."
                 style="width:100%; height:80px; padding:12px; border-radius:var(--radius); border:2px solid var(--border); background:rgba(0,0,0,0.2); color:var(--text); font-family:var(--font); margin-bottom:12px; resize:none;"></textarea>
 
-            <div style="display:flex; justify-content:center; margin-bottom:16px;">
+            <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-bottom:16px;">
                 <label for="review-photo-upload" class="btn-ghost"
                     style="cursor:pointer; display:flex; align-items:center; gap:8px; border-color:var(--accent); color:var(--accent);">
                     <svg style="width:16px;height:16px;stroke:var(--accent);fill:none;">
                         <use href="#ico-plus" />
                     </svg> <span style="font-weight: 800;">Aggiungi/cambia foto</span>
                 </label>
+                <button class="btn-ghost" id="btn-remove-photo"
+                    style="display:none; padding:8px 12px; border-color:var(--diff-hard); color:var(--diff-hard);">Rimuovi</button>
                 <input type="file" id="review-photo-upload" accept="image/*" capture="environment"
                     style="display:none;">
             </div>
@@ -3407,6 +3377,94 @@
             <div class="confirm-btns">
                 <button class="btn-cancel" id="btn-confirm-cancel">Annulla</button>
                 <button class="btn-confirm-danger" id="btn-confirm-reset">Conferma</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ────────── UPDATE PROMPT ────────── -->
+    <div id="update-prompt" style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        align-items: flex-end;
+        justify-content: center;
+        padding: 0 0 calc(16px + var(--safe-bottom));
+        opacity: 0;
+        transition: opacity 0.3s var(--ease);
+    ">
+        <div id="update-sheet" style="
+            background: rgba(18,18,28,0.97);
+            border: 1px solid var(--border-light);
+            border-radius: 24px 24px 20px 20px;
+            padding: 28px 24px 24px;
+            max-width: 420px;
+            width: calc(100% - 32px);
+            transform: translateY(40px);
+            opacity: 0;
+            transition: transform 0.45s var(--spring), opacity 0.35s var(--ease);
+        ">
+            <div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);margin:0 auto 20px;">
+            </div>
+
+            <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+                <div
+                    style="width:48px;height:48px;border-radius:14px;background:var(--accent-dim);border:1px solid rgba(200,241,53,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg
+                        style="width:24px;height:24px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <polyline points="1 20 1 14 7 14"></polyline>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div style="font-family:var(--font-display);font-weight:800;font-size:18px;margin-bottom:3px;">
+                        Aggiornamento disponibile</div>
+                    <div style="color:var(--text-dim);font-size:13px;line-height:1.4;">Una nuova versione di <strong
+                            style="color:var(--text);">more</strong> è pronta.</div>
+                </div>
+            </div>
+
+            <div
+                style="background:rgba(200,241,53,0.04);border:1px solid rgba(200,241,53,0.12);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:20px;display:flex;align-items:flex-start;gap:10px;">
+                <svg style="width:14px;height:14px;fill:var(--accent);flex-shrink:0;margin-top:1px;"
+                    viewBox="0 0 24 24">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                </svg>
+                <div style="font-size:12px;color:var(--text-dim);line-height:1.5;">
+                    L'aggiornamento avviene in-app: <strong style="color:var(--text);">non perderai i progressi né
+                        l'account.</strong> L'app si riavvierà automaticamente.
+                </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <button id="btn-update-confirm" style="
+                    width:100%;padding:14px;
+                    background:var(--accent);color:#0a0a0f;
+                    font-family:var(--font-display);font-weight:800;font-size:14px;
+                    border-radius:var(--radius-sm);border:none;cursor:pointer;
+                    display:flex;align-items:center;justify-content:center;gap:8px;
+                    transition:transform 0.15s var(--spring);
+                ">
+                    <svg
+                        style="width:16px;height:16px;stroke:#0a0a0f;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <polyline points="1 20 1 14 7 14"></polyline>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                    </svg>
+                    Aggiorna ora
+                </button>
+                <button id="btn-update-dismiss" style="
+                    width:100%;padding:12px;
+                    background:transparent;color:var(--text-muted);
+                    font-size:13px;font-weight:600;
+                    border:none;cursor:pointer;border-radius:var(--radius-sm);
+                    transition:color 0.15s;
+                ">Ricordamelo tra una settimana</button>
             </div>
         </div>
     </div>
@@ -3536,6 +3594,8 @@
         let isGuest = localStorage.getItem('more_guest') === 'true';
         let currentFilter = 'all';
         let lastCompletedQuest = null;
+
+        let cloudLoadedOnce = false;
 
         let state = {
             xp: 0,
@@ -3719,6 +3779,8 @@
 
         function syncToFirestore() {
             if (!currentUser || !navigator.onLine || !fb) return;
+            // Safety: never push empty state to cloud before loading cloud data
+            if (!cloudLoadedOnce && state.xp === 0 && (!state.completed || state.completed.length === 0)) return;
             const pureState = sanitizeForFirestore(state);
             fb.setDoc(fb.doc(fb.db, 'more_users', currentUser.uid), pureState, { merge: true })
                 .catch(e => console.error("Sync error:", e));
@@ -3818,6 +3880,55 @@
         const btnLogout = $('btn-logout');
         const btnLoginPrompt = $('btn-login-prompt');
         const btnReset = $('btn-reset');
+        const btnBackupLocal = $('btn-backup-local');
+        const inputRestoreLocal = $('input-restore-local');
+
+        /* ── LOCAL BACKUP & RESTORE ───────────────────────── */
+        btnBackupLocal.addEventListener('click', () => {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "more_backup.json");
+            document.body.appendChild(downloadAnchorNode); // required for firefox
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            showToast('Progressi salvati!');
+        });
+
+        inputRestoreLocal.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (evt) {
+                try {
+                    const parsedState = JSON.parse(evt.target.result);
+                    if (parsedState && typeof parsedState === 'object') {
+                        // Merge the parsed state
+                        Object.assign(state, parsedState);
+                        // Make sure cloudLoadedOnce allows the new local state to sync
+                        state.updatedAt = Date.now();
+                        saveLocal();
+                        syncToFirestore();
+
+                        // Force UI refresh
+                        updateXPUI();
+                        renderActiveQuest();
+                        renderCompleted();
+                        computeLocalStats();
+                        initDailyQuest();
+
+                        showToast('Progressi ripristinati con successo!');
+                        openSettings(); // refresh settings view
+                    } else {
+                        showToast('File non valido');
+                    }
+                } catch (err) {
+                    showToast('Errore lettura file JSON');
+                }
+            };
+            reader.readAsText(file);
+            inputRestoreLocal.value = ''; // reset
+        });
 
 
         /* ── AUTH LOGIC ───────────────────────────────────── */
@@ -3889,10 +4000,11 @@
                 renderCompleted();
                 initSeasonalCarousel();
                 initDailyQuest();
-            } else if (localT >= cloudT) {
-                // If local is newer OR EQUAL (like right after login with Guest data), push it
+            } else if (localT >= cloudT && cloudLoadedOnce) {
+                // If local is newer OR EQUAL, push it — but ONLY if we've loaded cloud once already
                 syncToFirestore();
             }
+            cloudLoadedOnce = true;
 
             let display = 'Utente';
             if (cloudState && cloudState.username) display = cloudState.username;
@@ -3938,7 +4050,7 @@
 
                                 // Merge solo se i dati cloud sono più recenti
                                 // NON sovrascrivere se l'XP cloud è minore di quello locale (evita rollback post-completamento)
-                                if (cloudT > localT && (cloud.xp ?? 0) >= state.xp) {
+                                if (cloudT > localT) {
                                     state = {
                                         ...state,
                                         xp: cloud.xp ?? state.xp,
@@ -4520,7 +4632,8 @@
 
             // Generate daily using deterministic seed — exclude multi-day quests
             const MULTI_DAY_KW = ['settimana', '7 giorni', 'sette giorni', '30 giorni', 'un mese', 'trenta giorni', 'tre giorni', 'due giorni', '3 giorni', '2 giorni', '5 giorni', '10 giorni', 'due notti', 'tre notti', '48 ore', '72 ore', 'ogni giorno per', 'ogni mattina per', 'consecutiv', 'per una settimana', 'per un mese', 'per 7', 'per 30', 'per tre', 'per due'];
-            const pool = getFullPool().filter(q => {
+            const globalPool = window.QUESTS_POOL || [];
+            const pool = globalPool.filter(q => {
                 if (['winter', 'spring', 'summer', 'autumn', 'weekend'].includes(q.season) || q.difficulty === 'boss') return false;
                 const text = (q.title + ' ' + q.description).toLowerCase();
                 return !MULTI_DAY_KW.some(kw => text.includes(kw));
@@ -4651,6 +4764,7 @@
             }
             $('review-photo-upload').value = '';
             currentPhotoBase64 = null;
+            if ($('btn-remove-photo')) $('btn-remove-photo').style.display = 'none';
 
             // Setup buttons
             $('btn-review-delete').style.display = 'none';
@@ -4674,10 +4788,12 @@
                 previewEl.src = q.photo;
                 previewEl.style.display = 'block';
                 currentPhotoBase64 = q.photo;
+                if ($('btn-remove-photo')) $('btn-remove-photo').style.display = 'block';
             } else {
                 previewEl.style.display = 'none';
                 previewEl.src = '';
                 currentPhotoBase64 = null;
+                if ($('btn-remove-photo')) $('btn-remove-photo').style.display = 'none';
             }
 
             $('review-photo-upload').value = '';
@@ -4782,9 +4898,22 @@
             }
         });
 
+        $('btn-remove-photo')?.addEventListener('click', () => {
+            currentPhotoBase64 = null;
+            $('review-photo-preview').style.display = 'none';
+            $('review-photo-preview').src = '';
+            $('btn-remove-photo').style.display = 'none';
+            $('review-photo-upload').value = '';
+        });
+
         $('review-photo-upload')?.addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                showToast('Formato foto non supportato');
+                $('review-photo-upload').value = '';
+                return;
+            }
             const reader = new FileReader();
             reader.onload = function (event) {
                 const img = new Image();
@@ -4808,6 +4937,7 @@
                         preview.src = b64;
                         preview.style.display = 'block';
                     }
+                    if ($('btn-remove-photo')) $('btn-remove-photo').style.display = 'flex';
                 };
                 img.src = event.target.result;
             };
@@ -4972,7 +5102,8 @@
             const todayStr = new Date().toISOString().split('T')[0];
             if (state.dailyCompleted && state.dailyCompleted.date === todayStr) return null;
             const MULTI_DAY_KW = ['settimana', '7 giorni', 'sette giorni', '30 giorni', 'un mese', 'tre giorni', 'due giorni', '3 giorni', '2 giorni', '5 giorni', '10 giorni', 'due notti', 'tre notti', '48 ore', '72 ore', 'consecutiv'];
-            const dailyPool = getFullPool().filter(q => {
+            const globalPool = window.QUESTS_POOL || [];
+            const dailyPool = globalPool.filter(q => {
                 if (['winter', 'spring', 'summer', 'autumn', 'weekend'].includes(q.season) || q.difficulty === 'boss') return false;
                 const text = (q.title + ' ' + q.description).toLowerCase();
                 return !MULTI_DAY_KW.some(kw => text.includes(kw));
@@ -5938,11 +6069,25 @@
                         <div class="custom-quest-item">
                         <span class="cq-title">${escapeHtml(cq.title)}</span>
                         <div style="display:flex; gap:6px;">
+                            <button class="btn-use-cq" data-idx="${i}" style="font-size:11px; padding:4px 10px; border:1px solid var(--accent); color:var(--accent); background:none; border-radius:var(--radius-sm); cursor:pointer;">Usa</button>
                             <button class="btn-send-cq" data-idx="${i}" style="font-size:11px; padding:4px 10px; border:1px solid var(--accent); color:var(--accent); background:none; border-radius:var(--radius-sm); cursor:pointer;">Invia</button>
                             <button class="btn-delete-cq" data-idx="${i}">Elimina</button>
                         </div>
                     </div>
                             `).join('');
+                customQuestList.querySelectorAll('.btn-use-cq').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const idx = parseInt(btn.dataset.idx);
+                        const cq = state.customQuests[idx];
+                        if (cq) {
+                            state.currentQuest = cq;
+                            saveLocal();
+                            renderActiveQuest();
+                            btnHome.click(); // navigate back to home
+                            showToast('Quest impostata come attiva');
+                        }
+                    });
+                });
                 customQuestList.querySelectorAll('.btn-send-cq').forEach(btn => {
                     btn.addEventListener('click', () => {
                         const idx = parseInt(btn.dataset.idx);
@@ -6211,8 +6356,8 @@
                     generateQuest();
                 });
 
-                // Clear URL params
-                history.replaceState(null, '', location.pathname);
+                // Clear URL params but keep hash
+                history.replaceState(null, '', location.pathname + location.hash);
             }
             // Handle profile route
             checkProfileRoute();
@@ -6389,21 +6534,48 @@
                     const cleanU = (data.username || 'U').replace(/^@+/, '');
                     const initial = cleanU[0].toUpperCase();
                     const last5 = (data.completed || []).slice(-5).reverse();
+
+                    let recentHTML = '<div class="quest-empty" style="font-size:13px;">Nessuna attività recente</div>';
+                    if (last5.length > 0) {
+                        recentHTML = '<ul class="completed-list" style="margin-top:0;">' + last5.map(q => {
+                            const diffDot = `dot-${q.difficulty || 'easy'}`;
+                            return `<li class="completed-item" style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                                <div class="completed-dot ${diffDot}" style="margin-top:0;"></div>
+                                <div style="flex:1;">
+                                    <div class="completed-name" style="font-size:13px;font-weight:700;">${escapeHtml(q.title)}</div>
+                                    <div style="font-size:11px;color:var(--text-dim);">+${(q.xp || 0).toLocaleString('it-IT')} XP</div>
+                                </div>
+                            </li>`;
+                        }).join('') + '</ul>';
+                    }
+
+                    const avatarBg = data.avatarColor || '#333';
+                    const streak = data.streak || 0;
+                    const totalQuests = (data.completed || []).length;
+
                     profileContent.innerHTML = `
-                        <div class="profile-card">
-                            <div class="profile-avatar">${initial}</div>
-                            <div class="profile-username">@${escapeHtml(cleanU)}</div>
-                            <div class="profile-level">LVL ${pInfo.level} · ${pInfo.name.toUpperCase()}</div>
-                            <div class="profile-stat-row">
-                                <div class="profile-stat"><div class="profile-stat-val">${(data.xp || 0).toLocaleString('it-IT')}</div><div class="profile-stat-label">XP</div></div>
-                                <div class="profile-stat"><div class="profile-stat-val">${data.streak || 0}</div><div class="profile-stat-label">Streak</div></div>
-                                <div class="profile-stat"><div class="profile-stat-val">${(data.completed || []).length}</div><div class="profile-stat-label">Quest</div></div>
+                        <div style="width:100%;max-width:400px;margin:auto;display:flex;flex-direction:column;gap:16px;">
+                            <div style="background:rgba(18,18,28,0.98);border:1px solid var(--border-light);border-radius:var(--radius);padding:24px;text-align:center;">
+                                <div style="width:72px;height:72px;border-radius:50%;background:${avatarBg};margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:28px;color:#fff;">${initial}</div>
+                                <div style="font-family:var(--font-display);font-weight:800;font-size:20px;margin-bottom:4px;">${escapeHtml(data.displayName || cleanU)}</div>
+                                <div style="color:var(--text-dim);font-size:14px;margin-bottom:12px;">@${escapeHtml(cleanU)}</div>
+                                <div class="xp-level-badge" style="margin-bottom:12px;"><svg><use href="#ico-crown"/></svg>LVL ${pInfo.level} &middot; ${pInfo.name.toUpperCase()}</div>
+                                ${data.bio ? `<div style="font-size:14px;background:rgba(255,255,255,0.03);padding:12px;border-radius:12px;font-style:italic;">"${escapeHtml(data.bio)}"</div>` : ''}
                             </div>
-                            ${last5.length > 0 ? `<div class="profile-quests-title">Ultime quest</div>
-                            <ul class="completed-list">${last5.map(q => `<li class="completed-item"><span class="completed-dot"></span><span class="completed-name">${escapeHtml(q.title)}</span></li>`).join('')}</ul>` : ''
-                        }
+                            
+                            <div class="xp-card" style="display:flex;justify-content:space-around;padding:16px;margin-bottom:0;">
+                                <div style="text-align:center;"><div style="font-family:var(--font-display);font-weight:800;font-size:18px;color:var(--accent);">${(data.xp || 0).toLocaleString('it-IT')}</div><div style="font-size:10px;text-transform:uppercase;color:var(--text-dim);font-weight:700;">XP</div></div>
+                                <div style="text-align:center;"><div style="font-family:var(--font-display);font-weight:800;font-size:18px;">${totalQuests}</div><div style="font-size:10px;text-transform:uppercase;color:var(--text-dim);font-weight:700;">Quest</div></div>
+                                <div style="text-align:center;"><div style="font-family:var(--font-display);font-weight:800;font-size:18px;color:#ffb347;">${streak}</div><div style="font-size:10px;text-transform:uppercase;color:var(--text-dim);font-weight:700;">Streak</div></div>
+                            </div>
+                            
+                            <div style="background:rgba(18,18,28,0.98);border:1px solid var(--border-light);border-radius:var(--radius);padding:20px;">
+                                <div class="section-title" style="font-size:14px;margin-bottom:12px;">Ultime Attività</div>
+                                ${recentHTML}
+                            </div>
+
+                            <button id="btn-close-profile" style="width:100%; justify-content:center; padding:16px; font-size:15px; background:var(--surface-hover); color:var(--text); border:1px solid var(--border); border-radius:var(--radius-sm); font-weight:800; letter-spacing:0.5px;">Indietro</button>
                         </div>
-                        <button class="btn-profile-close" id="btn-close-profile">Chiudi</button>
                     `;
                     $('btn-close-profile').addEventListener('click', closeProfile);
                 }).catch(err => {
@@ -6552,7 +6724,98 @@
                 navigator.serviceWorker.register('./sw.js')
                     .then(reg => console.log('SW Registered', reg))
                     .catch(err => console.log('SW Error', err));
+
+                // GitHub Update Notifier Check
+                setTimeout(checkForUpdates, 4000);
             });
+        }
+
+        function checkForUpdates() {
+            try {
+                const ignoredUntil = localStorage.getItem('more_update_ignored');
+                if (ignoredUntil && Date.now() < parseInt(ignoredUntil)) return;
+
+                fetch('https://api.github.com/repos/lollo21x/more/commits/main')
+                    .then(res => { if (!res.ok) throw new Error('rate limit or network'); return res.json(); })
+                    .then(data => {
+                        const latestSha = data.sha;
+                        if (!latestSha) return;
+                        const currentSha = localStorage.getItem('more_current_sha');
+
+                        if (!currentSha) {
+                            // Prima visita: salva SHA di riferimento, non mostrare nulla
+                            localStorage.setItem('more_current_sha', latestSha);
+                            return;
+                        }
+
+                        if (latestSha === currentSha) return; // Già aggiornato
+
+                        // Mostra il popup
+                        const prompt = $('update-prompt');
+                        const sheet = $('update-sheet');
+                        if (!prompt || !sheet) return;
+
+                        prompt.style.display = 'flex';
+                        requestAnimationFrame(() => requestAnimationFrame(() => {
+                            prompt.style.opacity = '1';
+                            sheet.style.transform = 'translateY(0)';
+                            sheet.style.opacity = '1';
+                        }));
+
+                        function hidePrompt() {
+                            prompt.style.opacity = '0';
+                            sheet.style.transform = 'translateY(40px)';
+                            sheet.style.opacity = '0';
+                            setTimeout(() => { prompt.style.display = 'none'; }, 400);
+                        }
+
+                        // Dismiss: ricorda tra 7 giorni
+                        $('btn-update-dismiss').onclick = () => {
+                            hidePrompt();
+                            localStorage.setItem('more_update_ignored', Date.now() + 7 * 24 * 60 * 60 * 1000);
+                        };
+
+                        // Click fuori per chiudere (= dismiss)
+                        prompt.onclick = (e) => {
+                            if (e.target === prompt) {
+                                hidePrompt();
+                                localStorage.setItem('more_update_ignored', Date.now() + 7 * 24 * 60 * 60 * 1000);
+                            }
+                        };
+
+                        // Aggiorna
+                        $('btn-update-confirm').onclick = async () => {
+                            const btn = $('btn-update-confirm');
+                            if (btn) {
+                                btn.innerHTML = '<div class="spinner" style="width:20px;height:20px;margin:0;border-width:2px;"></div>';
+                                btn.style.pointerEvents = 'none';
+                            }
+
+                            // Salva subito il nuovo SHA per non rimostrare il popup
+                            localStorage.setItem('more_current_sha', latestSha);
+                            localStorage.removeItem('more_update_ignored');
+
+                            // Pulizia cache: NON tocca localStorage (progressi + account salvi)
+                            try {
+                                if ('caches' in window) {
+                                    const keys = await caches.keys();
+                                    await Promise.all(keys.map(k => caches.delete(k)));
+                                }
+                                if ('serviceWorker' in navigator) {
+                                    const regs = await navigator.serviceWorker.getRegistrations();
+                                    await Promise.all(regs.map(r => r.unregister()));
+                                }
+                            } catch (e) {
+                                console.warn('Cache clear parziale:', e);
+                            }
+
+                            window.location.reload();
+                        };
+                    })
+                    .catch(err => console.log('Update check skipped:', err));
+            } catch (e) {
+                console.error('Update logic error:', e);
+            }
         }
     </script>
 </body>
