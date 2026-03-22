@@ -256,6 +256,19 @@
             z-index: 300;
         }
 
+        /* ── FIX: safe area fill below tab bar (iOS PWA) ── */
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--safe-bottom, 0px);
+            background: rgba(10, 10, 15, 0.65);
+            z-index: 299;
+            pointer-events: none;
+        }
+
         .tab-btn {
             display: flex;
             flex-direction: column;
