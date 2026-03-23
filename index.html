@@ -247,11 +247,13 @@
             left: 0;
             right: 0;
             height: calc(64px + var(--safe-bottom));
-            /* Il fix per iOS: ingloba la safe area nell'altezza */
+            /* Il trucco che avevi nel file vecchio */
             background: rgba(10, 10, 15, 0.65);
+            /* Ripristinato il blur originale */
             backdrop-filter: blur(30px) saturate(180%);
             -webkit-backdrop-filter: blur(30px) saturate(180%);
             display: flex;
+            /* Ripristinato il flex come prima */
             justify-content: space-around;
             align-items: center;
             padding-bottom: var(--safe-bottom);
