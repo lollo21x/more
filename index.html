@@ -89,8 +89,9 @@
             font-family: var(--font-body);
             background: var(--bg);
             color: var(--text);
-            height: 100%;
-            overflow: hidden;
+            min-height: 100%;
+            overflow-x: hidden;
+            overscroll-behavior: none;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
@@ -148,15 +149,16 @@
         #main-screen {
             display: flex;
             flex-direction: column;
-            position: fixed;
-            inset: 0;
-            overflow: hidden;
+            min-height: 100dvh;
+            position: relative;
             z-index: 1;
         }
 
         .header {
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            right: 0;
             z-index: 100;
             display: flex;
             align-items: center;
@@ -232,72 +234,59 @@
 
         .content {
             flex: 1;
-            padding: 20px 20px calc(112px + var(--safe-bottom));
+            padding: 20px;
+            padding-top: calc(60px + var(--safe-top) + 20px);
+            padding-bottom: calc(84px + var(--safe-bottom));
             -webkit-overflow-scrolling: touch;
             overflow-y: auto;
             overflow-x: hidden;
             animation: fadeInScale 0.4s var(--spring);
             overflow-anchor: none;
+            overscroll-behavior-y: none;
+            touch-action: pan-y;
         }
 
-        /* ── BOTTOM BAR PWA ───────────────────────────────────── */
-        .pwa-bottom-bar {
+        /* ── TAB BAR ───────────────────────────────────────── */
+        .tab-bar {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             height: calc(64px + var(--safe-bottom));
-            /* Il trucco che avevi nel file vecchio */
             background: rgba(10, 10, 15, 0.65);
-            /* Ripristinato il blur originale */
             backdrop-filter: blur(30px) saturate(180%);
             -webkit-backdrop-filter: blur(30px) saturate(180%);
             display: flex;
-            /* Ripristinato il flex come prima */
             justify-content: space-around;
             align-items: center;
             padding-bottom: var(--safe-bottom);
-            /* Spinge i bottoni sopra la linea di iOS */
             z-index: 300;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            isolation: isolate;
         }
 
-        .pwa-tab {
+        .tab-btn {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             color: var(--text-dim);
-            background: transparent;
-            border: none;
             transition: color 0.2s, transform 0.1s;
-            -webkit-tap-highlight-color: transparent;
-            width: 100%;
-            height: 100%;
         }
 
-        .pwa-tab:active {
+        .tab-btn:active {
             transform: scale(0.92);
         }
 
-        .pwa-tab.active {
+        .tab-btn.active {
             color: var(--accent);
         }
 
-        .pwa-tab svg {
+        .tab-btn svg {
             width: 28px;
             height: 28px;
             stroke: currentColor;
             fill: none;
             stroke-width: 2;
-        }
-
-        /* ── FIX AGGIUNTIVO PER IL BODY ────────────────────────── */
-        html,
-        body {
-            height: 100%;
-            background: #0a0a0f;
-            overscroll-behavior-y: none;
         }
 
         /* ── XP CARD ──────────────────────────────────────── */
@@ -2016,14 +2005,14 @@
         /* ── FIX: bottoni coperti dalla navbar ── */
         #sub-profilo,
         .profile-sub-section {
-            padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important;
+            padding-bottom: calc(84px + var(--safe-bottom)) !important;
             overflow-y: auto;
             min-height: 0;
         }
 
         /* ── FIX: Settings non coperta dalla navbar ── */
         #settings-screen {
-            padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important;
+            padding-bottom: calc(84px + var(--safe-bottom)) !important;
         }
 
         /* ── Carousel: transizione fluida ── */
@@ -3249,23 +3238,23 @@
 
 
         <!-- TAB BAR -->
-        <nav class="pwa-bottom-bar" aria-label="Navigazione principale">
-            <button class="pwa-tab active" id="btn-home" aria-label="Home" title="Home">
+        <nav class="tab-bar">
+            <button class="tab-btn active" id="btn-home">
                 <svg>
                     <use href="#ico-home" />
                 </svg>
             </button>
-            <button class="pwa-tab" id="btn-tab-stats" aria-label="Statistiche" title="Statistiche">
+            <button class="tab-btn" id="btn-tab-stats">
                 <svg>
                     <use href="#ico-chart" />
                 </svg>
             </button>
-            <button class="pwa-tab" id="btn-tab-quests" aria-label="Impostazioni" title="Impostazioni">
+            <button class="tab-btn" id="btn-tab-quests" title="Impostazioni">
                 <svg>
                     <use href="#ico-settings" />
                 </svg>
             </button>
-            <button class="pwa-tab" id="btn-tab-profile" aria-label="Profilo" title="Profilo">
+            <button class="tab-btn" id="btn-tab-profile" title="Profilo">
                 <svg>
                     <use href="#ico-user" />
                 </svg>
