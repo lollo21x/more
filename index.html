@@ -241,60 +241,74 @@
             overflow-anchor: none;
         }
 
-        /* ── TAB BAR ───────────────────────────────────────── */
-        .tab-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            /* Sfondo leggermente più trasparente per esaltare l'effetto vetro */
-            background: rgba(10, 10, 15, 0.85);
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
+        /* ── TAB BAR RIFATTA DA ZERO (Forzata al fondo) ───────────────── */
 
-            /* Usa un padding per iOS e azzera il bottom, così il background-blur ricopre anche il fondo */
-            padding-top: 10px;
-            padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-            z-index: 300;
+        .tab-bar {
+            /* Posizionamento assoluto incollato ai bordi */
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
+
+            /* Box model per evitare fuoriuscite */
+            box-sizing: border-box !important;
+            z-index: 9999 !important;
+
+            /* Layout interno */
+            display: flex !important;
+            justify-content: space-around !important;
+            align-items: center !important;
+
+            /* Effetto Vetro (Blur) esteso su tutta l'area */
+            background: rgba(10, 10, 15, 0.75) !important;
+            backdrop-filter: blur(20px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+
+            /* Padding: si espande fino al limite fisico dello schermo (safe-area) */
+            padding-top: 16px !important;
+            padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
         }
+
+        /* Distruggiamo qualsiasi pseudo-elemento che creava il blocco nero inutile */
+        .tab-bar::before,
+        .tab-bar::after {
+            display: none !important;
+            content: none !important;
+        }
+
+        /* ── STILE PULSANTI E ICONE ───────────────────────────────────── */
 
         .tab-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-dim);
-            transition: color 0.2s var(--ease), transform 0.1s var(--spring);
-            /* Ingrandiamo leggermente l'area touch per comodità */
-            padding: 6px 16px;
-            border-radius: 12px;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .tab-btn:active {
-            transform: scale(0.92);
-            background: rgba(255, 255, 255, 0.05);
-            /* Feedback rapido sul touch in stile iOS */
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: var(--text-dim) !important;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 20px !important;
+            transition: color 0.2s ease, transform 0.2s ease !important;
+            -webkit-tap-highlight-color: transparent !important;
+            outline: none !important;
+            cursor: pointer !important;
         }
 
         .tab-btn.active {
-            color: var(--accent);
+            color: var(--accent) !important;
+            transform: scale(1.1) !important;
         }
 
         .tab-btn svg {
-            width: 26px;
-            /* 26px dona un look più premium */
-            height: 26px;
-            stroke: currentColor;
-            fill: none;
-            stroke-width: 2.2;
-            /* Dà peso alle icone in modo che stacchino */
-            stroke-linecap: round;
-            stroke-linejoin: round;
+            width: 26px !important;
+            height: 26px !important;
+            stroke: currentColor !important;
+            fill: none !important;
+            stroke-width: 2.2 !important;
+            stroke-linecap: round !important;
+            stroke-linejoin: round !important;
         }
 
         /* ── XP CARD ──────────────────────────────────────── */
