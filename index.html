@@ -232,8 +232,7 @@
 
         .content {
             flex: 1;
-            padding: 20px;
-            padding-bottom: calc(24px + var(--safe-bottom));
+            padding: 20px 20px calc(112px + var(--safe-bottom));
             -webkit-overflow-scrolling: touch;
             overflow-y: auto;
             overflow-x: hidden;
@@ -243,15 +242,18 @@
 
         /* ── BOTTOM BAR PWA ───────────────────────────────────── */
         .pwa-bottom-bar {
-            position: relative;
-            z-index: 20;
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 220;
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
             align-items: center;
             gap: 0;
             width: 100%;
             margin: 0;
-            padding: 10px 12px calc(10px + var(--safe-bottom));
+            padding: 10px 12px 8px;
             background: rgba(10, 10, 15, 0.82);
             backdrop-filter: blur(24px) saturate(160%);
             -webkit-backdrop-filter: blur(24px) saturate(160%);
@@ -259,6 +261,7 @@
             box-shadow: 0 -12px 34px rgba(0, 0, 0, 0.34);
             isolation: isolate;
             transform: translateZ(0);
+            contain: paint;
         }
 
         .pwa-bottom-bar::before {
@@ -266,8 +269,21 @@
             position: absolute;
             inset: 0;
             pointer-events: none;
-            background: linear-gradient(to top, rgba(200, 241, 53, 0.06), transparent 55%);
-            opacity: 0.7;
+            background: linear-gradient(to top, rgba(200, 241, 53, 0.06), transparent 60%);
+            opacity: 0.72;
+        }
+
+        .pwa-bottom-bar::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 6px;
+            width: 118px;
+            height: 4px;
+            transform: translateX(-50%);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            pointer-events: none;
         }
 
         .pwa-tab {
@@ -276,7 +292,7 @@
             display: grid;
             place-items: center;
             width: calc(100% - 8px);
-            height: 48px;
+            height: 52px;
             margin: 0 4px;
             border: 1px solid transparent;
             border-radius: 16px;
