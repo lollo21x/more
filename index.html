@@ -241,47 +241,51 @@
             overflow-anchor: none;
         }
 
-        /* ── TAB BAR RIFATTA DA ZERO (Forzata al fondo) ───────────────── */
-
+        /* ── TAB BAR DEFINITIVA (Full Fix iOS/Android) ───────────────── */
         .tab-bar {
-            /* Posizionamento assoluto incollato ai bordi */
+            /* Posizionamento assoluto al fondo */
             position: fixed !important;
             bottom: 0 !important;
             left: 0 !important;
             right: 0 !important;
             width: 100% !important;
-            margin: 0 !important;
 
-            /* Box model per evitare fuoriuscite */
-            box-sizing: border-box !important;
-            z-index: 9999 !important;
+            /* Design: Blur e Trasparenza */
+            background: rgba(10, 10, 15, 0.75) !important; /* Leggermente più trasparente per il blur */
+            backdrop-filter: blur(25px) saturate(160%) !important;
+            -webkit-backdrop-filter: blur(25px) saturate(160%) !important;
 
-            /* Layout interno */
+            /* Bordi e Ombre */
+            border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3) !important;
+
+            /* Layout icone */
             display: flex !important;
             justify-content: space-around !important;
             align-items: center !important;
+            z-index: 9999 !important;
 
-            /* Effetto Vetro (Blur) esteso su tutta l'area */
-            background: rgba(10, 10, 15, 0.75) !important;
-            backdrop-filter: blur(20px) saturate(180%) !important;
-            -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-            border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+            /* PADDING CRITICO: risolve il bug dello spazio vuoto */
+            padding-top: 12px !important;
+            /* Usa la safe-area di iOS come padding interno, non come margine esterno */
+            padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
 
-            /* Padding: si espande fino al limite fisico dello schermo (safe-area) */
-            padding-top: 16px !important;
-            padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+            /* Reset di potenziali conflitti */
+            margin: 0 !important;
+            height: auto !important;
+            transform: none !important;
         }
 
-        /* Distruggiamo qualsiasi pseudo-elemento che creava il blocco nero inutile */
+        /* Forza la sparizione di vecchi "tappi" o barre nere */
         .tab-bar::before,
         .tab-bar::after {
             display: none !important;
             content: none !important;
         }
 
-        /* ── STILE PULSANTI E ICONE ───────────────────────────────────── */
-
+        /* ── PULSANTI E ICONE ───────────────────────────────────── */
         .tab-btn {
+            flex: 1 !important;
             display: flex !important;
             flex-direction: column !important;
             align-items: center !important;
@@ -289,16 +293,15 @@
             color: var(--text-dim) !important;
             background: transparent !important;
             border: none !important;
-            padding: 0 20px !important;
-            transition: color 0.2s ease, transform 0.2s ease !important;
+            padding: 8px 0 !important;
+            transition: color 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
             -webkit-tap-highlight-color: transparent !important;
-            outline: none !important;
-            cursor: pointer !important;
         }
 
         .tab-btn.active {
             color: var(--accent) !important;
-            transform: scale(1.1) !important;
+            /* Effetto "pop" discreto sull'icona attiva */
+            transform: scale(1.1) translateY(-2px) !important;
         }
 
         .tab-btn svg {
@@ -307,8 +310,14 @@
             stroke: currentColor !important;
             fill: none !important;
             stroke-width: 2.2 !important;
-            stroke-linecap: round !important;
-            stroke-linejoin: round !important;
+        }
+
+        /* ── FIX AGGIUNTIVO PER IL BODY ────────────────────────── */
+        /* Per assicurarci che la PWA non lasci "buchi" quando si scrolla */
+        html, body {
+            height: 100dvh !important; /* Dynamic Viewport Height per iOS */
+            background: #0a0a0f !important;
+            overscroll-behavior-y: none !important; /* Evita il rimbalzo gommoso che mostra il fondo */
         }
 
         /* ── XP CARD ──────────────────────────────────────── */
