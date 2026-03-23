@@ -233,7 +233,7 @@
         .content {
             flex: 1;
             padding: 20px;
-            padding-bottom: calc(84px + var(--safe-bottom));
+            padding-bottom: calc(54px + var(--safe-bottom));
             -webkit-overflow-scrolling: touch;
             overflow-y: auto;
             overflow-x: hidden;
@@ -262,17 +262,19 @@
             /* Layout icone */
             display: flex !important;
             justify-content: space-around !important;
-            align-items: center !important;
+            align-items: flex-end !important;
             z-index: 9999 !important;
 
             /* PADDING CRITICO: risolve il bug dello spazio vuoto */
             padding-top: 12px !important;
-            /* Usa la safe-area di iOS come padding interno, non come margine esterno */
-            padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+            /* Usa SOLO la safe-area come padding interno (niente padding "doppio" extra) */
+            padding-bottom: 0px !important;
+
+            /* Altezza totale = zona icone + safe-area (evita strip vuoto sotto le icone) */
+            height: calc(54px + env(safe-area-inset-bottom, 0px)) !important;
 
             /* Reset di potenziali conflitti */
             margin: 0 !important;
-            height: auto !important;
             transform: none !important;
         }
 
@@ -1342,7 +1344,7 @@
             flex-direction: column;
             flex: 1;
             padding: 20px;
-            padding-bottom: calc(84px + var(--safe-bottom));
+            padding-bottom: calc(54px + var(--safe-bottom));
             -webkit-overflow-scrolling: touch;
             overflow-y: auto;
         }
