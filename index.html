@@ -237,6 +237,7 @@
             overflow-y: auto;
             overflow-x: hidden;
             animation: fadeInScale 0.4s var(--spring);
+            overflow-anchor: none;
         }
 
         /* ── TAB BAR ───────────────────────────────────────── */
@@ -245,14 +246,14 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: calc(64px + var(--safe-bottom));
-            background: rgba(10, 10, 15, 0.65);
+            background: rgba(10, 10, 15, 0.88);
             backdrop-filter: blur(30px) saturate(180%);
             -webkit-backdrop-filter: blur(30px) saturate(180%);
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding-bottom: var(--safe-bottom);
+            padding-top: 10px;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
             z-index: 300;
         }
 
@@ -1975,6 +1976,10 @@
         }
 
         /* ── FIX: spazio vuoto sopra le tab nel profilo (mobile) ── */
+        .header.tab-profile-active {
+            display: none !important;
+        }
+
         #my-profile-screen {
             padding-top: 0 !important;
         }
@@ -5303,6 +5308,7 @@
 
         btnHome.addEventListener('click', () => {
             homeScreen.scrollTo({ top: 0, behavior: 'smooth' });
+            document.querySelector('.header').classList.remove('tab-profile-active');
             btnHome.classList.add('active');
             btnTabStats.classList.remove('active');
             btnSettings.classList.remove('active');
@@ -5316,6 +5322,7 @@
 
         btnTabStats.addEventListener('click', () => {
             statsScreen.scrollTo({ top: 0, behavior: 'smooth' });
+            document.querySelector('.header').classList.remove('tab-profile-active');
             btnHome.classList.remove('active');
             btnTabStats.classList.add('active');
             btnSettings.classList.remove('active');
@@ -5340,6 +5347,7 @@
             statsScreen.style.display = 'none';
             settingsScreen.style.display = 'none';
             switchToScreen(myProfileScreen);
+            document.querySelector('.header').classList.add('tab-profile-active');
 
             renderProfileScreen();
             // If we are on comparison tab, restart listener
@@ -6010,7 +6018,7 @@
         /* ── SETTINGS / QUESTS ─────────────────────────────────────── */
         btnSettings.addEventListener('click', () => {
             openSettings();
-            homeScreen.scrollTo({ top: 0, behavior: 'smooth' });
+            document.querySelector('.header').classList.remove('tab-profile-active');
             btnHome.classList.remove('active');
             btnTabStats.classList.remove('active');
             btnTabProfile.classList.remove('active');
