@@ -247,28 +247,19 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(10, 10, 15, 0.95);
-            backdrop-filter: blur(30px) saturate(180%);
-            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            /* Sfondo leggermente più trasparente per esaltare l'effetto vetro */
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             justify-content: space-around;
             align-items: center;
+
+            /* Usa un padding per iOS e azzera il bottom, così il background-blur ricopre anche il fondo */
             padding-top: 10px;
             padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
             z-index: 300;
-        }
-
-        /* Riempie il gap sotto il home indicator iOS con lo stesso colore */
-        .tab-bar::before {
-            content: '';
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: env(safe-area-inset-bottom, 0px);
-            background: #0a0a0f;
-            z-index: -1;
-            pointer-events: none;
         }
 
         .tab-btn {
@@ -277,28 +268,33 @@
             align-items: center;
             justify-content: center;
             color: var(--text-dim);
-            transition: color 0.2s, transform 0.1s;
+            transition: color 0.2s var(--ease), transform 0.1s var(--spring);
+            /* Ingrandiamo leggermente l'area touch per comodità */
+            padding: 6px 16px;
+            border-radius: 12px;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .tab-btn:active {
             transform: scale(0.92);
+            background: rgba(255, 255, 255, 0.05);
+            /* Feedback rapido sul touch in stile iOS */
         }
 
         .tab-btn.active {
             color: var(--accent);
-            transition: color 0.2s var(--ease);
-        }
-
-        .tab-btn {
-            transition: color 0.2s var(--ease), transform 0.1s;
         }
 
         .tab-btn svg {
-            width: 28px;
-            height: 28px;
+            width: 26px;
+            /* 26px dona un look più premium */
+            height: 26px;
             stroke: currentColor;
             fill: none;
-            stroke-width: 2;
+            stroke-width: 2.2;
+            /* Dà peso alle icone in modo che stacchino */
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         /* ── XP CARD ──────────────────────────────────────── */
