@@ -80,9 +80,7 @@
 
         html {
             -webkit-text-size-adjust: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #0a0a0f;
+            height: 100%
         }
 
         body {
@@ -91,7 +89,6 @@
             color: var(--text);
             min-height: 100%;
             overflow-x: hidden;
-            overscroll-behavior: none;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
@@ -241,9 +238,6 @@
             overflow-y: auto;
             overflow-x: hidden;
             animation: fadeInScale 0.4s var(--spring);
-            overflow-anchor: none;
-            overscroll-behavior-y: none;
-            touch-action: pan-y;
         }
 
         /* ── TAB BAR ───────────────────────────────────────── */
@@ -261,7 +255,6 @@
             align-items: center;
             padding-bottom: var(--safe-bottom);
             z-index: 300;
-            isolation: isolate;
         }
 
         .tab-btn {
@@ -2005,14 +1998,14 @@
         /* ── FIX: bottoni coperti dalla navbar ── */
         #sub-profilo,
         .profile-sub-section {
-            padding-bottom: calc(84px + var(--safe-bottom)) !important;
+            padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important;
             overflow-y: auto;
             min-height: 0;
         }
 
         /* ── FIX: Settings non coperta dalla navbar ── */
         #settings-screen {
-            padding-bottom: calc(84px + var(--safe-bottom)) !important;
+            padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important;
         }
 
         /* ── Carousel: transizione fluida ── */
@@ -2511,7 +2504,6 @@
         .profile-sub-section,
         #settings-screen {
             -webkit-overflow-scrolling: touch;
-            overscroll-behavior-y: contain;
         }
 
         /* Prevent filter-bar from layout-thrashing */
@@ -2537,15 +2529,6 @@
             animation: tabFadeIn 0.22s var(--ease) forwards;
         }
 
-
-        /* ── PREVENT iOS DOUBLE-TAP ZOOM ────────────────── */
-        button,
-        a,
-        input,
-        select,
-        textarea {
-            touch-action: manipulation;
-        }
 
         /* Better tap highlight */
         * {
@@ -6831,6 +6814,8 @@
             }
         }
     </script>
+
+
 </body>
 
 </html>
