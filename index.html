@@ -18,7 +18,7 @@
     <link rel="apple-touch-icon" sizes="167x167" href="logo.png">
     <link rel="icon" href="logo.png">
     <link rel="manifest" href="manifest.json?v=4">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -2738,14 +2738,17 @@
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
             </symbol>
+            <!-- Star (streak) -->
+            <symbol id="ico-star" viewBox="0 0 24 24">
+                <polygon
+                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </symbol>
             <!-- Refresh -->
             <symbol id="ico-refresh" viewBox="0 0 24 24">
-                <polyline points="23 4 23 10 17 10"
-                    style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" />
-                <polyline points="1 20 1 14 7 14"
-                    style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" />
-                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
-                    style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" />
+                <polyline points="23 4 23 10 17 10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <polyline points="1 20 1 14 7 14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" />
             </symbol>
             <!-- Pen/Edit -->
             <symbol id="ico-pen" viewBox="0 0 24 24">
@@ -3404,12 +3407,7 @@
             <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
                 <div
                     style="width:48px;height:48px;border-radius:14px;background:var(--accent-dim);border:1px solid rgba(200,241,53,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <svg
-                        style="width:24px;height:24px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
+                    <i class="fa-solid fa-cloud-arrow-down" style="color: var(--accent); font-size: 24px;"></i>
                 </div>
                 <div>
                     <div style="font-family:var(--font-display);font-weight:800;font-size:18px;margin-bottom:3px;">
@@ -3441,12 +3439,7 @@
                     display:flex;align-items:center;justify-content:center;gap:8px;
                     transition:transform 0.15s var(--spring);
                 ">
-                    <svg
-                        style="width:16px;height:16px;stroke:#0a0a0f;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
+                    <i class="fa-solid fa-cloud-arrow-down" style="color: rgb(0, 0, 0); margin-right: 4px;"></i>
                     Aggiorna ora
                 </button>
                 <button id="btn-update-dismiss" style="
@@ -5395,7 +5388,7 @@
                 {
                     id: 'explorer',
                     name: 'Esploratore',
-                    icon: '#ico-diamond',
+                    icon: '#ico-crosshair',
                     color: '#4fa3ff',
                     unlocked: totalQuests >= 10
                 },
@@ -5409,7 +5402,7 @@
                 {
                     id: 'trophy_collector',
                     name: 'Collezionista',
-                    icon: '#ico-trophy',
+                    icon: '#ico-bookmark',
                     color: '#a3ff4f',
                     unlocked: totalQuests >= 50
                 },
@@ -5423,14 +5416,14 @@
                 {
                     id: 'centurion',
                     name: 'Centurione',
-                    icon: '#ico-sword',
+                    icon: '#ico-user',
                     color: '#ff4f4f',
                     unlocked: totalQuests >= 250
                 },
                 {
                     id: 'streak_week',
                     name: 'Costanza',
-                    icon: '#ico-flame',
+                    icon: '#ico-star',
                     color: '#ffb347',
                     unlocked: streak >= 7
                 },
@@ -5451,7 +5444,7 @@
                 {
                     id: 'xp_master',
                     name: 'Leggenda',
-                    icon: '#ico-crown',
+                    icon: '#ico-trophy',
                     color: '#ffb347',
                     unlocked: totalXP >= 50000
                 },
@@ -5564,7 +5557,10 @@
                     ${getAchievementBadges().map(b => `
                         <div style="flex: 0 0 80px; text-align: center; opacity: ${b.unlocked ? 1 : 0.3}; filter: ${b.unlocked ? 'none' : 'grayscale(1)'}; transition: all 0.3s;">
                             <div style="width: 60px; height: 60px; border-radius: 50%; background: ${b.unlocked ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)'}; border: 2px solid ${b.unlocked ? b.color : 'rgba(255,255,255,0.1)'}; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center;">
-                                <svg style="width:30px;height:30px;stroke:${b.unlocked ? b.color : 'var(--text-muted)'};fill:none;"><use href="${b.icon}"/></svg>
+                                ${b.icon.startsWith('#')
+                    ? `<svg style="width:30px;height:30px;stroke:${b.unlocked ? b.color : 'var(--text-muted)'};fill:none;"><use href="${b.icon}"/></svg>`
+                    : `<i class="${b.icon}" style="font-size:24px; color:${b.unlocked ? b.color : 'var(--text-muted)'};"></i>`
+                }
                             </div>
                             <div style="font-size: 10px; font-weight: 700; color: ${b.unlocked ? 'var(--text)' : 'var(--text-dim)'}; line-height: 1.1;">${b.name}</div>
                         </div>
