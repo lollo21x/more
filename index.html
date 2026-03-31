@@ -3370,6 +3370,10 @@
                     <button class="btn-sheet" id="btn-reset"
                         style="background: rgba(255, 79, 79, 0.1); border: 1px solid rgba(255, 79, 79, 0.2); color: var(--diff-hard);">Reset
                         progressi locali</button>
+
+                    <div id="app-version-label"
+                        style="text-align: center; font-size: 11px; color: var(--text-dim); margin-top: 24px; font-family: var(--font-display); font-weight: 700; opacity: 0.5; text-transform: uppercase; letter-spacing: 1px;">
+                    </div>
                 </div>
             </div>
         </main>
@@ -6663,6 +6667,17 @@
         }
 
         function openSettings() {
+            // Get version from Service Worker
+            fetch('./sw.js')
+                .then(res => res.text())
+                .then(text => {
+                    const match = text.match(/CACHE_NAME\s*=\s*'([^']+)'/);
+                    if (match && match[1]) {
+                        const lbl = document.getElementById('app-version-label');
+                        if (lbl) lbl.textContent = match[1].replace('more-', 'more ');
+                    }
+                }).catch(() => { });
+
             const pool = getFullPool();
             const completedTitles = new Set(state.completed.map(c => c.title));
             const avail = pool.filter(q => !completedTitles.has(q.title)).length;
