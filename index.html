@@ -1298,20 +1298,7 @@
 
 
 
-        /* ── STATS SCREEN ─────────────────────────────────── */
-        #stats-screen {
-            display: none;
-            flex-direction: column;
-            flex: 1;
-            padding: 20px;
-            padding-bottom: calc(84px + var(--safe-bottom));
-            -webkit-overflow-scrolling: touch;
-            overflow-y: auto;
-        }
-
-        #stats-screen.show {
-            display: flex;
-        }
+        /* Removed redundant #stats-screen override to use .content padding */
 
         .streak-badge {
             display: inline-flex;
@@ -3218,7 +3205,7 @@
         </main>
 
         <!-- STATS SCREEN -->
-        <main class="content" id="stats-screen">
+        <main class="content" id="stats-screen" style="display: none; flex-direction: column; flex: 1;">
             <div class="stats-card">
                 <div class="stats-header">
                     <svg>
