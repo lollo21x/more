@@ -2564,6 +2564,243 @@
             content-visibility: auto;
             contain-intrinsic-size: 0 800px;
         }
+
+        /* ── QUEST CHAINS ─────────────────────────────────── */
+        .chains-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chain-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s var(--ease), box-shadow 0.3s;
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .chain-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--chain-color, var(--accent));
+            opacity: 0.8;
+        }
+
+        .chain-card:active {
+            transform: scale(0.985);
+        }
+
+        .chain-card.chain-completed {
+            border-color: rgba(200, 241, 53, 0.25);
+            background: rgba(200, 241, 53, 0.04);
+        }
+
+        .chain-card.chain-completed::before {
+            background: var(--accent);
+            opacity: 1;
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .chain-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .chain-icon {
+            font-size: 28px;
+            line-height: 1;
+            flex-shrink: 0;
+            filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+        }
+
+        .chain-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .chain-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 15px;
+            letter-spacing: -0.2px;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+
+        .chain-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.3;
+        }
+
+        .chain-progress-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .chain-dots {
+            display: flex;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .chain-dot {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.08);
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+
+        .chain-dot.done {
+            background: var(--chain-color, var(--accent));
+            box-shadow: 0 0 8px color-mix(in srgb, var(--chain-color, var(--accent)) 50%, transparent);
+        }
+
+        .chain-counter {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-dim);
+            font-family: var(--font-display);
+            white-space: nowrap;
+        }
+
+        .chain-bonus {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--chain-color, var(--accent));
+            margin-top: 10px;
+            padding: 4px 10px;
+            background: color-mix(in srgb, var(--chain-color, var(--accent)) 10%, transparent);
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+        }
+
+        .chain-bonus svg {
+            width: 12px;
+            height: 12px;
+            fill: var(--chain-color, var(--accent));
+        }
+
+        .chain-quests {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.35s var(--ease), margin-top 0.35s var(--ease);
+            margin-top: 0;
+        }
+
+        .chain-quests.open {
+            max-height: 500px;
+            margin-top: 14px;
+        }
+
+        .chain-quest-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 0;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        .chain-quest-item:first-child {
+            border-top: none;
+        }
+
+        .chain-quest-check {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid var(--border-light);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1px;
+            transition: all 0.2s;
+        }
+
+        .chain-quest-check.checked {
+            background: var(--chain-color, var(--accent));
+            border-color: var(--chain-color, var(--accent));
+        }
+
+        .chain-quest-check.checked svg {
+            width: 10px;
+            height: 10px;
+            stroke: #0a0a0f;
+            stroke-width: 3;
+            fill: none;
+        }
+
+        .chain-quest-item.item-done {
+            color: var(--text-muted);
+            text-decoration: line-through;
+            text-decoration-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .chain-expand-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .chain-completed-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-top: 10px;
+        }
+
+        .chain-completed-badge svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--accent);
+            fill: none;
+            stroke-width: 2.5;
+        }
+
+        @keyframes chainPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(200, 241, 53, 0);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(200, 241, 53, 0.15);
+            }
+        }
+
+        .chain-card.chain-completed {
+            animation: chainPulse 3s ease-in-out infinite;
+        }
     </style>
 </head>
 
@@ -2719,10 +2956,10 @@
                 <polyline points="9 18 15 12 9 6"
                     style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" />
             </symbol>
-            <!-- Send / Challenge -->
+            <!-- Send / Challenge (arrow send) -->
             <symbol id="ico-send" viewBox="0 0 24 24">
-                <line x1="22" y1="2" x2="11" y2="13" />
-                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
             </symbol>
             <!-- Bookmark -->
             <symbol id="ico-bookmark" viewBox="0 0 24 24">
@@ -2896,43 +3133,6 @@
                 </div>
             </div>
 
-            <!-- DAILY QUEST -->
-            <div id="daily-quest-zone" style="display:none; margin-bottom: 28px;">
-                <div class="section-header">
-                    <span class="section-title">Quest giornaliera</span>
-                    <span id="daily-countdown"
-                        style="font-size:14px; color:var(--text-muted); font-weight:600; font-family:monospace;"></span>
-                </div>
-                <div id="daily-quest-container"></div>
-            </div>
-
-            <!-- DIFFICULTY FILTER MOVED DOWN -->
-
-            <!-- SEASONAL CAROUSEL -->
-            <div id="seasonal-zone" style="display:none; margin-bottom: 28px;">
-                <div class="section-header" style="margin-bottom: 8px;">
-                    <span class="section-title">Quest stagionale <span id="seasonal-counter"
-                            style="color:var(--text-muted); font-size:14px; font-weight:600; margin-left:8px;">0/0</span></span>
-                    <div style="display:flex;gap:8px">
-                        <button class="btn-icon" id="btn-seasonal-prev" style="width:32px;height:32px;"><svg>
-                                <use href="#ico-arrow-left" />
-                            </svg></button>
-                        <button class="btn-icon" id="btn-seasonal-next" style="width:32px;height:32px;"><svg>
-                                <use href="#ico-arrow-right" />
-                            </svg></button>
-                    </div>
-                </div>
-                <div id="seasonal-countdown-display"
-                    style="font-size:13px; color:var(--text-muted); font-weight:600; font-family:var(--font-body); margin-bottom: 14px;">
-                </div>
-                <div id="seasonal-carousel-container"
-                    style="overflow:hidden; border-radius:var(--radius); position:relative;">
-                    <div id="seasonal-carousel-track"
-                        style="display:flex; align-items:flex-start; transition:transform 0.4s var(--ease);">
-                    </div>
-                </div>
-            </div>
-
             <!-- ACTIVE QUEST -->
             <div class="section-header" style="margin-bottom: 16px;">
                 <span class="section-title">Quest attiva</span>
@@ -2963,6 +3163,50 @@
 
             <div id="challenge-banner-container"></div>
             <div id="quest-container"></div>
+
+            <!-- DAILY QUEST -->
+            <div id="daily-quest-zone" style="display:none; margin-bottom: 28px;">
+                <div class="section-header">
+                    <span class="section-title">Quest giornaliera</span>
+                    <span id="daily-countdown"
+                        style="font-size:14px; color:var(--text-muted); font-weight:600; font-family:monospace;"></span>
+                </div>
+                <div id="daily-quest-container"></div>
+            </div>
+
+            <!-- SEASONAL CAROUSEL -->
+            <div id="seasonal-zone" style="display:none; margin-bottom: 28px;">
+                <div class="section-header" style="margin-bottom: 8px;">
+                    <span class="section-title">Quest stagionale <span id="seasonal-counter"
+                            style="color:var(--text-muted); font-size:14px; font-weight:600; margin-left:8px;">0/0</span></span>
+                    <div style="display:flex;gap:8px">
+                        <button class="btn-icon" id="btn-seasonal-prev" style="width:32px;height:32px;"><svg>
+                                <use href="#ico-arrow-left" />
+                            </svg></button>
+                        <button class="btn-icon" id="btn-seasonal-next" style="width:32px;height:32px;"><svg>
+                                <use href="#ico-arrow-right" />
+                            </svg></button>
+                    </div>
+                </div>
+                <div id="seasonal-countdown-display"
+                    style="font-size:13px; color:var(--text-muted); font-weight:600; font-family:var(--font-body); margin-bottom: 14px;">
+                </div>
+                <div id="seasonal-carousel-container"
+                    style="overflow:hidden; border-radius:var(--radius); position:relative;">
+                    <div id="seasonal-carousel-track"
+                        style="display:flex; align-items:flex-start; transition:transform 0.4s var(--ease);">
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUEST CHAINS -->
+            <div id="chains-zone" style="display:none; margin-bottom: 28px;">
+                <div class="section-header">
+                    <span class="section-title">Quest chain</span>
+                    <span id="chains-counter" style="color:var(--text-muted); font-size:14px; font-weight:600;"></span>
+                </div>
+                <div id="chains-container" class="chains-section"></div>
+            </div>
 
             <!-- COMPLETED QUESTS -->
             <div class="completed-section">
@@ -3011,6 +3255,8 @@
                     <div class="xp-grid" id="xp-graph"></div>
                 </div>
             </div>
+
+            <div class="stats-card" id="chains-stats-card"></div>
         </main>
 
         <!-- ────────── SETTINGS SCREEN ────────── -->
@@ -3283,8 +3529,7 @@
                 </label>
                 <button class="btn-ghost" id="btn-remove-photo"
                     style="display:none; padding:8px 12px; border-color:var(--diff-hard); color:var(--diff-hard);">Rimuovi</button>
-                <input type="file" id="review-photo-upload" accept="image/*" capture="environment"
-                    style="display:none;">
+                <input type="file" id="review-photo-upload" accept="image/*" style="display:none;">
             </div>
 
             <img id="review-photo-preview"
@@ -3535,6 +3780,9 @@
             { id: "boss_slayer", label: "Boss Slayer", desc: "Completa la tua prima boss fight.", condition: s => s._bossCompleted >= 1 },
             { id: "explorer", label: "Explorer", desc: "Raggiungi il livello Explorer.", condition: s => s.xp >= 5000 },
             { id: "legend", label: "True Legend", desc: "Raggiungi il livello Legend.", condition: s => s.xp >= 90000 },
+            { id: "first_chain", label: "Primo Anello", desc: "Completa la tua prima quest chain.", condition: s => s.completedChains && s.completedChains.length >= 1 },
+            { id: "three_chains", label: "Incatenato", desc: "Completa 3 quest chain diverse.", condition: s => s.completedChains && s.completedChains.length >= 3 },
+            { id: "all_chains", label: "Il maestro delle catene", desc: "Completa tutte le quest chain disponibili.", condition: s => s.completedChains && s.completedChains.length >= QUEST_CHAINS.length },
         ];
 
         const BOSS_QUESTS = [
@@ -3554,6 +3802,7 @@
             return TITLES.filter(t => {
                 if (t.reqXP !== undefined && state.xp >= t.reqXP) return true;
                 if (t.reqAchiev && state.achievements && state.achievements.includes(t.reqAchiev)) return true;
+                if (t.reqChain && state.completedChains && state.completedChains.includes(t.reqChain)) return true;
                 return false;
             });
         }
@@ -3569,7 +3818,255 @@
             { id: "custom_creator", label: "Game Master", reqAchiev: "custom_creator" },
             { id: "ten_month", label: "Grinder", reqAchiev: "ten_month" },
             { id: "nocturnal", label: "Night Owl", reqAchiev: "nocturnal" },
-            { id: "early_bird", label: "Alba Warrior", reqAchiev: "early_bird" }
+            { id: "early_bird", label: "Alba Warrior", reqAchiev: "early_bird" },
+            { id: "chain_monaco", label: "Il monaco", reqChain: "chain_silence" },
+            { id: "chain_esploratore", label: "L'esploratore", reqChain: "chain_explorer" },
+            { id: "chain_notturno", label: "Cacciatore notturno", reqChain: "chain_night" },
+            { id: "chain_guerriero", label: "Guerriero", reqChain: "chain_warrior" },
+            { id: "chain_chef", label: "Chef del caos", reqChain: "chain_cook" },
+            { id: "chain_ghost", label: "Ghost walker", reqChain: "chain_urbex" },
+            { id: "chain_solo", label: "Il solitario", reqChain: "chain_solo" },
+            { id: "chain_narrator", label: "Il narratore", reqChain: "chain_writer" },
+            { id: "chain_survivor", label: "Ghost survivor", reqChain: "chain_survivor" },
+            { id: "chain_mind", label: "Atleta mentale", reqChain: "chain_mind" },
+            { id: "chain_mountain", label: "Il montanaro", reqChain: "chain_mountain" },
+            { id: "chain_artigiano", label: "L'artigiano", reqChain: "chain_maker" }
+        ];
+
+        /* ── QUEST CHAINS ────────────────────────────────── */
+        const QUEST_CHAINS = [
+            {
+                id: "chain_silence",
+                title: "Il monaco urbano",
+                description: "Disconnettiti dal rumore del mondo, un passo alla volta.",
+                icon: "ico-ghost",
+                color: "#4fa3ff",
+                colorBg: "rgba(79, 163, 255, 0.08)",
+                colorBorder: "rgba(79, 163, 255, 0.22)",
+                bonusXP: 3000,
+                unlockTitle: "Il monaco",
+                unlockTitleId: "chain_monaco",
+                season: null,
+                quests: [
+                    { ref: "Passa una mattina senza telefono", stepLabel: "Step 1 — Distacco digitale" },
+                    { ref: "Passa una sera senza internet", stepLabel: "Step 2 — Oscuramento serale" },
+                    { ref: "Fai 30 minuti di meditazione", stepLabel: "Step 3 — Il silenzio interiore" },
+                    { ref: "Passa 48 ore in totale isolamento", stepLabel: "Step 4 — Il ritiro" }
+                ]
+            },
+            {
+                id: "chain_explorer",
+                title: "L'esploratore",
+                description: "Il mondo è più grande di quanto pensi. Usalo.",
+                icon: "ico-crosshair",
+                color: "#c8f135",
+                colorBg: "rgba(200, 241, 53, 0.08)",
+                colorBorder: "rgba(200, 241, 53, 0.20)",
+                bonusXP: 5000,
+                unlockTitle: "L'esploratore",
+                unlockTitleId: "chain_esploratore",
+                season: null,
+                quests: [
+                    { ref: "Trova un posto nuovo in città", stepLabel: "Step 1 — La scoperta locale" },
+                    { ref: "Vai in un posto che conosci solo da internet", stepLabel: "Step 2 — Dal virtuale al reale" },
+                    { ref: "Trascorri una giornata intera in una città che non conosci", stepLabel: "Step 3 — La città straniera" },
+                    { ref: "Fai un viaggio in un paese straniero da solo", stepLabel: "Step 4 — Il grande salto" }
+                ]
+            },
+            {
+                id: "chain_night",
+                title: "Il cacciatore notturno",
+                description: "Quando tutti dormono, tu sei sveglio e vivo.",
+                icon: "ico-flame",
+                color: "#a855f7",
+                colorBg: "rgba(168, 85, 247, 0.08)",
+                colorBorder: "rgba(168, 85, 247, 0.22)",
+                bonusXP: 4000,
+                unlockTitle: "Cacciatore notturno",
+                unlockTitleId: "chain_notturno",
+                season: null,
+                quests: [
+                    { ref: "Vai a dormire alle 22 per tre giorni di fila", stepLabel: "Step 1 — Reset del ritmo" },
+                    { ref: "Guarda le stelle per 30 minuti", stepLabel: "Step 2 — La prima notte" },
+                    { ref: "Fai un'escursione notturna", stepLabel: "Step 3 — Nel buio" },
+                    { ref: "Fai una notte intera in bianco (intenzionale)", stepLabel: "Step 4 — Alba senza sonno" }
+                ]
+            },
+            {
+                id: "chain_warrior",
+                title: "Il guerriero del corpo",
+                description: "Ogni limite è solo un confine da spostare.",
+                icon: "ico-shield",
+                color: "#ff4f4f",
+                colorBg: "rgba(255, 79, 79, 0.08)",
+                colorBorder: "rgba(255, 79, 79, 0.22)",
+                bonusXP: 6000,
+                unlockTitle: "Guerriero",
+                unlockTitleId: "chain_guerriero",
+                season: null,
+                quests: [
+                    { ref: "Fai una doccia fredda", stepLabel: "Step 1 — Il battesimo del freddo" },
+                    { ref: "Fai 50 flessioni in un'unica sessione", stepLabel: "Step 2 — La base" },
+                    { ref: "Corri 10 km senza fermarti", stepLabel: "Step 3 — La resistenza" },
+                    { ref: "Completa una maratona o mezza maratona", stepLabel: "Step 4 — Il test finale" }
+                ]
+            },
+            {
+                id: "chain_cook",
+                title: "Il cuoco del fuoco",
+                description: "Dal grano al pane, dalle mani al piatto.",
+                icon: "ico-diamond",
+                color: "#ffb347",
+                colorBg: "rgba(255, 179, 71, 0.08)",
+                colorBorder: "rgba(255, 179, 71, 0.22)",
+                bonusXP: 3500,
+                unlockTitle: "Chef del caos",
+                unlockTitleId: "chain_chef",
+                season: null,
+                quests: [
+                    { ref: "Cucina senza ricetta", stepLabel: "Step 1 — L'improvvisazione" },
+                    { ref: "Cucina qualcosa che non hai mai cucinato", stepLabel: "Step 2 — Il territorio sconosciuto" },
+                    { ref: "Impara a fare la pasta fresca a mano", stepLabel: "Step 3 — Le mani in pasta" },
+                    { ref: "Cucinare pane da zero", stepLabel: "Step 4 — Il rito del pane" },
+                    { ref: "Cucinare per 10 persone", stepLabel: "Step 5 — Il gran banchetto" }
+                ]
+            },
+            {
+                id: "chain_urbex",
+                title: "L'urbexer",
+                description: "Il mondo ha uno strato dimenticato. Tu sai vederlo.",
+                icon: "ico-crosshair",
+                color: "#94a3b8",
+                colorBg: "rgba(148, 163, 184, 0.07)",
+                colorBorder: "rgba(148, 163, 184, 0.20)",
+                bonusXP: 7000,
+                unlockTitle: "Ghost walker",
+                unlockTitleId: "chain_ghost",
+                season: null,
+                quests: [
+                    { ref: "Fotografa un edificio abbandonato dall'esterno", stepLabel: "Step 1 — Il primo sguardo" },
+                    { ref: "Ricerca la storia di un posto abbandonato", stepLabel: "Step 2 — Il detective" },
+                    { ref: "Entra in un edificio abbandonato accessibile legalmente", stepLabel: "Step 3 — L'ingresso" },
+                    { ref: "Documentalo come un fotoreporter", stepLabel: "Step 4 — Il reportage" },
+                    { ref: "Passa una notte in un luogo abbandonato", stepLabel: "Step 5 — La notte tra le rovine" }
+                ]
+            },
+            {
+                id: "chain_solo",
+                title: "Il solitario",
+                description: "La compagnia migliore che puoi avere sei tu stesso.",
+                icon: "ico-user",
+                color: "#38bdf8",
+                colorBg: "rgba(56, 189, 248, 0.07)",
+                colorBorder: "rgba(56, 189, 248, 0.20)",
+                bonusXP: 4500,
+                unlockTitle: "Il solitario",
+                unlockTitleId: "chain_solo",
+                season: null,
+                quests: [
+                    { ref: "Vai al cinema da solo", stepLabel: "Step 1 — La prima solitudine" },
+                    { ref: "Trascorri una giornata intera in una città che non conosci", stepLabel: "Step 2 — La città sconosciuta" },
+                    { ref: "Fai un viaggio in treno senza meta precisa", stepLabel: "Step 3 — Il vagabondo" },
+                    { ref: "Fai un viaggio in un paese straniero da solo", stepLabel: "Step 4 — Il grande silenzio" }
+                ]
+            },
+            {
+                id: "chain_writer",
+                title: "Il narratore",
+                description: "La tua storia merita di essere scritta. Inizia ora.",
+                icon: "ico-bookmark",
+                color: "#f472b6",
+                colorBg: "rgba(244, 114, 182, 0.07)",
+                colorBorder: "rgba(244, 114, 182, 0.20)",
+                bonusXP: 3000,
+                unlockTitle: "Il narratore",
+                unlockTitleId: "chain_narrator",
+                season: null,
+                quests: [
+                    { ref: "Scrivi 3 pagine di flusso di coscienza", stepLabel: "Step 1 — Le pagine del mattino" },
+                    { ref: "Porta con te un taccuino per un giorno", stepLabel: "Step 2 — L'osservatore" },
+                    { ref: "Tieni un diario per una settimana", stepLabel: "Step 3 — La disciplina" },
+                    { ref: "Scrivi un racconto breve e fallo leggere a qualcuno", stepLabel: "Step 4 — La voce pubblica" },
+                    { ref: "Scrivi e pubblica qualcosa", stepLabel: "Step 5 — Il lancio" }
+                ]
+            },
+            {
+                id: "chain_survivor",
+                title: "Il sopravvissuto",
+                description: "Se sparisse tutto, sapresti cavartela?",
+                icon: "ico-shield",
+                color: "#84cc16",
+                colorBg: "rgba(132, 204, 22, 0.07)",
+                colorBorder: "rgba(132, 204, 22, 0.20)",
+                bonusXP: 8000,
+                unlockTitle: "Ghost survivor",
+                unlockTitleId: "chain_survivor",
+                season: null,
+                quests: [
+                    { ref: "Impara i nodi base della sopravvivenza", stepLabel: "Step 1 — Le basi" },
+                    { ref: "Costruisci un fuoco da zero", stepLabel: "Step 2 — Il fuoco" },
+                    { ref: "Costruisci una capanna nel bosco", stepLabel: "Step 3 — Il riparo" },
+                    { ref: "Fai una notte in un posto completamente selvaggio", stepLabel: "Step 4 — La prova" },
+                    { ref: "Fai un campo sopravvivenza di 3 giorni", stepLabel: "Step 5 — Il campo finale" }
+                ]
+            },
+            {
+                id: "chain_mind",
+                title: "L'atleta della mente",
+                description: "La tua mente è un muscolo. Allenala fino al limite.",
+                icon: "ico-crown",
+                color: "#e879f9",
+                colorBg: "rgba(232, 121, 249, 0.07)",
+                colorBorder: "rgba(232, 121, 249, 0.20)",
+                bonusXP: 5000,
+                unlockTitle: "Atleta mentale",
+                unlockTitleId: "chain_mind",
+                season: null,
+                quests: [
+                    { ref: "Fai 30 minuti di meditazione", stepLabel: "Step 1 — Il silenzio" },
+                    { ref: "Leggi per due ore di fila", stepLabel: "Step 2 — La concentrazione" },
+                    { ref: "Prova la meditazione vipassana per un weekend", stepLabel: "Step 3 — L'immersione" },
+                    { ref: "Fai un ritiro di meditazione di 3 giorni", stepLabel: "Step 4 — La dissoluzione" }
+                ]
+            },
+            {
+                id: "chain_mountain",
+                title: "Il montanaro",
+                description: "La quota è una conquista. Ogni metro conta.",
+                icon: "ico-crosshair",
+                color: "#f8fafc",
+                colorBg: "rgba(248, 250, 252, 0.05)",
+                colorBorder: "rgba(248, 250, 252, 0.15)",
+                bonusXP: 7000,
+                unlockTitle: "Il montanaro",
+                unlockTitleId: "chain_mountain",
+                season: null,
+                quests: [
+                    { ref: "Percorri un sentiero che non hai mai fatto", stepLabel: "Step 1 — Il primo sentiero" },
+                    { ref: "Fai un'escursione di almeno 20 km", stepLabel: "Step 2 — La distanza" },
+                    { ref: "Dormi in bivacco in alta montagna", stepLabel: "Step 3 — La notte in quota" },
+                    { ref: "Scala una vetta di almeno 3000 metri", stepLabel: "Step 4 — La vetta" }
+                ]
+            },
+            {
+                id: "chain_maker",
+                title: "L'artigiano",
+                description: "Costruire con le mani è la forma più antica di magia.",
+                icon: "ico-sword",
+                color: "#fb923c",
+                colorBg: "rgba(251, 146, 60, 0.07)",
+                colorBorder: "rgba(251, 146, 60, 0.20)",
+                bonusXP: 4000,
+                unlockTitle: "L'artigiano",
+                unlockTitleId: "chain_artigiano",
+                season: null,
+                quests: [
+                    { ref: "Costruisci qualcosa con le mani", stepLabel: "Step 1 — Le prime mani" },
+                    { ref: "Impara un'abilità artigianale di base", stepLabel: "Step 2 — La disciplina" },
+                    { ref: "Costruisci qualcosa di utile per casa", stepLabel: "Step 3 — L'utilità" },
+                    { ref: "Costruisci qualcosa di complesso con le mani", stepLabel: "Step 4 — Il capolavoro" }
+                ]
+            }
         ];
 
         /* ── STATE & FIREBASE ─────────────────────────────── */
@@ -3587,6 +4084,7 @@
             completed: [],
             streak: 0,
             lastQuestDate: null,
+            lastQuestTimestamp: 0,
             xpHistory: [],
             stats: {
                 easy: { count: 0, totalXp: 0 },
@@ -3609,7 +4107,9 @@
             avatarColor: "",
             joinedAt: 0,
             updatedAt: 0,
-            bookmarkedQuests: []
+            bookmarkedQuests: [],
+            completedChains: [],
+            chainProgress: {}
         };
 
         function stringHashCode(str) {
@@ -3688,6 +4188,7 @@
                     const p = JSON.parse(s);
                     Object.assign(state, p);
                     if (typeof state.streak === 'undefined') state.streak = 0;
+                    if (typeof state.lastQuestTimestamp === 'undefined') state.lastQuestTimestamp = 0;
                     if (!state.xpHistory) state.xpHistory = [];
                     if (!state.stats) state.stats = { easy: { count: 0, totalXp: 0 }, medium: { count: 0, totalXp: 0 }, hard: { count: 0, totalXp: 0 } };
                     if (!state.questTimestamps) state.questTimestamps = [];
@@ -3710,17 +4211,24 @@
                     // Migrazione bookmarks → bookmarkedQuests
                     if (!state.bookmarkedQuests) state.bookmarkedQuests = state.bookmarks || [];
                     if (!Array.isArray(state.bookmarkedQuests)) state.bookmarkedQuests = [];
+                    if (!state.completedChains) state.completedChains = [];
+                    if (!state.chainProgress) state.chainProgress = {};
                 }
             } catch (e) { }
 
             // Azzeramento streak se sono passate più di 24 ore dall'ultimo completamento
-            if (state.lastQuestDate) {
+            if (state.lastQuestTimestamp && state.lastQuestTimestamp > 0) {
+                const elapsed = Date.now() - state.lastQuestTimestamp;
+                if (elapsed > 86400000) { // 24 ore in ms
+                    state.streak = 0;
+                }
+            } else if (state.lastQuestDate) {
+                // Fallback per migrazione: usa lastQuestDate se lastQuestTimestamp non esiste
                 const today = new Date();
                 const todayStr = today.toISOString().split('T')[0];
                 const yesterday = new Date(today);
                 yesterday.setDate(yesterday.getDate() - 1);
                 const yesterdayStr = yesterday.toISOString().split('T')[0];
-
                 if (state.lastQuestDate !== todayStr && state.lastQuestDate !== yesterdayStr) {
                     state.streak = 0;
                 }
@@ -3837,6 +4345,22 @@
         const btnConfCancel = $('btn-confirm-cancel');
         const btnConfReset = $('btn-confirm-reset');
         const toast = $('toast');
+
+        // ── REUSABLE CONFIRM DIALOG ──
+        let _confirmResolve = null;
+        function showConfirmDialog(title, message, confirmLabel = 'Conferma') {
+            return new Promise((resolve) => {
+                _confirmResolve = resolve;
+                $('confirm-overlay').querySelector('.confirm-title').textContent = title;
+                $('confirm-overlay').querySelector('.confirm-msg').textContent = message;
+                const dangerBtn = $('btn-confirm-reset');
+                dangerBtn.textContent = confirmLabel;
+                dangerBtn.onclick = () => { confirmOverlay.classList.remove('show'); _confirmResolve = null; resolve(true); };
+                btnConfCancel.onclick = () => { confirmOverlay.classList.remove('show'); _confirmResolve = null; resolve(false); };
+                confirmOverlay.onclick = (e) => { if (e.target === confirmOverlay) { confirmOverlay.classList.remove('show'); _confirmResolve = null; resolve(false); } };
+                confirmOverlay.classList.add('show');
+            });
+        }
 
         // Auth DOM
         const authScreen = $('auth-screen');
@@ -3958,6 +4482,7 @@
                     completed: cloudState.completed ?? [],
                     streak: cloudState.streak ?? 0,
                     lastQuestDate: cloudState.lastQuestDate ?? null,
+                    lastQuestTimestamp: cloudState.lastQuestTimestamp ?? 0,
                     xpHistory: cloudState.xpHistory ?? [],
                     stats: cloudState.stats ?? {
                         easy: { count: 0, totalXp: 0 },
@@ -3975,6 +4500,8 @@
                     notificationsEnabled: cloudState.notificationsEnabled ?? false,
                     selectedTitle: cloudState.selectedTitle ?? null,
                     bookmarkedQuests: cloudState.bookmarkedQuests ?? [],
+                    completedChains: cloudState.completedChains ?? [],
+                    chainProgress: cloudState.chainProgress ?? {},
                     displayName: cloudState.displayName ?? state.displayName ?? "",
                     username: cloudState.username ?? state.username ?? "",
                     bio: cloudState.bio ?? state.bio ?? "",
@@ -4047,6 +4574,7 @@
                                         completed: cloud.completed ?? state.completed,
                                         streak: cloud.streak ?? state.streak,
                                         lastQuestDate: cloud.lastQuestDate ?? state.lastQuestDate,
+                                        lastQuestTimestamp: cloud.lastQuestTimestamp ?? state.lastQuestTimestamp,
                                         xpHistory: cloud.xpHistory ?? state.xpHistory,
                                         stats: cloud.stats ?? state.stats,
                                         questTimestamps: cloud.questTimestamps ?? state.questTimestamps,
@@ -4060,6 +4588,8 @@
                                         notificationsEnabled: cloud.notificationsEnabled ?? state.notificationsEnabled,
                                         selectedTitle: cloud.selectedTitle ?? state.selectedTitle,
                                         bookmarkedQuests: cloud.bookmarkedQuests ?? state.bookmarkedQuests,
+                                        completedChains: cloud.completedChains ?? state.completedChains,
+                                        chainProgress: cloud.chainProgress ?? state.chainProgress,
                                         displayName: cloud.displayName ?? state.displayName,
                                         username: cloud.username ?? state.username,
                                         bio: cloud.bio ?? state.bio,
@@ -4316,9 +4846,31 @@
             const unlocked = getUnlockedTitles();
             let highestDefault = 'Novice';
             if (unlocked.length > 0) highestDefault = unlocked[unlocked.length - 1].label;
-            const displayTitle = state.selectedTitle ? (TITLES.find(t => t.id === state.selectedTitle)?.label || highestDefault) : highestDefault;
+            const selectedTitleObj = state.selectedTitle ? TITLES.find(t => t.id === state.selectedTitle) : null;
+            const displayTitle = selectedTitleObj ? selectedTitleObj.label : highestDefault;
+            // Chain titles theme the entire badge
+            let titleColor = '';
+            let chainObj = null;
+            if (selectedTitleObj && selectedTitleObj.reqChain) {
+                chainObj = QUEST_CHAINS.find(c => c.id === selectedTitleObj.reqChain);
+                if (chainObj) titleColor = chainObj.color;
+            }
 
-            levelBadge.innerHTML = `<svg><use href="#ico-crown"/></svg> LVL ${info.level} &middot; ${displayTitle.toUpperCase()}`;
+            if (titleColor) {
+                // Convert hex color to rgba for background tint
+                const r = parseInt(titleColor.slice(1, 3) || 'c8', 16);
+                const g = parseInt(titleColor.slice(3, 5) || 'f1', 16);
+                const b = parseInt(titleColor.slice(5, 7) || '35', 16);
+                levelBadge.style.color = titleColor;
+                levelBadge.style.background = `rgba(${r},${g},${b},0.15)`;
+                levelBadge.style.setProperty('--badge-icon-fill', titleColor);
+            } else {
+                levelBadge.style.color = '';
+                levelBadge.style.background = '';
+                levelBadge.style.setProperty('--badge-icon-fill', '');
+            }
+
+            levelBadge.innerHTML = `<svg style="fill:${titleColor || 'var(--accent)'}"><use href="#ico-crown"/></svg> LVL ${info.level} &middot; ${displayTitle.toUpperCase()}`;
 
             if (info.nextLevelXP) {
                 const progress = ((state.xp - info.prevLevelXP) / (info.nextLevelXP - info.prevLevelXP)) * 100;
@@ -4684,6 +5236,7 @@
                 state.streak = 1;
                 state.lastQuestDate = todayStr;
             }
+            state.lastQuestTimestamp = Date.now();
 
             state.questTimestamps.push(Date.now());
             state.dailyCompleted = { date: todayStr, questTitle: q.title };
@@ -4700,9 +5253,9 @@
                 _dailyBonus: DAILY_BONUS
             });
 
-            // Ricalcolo totale di tutto l'XP recuperando eventuali salvataggi e Boss
-            // Incremento diretto, coerente con completeQuest e completeSeasonal
-            state.xp += totalXp;
+            // Ricalcolo XP dalla source of truth (coerente con completeQuest e completeSeasonal)
+            state.xp = state.completed.reduce((s, c) => s + (Number(c.xp) || 0), 0)
+                + (state.bossCompleted || []).reduce((s, c) => s + (Number(c.xp) || 0), 0);
 
             let todayHistory = state.xpHistory.find(h => h.date === todayStr);
             if (todayHistory) todayHistory.xp = (todayHistory.xp || 0) + totalXp;
@@ -4718,6 +5271,8 @@
             updateXPUI();
             renderCompleted();
             checkAchievements();
+            checkChainCompletions();
+            renderChainsSection();
             initDailyQuest();
 
             modalXpText.textContent = `+ ${totalXp.toLocaleString('it-IT')} XP`;
@@ -4823,9 +5378,10 @@
             pendingCompletion = null;
         }
 
-        $('btn-review-delete').addEventListener('click', () => {
+        $('btn-review-delete').addEventListener('click', async () => {
             if (pendingCompletion && pendingCompletion.type === 'edit') {
-                if (confirm("Vuoi davvero eliminare questa quest? Gli XP guadagnati verranno rimossi.")) {
+                const confirmed = await showConfirmDialog('Eliminare quest?', 'Vuoi davvero eliminare questa quest? Gli XP guadagnati verranno rimossi.', 'Elimina');
+                if (confirmed) {
                     const removedQ = state.completed[pendingCompletion.index];
                     if (removedQ) {
                         // Rimuovi XP (ricalcola dalla somma reale)
@@ -4850,6 +5406,12 @@
                             const bki = state.bookmarkedQuests.findIndex(b => b.title === removedQ.title);
                             // Non rimuovere il bookmark, la quest torna disponibile
                         }
+
+                        // Fix 7: Se la quest eliminata era la daily quest di oggi, resetta dailyCompleted
+                        const todayStr = new Date().toISOString().split('T')[0];
+                        if (state.dailyCompleted && state.dailyCompleted.date === todayStr && state.dailyCompleted.questTitle === removedQ.title) {
+                            state.dailyCompleted = null;
+                        }
                     }
 
                     // Ricalcolo globale delle statistiche per garantire correttezza
@@ -4870,6 +5432,43 @@
                     checkAchievements();
                     renderStatsScreen();
                     renderProfileScreen();
+                    // Dynamic chain update: un-complete chains whose quests were removed
+                    if (state.completedChains && state.completedChains.length > 0) {
+                        const completedTitles = new Set((state.completed || []).map(c => c.title));
+                        const chainsToUncomplete = state.completedChains.filter(chainId => {
+                            const chain = QUEST_CHAINS.find(c => c.id === chainId);
+                            if (!chain) return false;
+                            return !chain.quests.every(q => completedTitles.has(q.ref));
+                        });
+                        if (chainsToUncomplete.length > 0) {
+                            chainsToUncomplete.forEach(chainId => {
+                                const idx = state.completedChains.indexOf(chainId);
+                                if (idx !== -1) state.completedChains.splice(idx, 1);
+                                // Also recalculate XP removing chain bonus
+                                const chain = QUEST_CHAINS.find(c => c.id === chainId);
+                                if (chain) {
+                                    state.xp = Math.max(0, state.xp - chain.bonusXP);
+                                    // Remove bonusXP from xpHistory
+                                    const todayStr = new Date().toISOString().split('T')[0];
+                                    const hist = state.xpHistory.find(h => h.date === todayStr);
+                                    if (hist) hist.xp = Math.max(0, hist.xp - chain.bonusXP);
+                                    // Revoke chain title
+                                    if (chain.unlockTitleId) {
+                                        const achIdx = (state.achievements || []).indexOf(chain.unlockTitleId);
+                                        if (achIdx !== -1) state.achievements.splice(achIdx, 1);
+                                        // Reset selected title if it was this chain's title
+                                        if (state.selectedTitle === chain.unlockTitleId) {
+                                            state.selectedTitle = null;
+                                        }
+                                    }
+                                }
+                            });
+                            updateXPUI();
+                            saveState();
+                        }
+                    }
+                    renderChainsSection();
+                    renderChainsStats();
                     if (state.profilePublic) syncToFirestore();
                     $('quest-review-overlay').classList.remove('show');
                     pendingCompletion = null;
@@ -5032,6 +5631,7 @@
                 state.streak = 1;
                 state.lastQuestDate = todayStr;
             }
+            state.lastQuestTimestamp = Date.now();
 
             let todayHistory = state.xpHistory.find(h => h.date === todayStr);
             if (todayHistory) todayHistory.xp += q.xp;
@@ -5060,8 +5660,8 @@
             renderCompleted();
             initSeasonalCarousel();
             checkAchievements();
-
-            // Scroll to next incomplete
+            checkChainCompletions();
+            renderChainsSection();
             const completedTitles = new Set(state.completed.map(c => c.title));
             const nextIncomplete = currentSeasonalQuests.findIndex((sq, i) => i > index && !completedTitles.has(sq.title));
             if (nextIncomplete !== -1) {
@@ -5198,6 +5798,7 @@
                 state.streak = 1;
                 state.lastQuestDate = todayStr;
             }
+            state.lastQuestTimestamp = Date.now();
 
             let todayHistory = state.xpHistory.find(h => h.date === todayStr);
             if (todayHistory) {
@@ -5236,6 +5837,8 @@
             renderCompleted();
             renderActiveQuest();
             checkAchievements();
+            checkChainCompletions();
+            renderChainsSection();
         }
 
         btnCloseModal.addEventListener('click', closeModal);
@@ -5369,6 +5972,8 @@
                 const wrapper = document.querySelector('.xp-graph-wrapper');
                 if (wrapper) wrapper.scrollLeft = wrapper.scrollWidth;
             });
+
+            renderChainsStats();
         }
 
         /* ── ACHIEVEMENT LOGIC ────────────────────────────────── */
@@ -5530,9 +6135,26 @@
                     <div style="font-family: var(--font-display); font-weight: 800; font-size: 24px; margin-bottom: 4px;">${displayName}</div>
                     <div style="color: var(--text-dim); font-size: 15px; margin-bottom: 12px;">${username}</div>
                     
-                    <div class="xp-level-badge" style="margin-bottom: 12px;">
-                        <svg><use href="#ico-crown"/></svg> LVL ${Math.floor(Math.sqrt(state.xp / 1500)) + 1} &middot; ${(state.selectedTitle || 'Novizio').toUpperCase()}
-                    </div>
+                    ${(() => {
+                    const selTit = state.selectedTitle ? TITLES.find(t => t.id === state.selectedTitle) : null;
+                    const titLabel = selTit ? selTit.label : (getUnlockedTitles().length > 0 ? getUnlockedTitles()[getUnlockedTitles().length - 1].label : 'Novice');
+                    let col = '';
+                    if (selTit && selTit.reqChain) { const ch = QUEST_CHAINS.find(c => c.id === selTit.reqChain); if (ch) col = ch.color; }
+                    const lvl = getLevelInfo(state.xp).level;
+                    let bgStyle = '';
+                    let colorStyle = '';
+                    if (col) {
+                        const r = parseInt(col.slice(1, 3) || 'c8', 16);
+                        const g = parseInt(col.slice(3, 5) || 'f1', 16);
+                        const b = parseInt(col.slice(5, 7) || '35', 16);
+                        bgStyle = `background:rgba(${r},${g},${b},0.15);color:${col};`;
+                        colorStyle = col;
+                    }
+                    return `<div class="xp-level-badge" style="margin-bottom:12px;${bgStyle}">
+                            <svg style="fill:${colorStyle || 'var(--accent)'}"><use href="#ico-crown"/></svg>
+                            LVL ${lvl} &middot; ${titLabel.toUpperCase()}
+                        </div>`;
+                })()}
                     
                     ${bio ? `<div style="font-size: 15px; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin: 0 auto; max-width: 280px;">${bio}</div>` : ''}
                 </div>
@@ -5558,9 +6180,9 @@
                         <div style="flex: 0 0 80px; text-align: center; opacity: ${b.unlocked ? 1 : 0.3}; filter: ${b.unlocked ? 'none' : 'grayscale(1)'}; transition: all 0.3s;">
                             <div style="width: 60px; height: 60px; border-radius: 50%; background: ${b.unlocked ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)'}; border: 2px solid ${b.unlocked ? b.color : 'rgba(255,255,255,0.1)'}; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center;">
                                 ${b.icon.startsWith('#')
-                    ? `<svg style="width:30px;height:30px;stroke:${b.unlocked ? b.color : 'var(--text-muted)'};fill:none;"><use href="${b.icon}"/></svg>`
-                    : `<i class="${b.icon}" style="font-size:24px; color:${b.unlocked ? b.color : 'var(--text-muted)'};"></i>`
-                }
+                        ? `<svg style="width:30px;height:30px;stroke:${b.unlocked ? b.color : 'var(--text-muted)'};fill:none;"><use href="${b.icon}"/></svg>`
+                        : `<i class="${b.icon}" style="font-size:24px; color:${b.unlocked ? b.color : 'var(--text-muted)'};"></i>`
+                    }
                             </div>
                             <div style="font-size: 10px; font-weight: 700; color: ${b.unlocked ? 'var(--text)' : 'var(--text-dim)'}; line-height: 1.1;">${b.name}</div>
                         </div>
@@ -6084,6 +6706,14 @@
                     const opt = document.createElement('option');
                     opt.value = t.id;
                     opt.textContent = t.label;
+                    // Chain titles get their chain color
+                    if (t.reqChain) {
+                        const chain = QUEST_CHAINS.find(c => c.id === t.reqChain);
+                        if (chain) {
+                            opt.style.color = chain.color;
+                            opt.textContent = '⬢ ' + t.label;
+                        }
+                    }
                     selectActiveTitle.appendChild(opt);
                 });
                 selectActiveTitle.value = state.selectedTitle || '';
@@ -6174,22 +6804,18 @@
         }
 
 
-        btnReset.addEventListener('click', () => {
+        btnReset.addEventListener('click', async () => {
             closeSettings();
-            confirmOverlay.classList.add('show');
-        });
+            const confirmed = await showConfirmDialog('Reset completo?', 'Tutti i progressi, XP e quest verranno cancellati. Questa azione è irreversibile.', 'Conferma');
+            if (!confirmed) return;
 
-        btnConfCancel.addEventListener('click', () => confirmOverlay.classList.remove('show'));
-        confirmOverlay.addEventListener('click', e => { if (e.target === confirmOverlay) confirmOverlay.classList.remove('show'); });
-
-        btnConfReset.addEventListener('click', () => {
-            confirmOverlay.classList.remove('show');
             state = {
                 xp: 0,
                 currentQuest: null,
                 completed: [],
                 streak: 0,
                 lastQuestDate: null,
+                lastQuestTimestamp: 0,
                 xpHistory: [],
                 stats: {
                     easy: { count: 0, totalXp: 0 },
@@ -6200,7 +6826,9 @@
                 customQuests: [],
                 challenges_sent: [],
                 profilePublic: false,
-                updatedAt: Date.now()
+                updatedAt: Date.now(),
+                completedChains: [],
+                chainProgress: {}
             };
             localStorage.setItem('more_state', JSON.stringify(state));
             syncToFirestore();
@@ -6209,6 +6837,7 @@
             else renderActiveQuest();
             renderCompleted();
             initSeasonalCarousel();
+            renderChainsSection();
             showToast('Progressi resettati');
         });
 
@@ -6323,7 +6952,13 @@
         /* ── CHALLENGE A FRIEND ───────────────────────────── */
         function challengeQuest(quest) {
             const username = getCurrentUsername();
-            const url = `${location.origin}${location.pathname}?challenge=${encodeURIComponent(quest.title)}&from=${encodeURIComponent(username)}`;
+            const xpMap = { easy: 1000, medium: 2000, hard: 5000 };
+            let url = `${location.origin}${location.pathname}?challenge=${encodeURIComponent(quest.title)}&from=${encodeURIComponent(username)}`;
+            // Include quest metadata so custom quests work for recipients
+            url += `&diff=${encodeURIComponent(quest.difficulty || 'easy')}`;
+            url += `&xp=${quest.xp || xpMap[quest.difficulty] || 1000}`;
+            url += `&cat=${encodeURIComponent(quest.category || 'sfida')}`;
+            if (quest.description) url += `&desc=${encodeURIComponent(quest.description)}`;
 
             if (!state.challenges_sent) state.challenges_sent = [];
             state.challenges_sent.push({ questTitle: quest.title, to: null, sentAt: new Date().toISOString() });
@@ -6356,7 +6991,18 @@
                 try { _decodedTitle = decodeURIComponent(challengeTitle); } catch (e) { _decodedTitle = challengeTitle; }
                 try { _decodedFrom = decodeURIComponent(fromUser || 'qualcuno'); } catch (e) { _decodedFrom = 'qualcuno'; }
                 const pool = getFullPool();
-                const quest = pool.find(q => q.title === _decodedTitle);
+                let quest = pool.find(q => q.title === _decodedTitle);
+
+                // Se non trovata nel pool (es. quest custom del mittente), ricostruisci dai params URL
+                if (!quest) {
+                    const xpMap = { easy: 1000, medium: 2000, hard: 5000 };
+                    const diff = params.get('diff') || 'easy';
+                    const xp = parseInt(params.get('xp')) || xpMap[diff] || 1000;
+                    const cat = params.get('cat') || 'sfida';
+                    let desc = params.get('desc') || _decodedTitle;
+                    try { desc = decodeURIComponent(desc); } catch (e) { }
+                    quest = { title: _decodedTitle, description: desc, difficulty: diff, xp, category: cat, isCustom: true };
+                }
 
                 challengeBannerCont.innerHTML = `
                     <div class="challenge-banner" style="flex-direction:column; align-items:flex-start; gap:8px; padding:14px 16px; background:rgba(79,163,255,0.08); border:1px solid rgba(79,163,255,0.2); border-radius:var(--radius-sm); margin-bottom:16px;">
@@ -6374,8 +7020,7 @@
                 const btnAccept = document.getElementById('btn-accept-challenge');
                 const btnReject = document.getElementById('btn-reject-challenge');
                 if (btnAccept) btnAccept.addEventListener('click', () => {
-                    if (quest) { state.currentQuest = quest; saveLocal(); renderActiveQuest(); showToast('Sfida accettata!'); }
-                    else { showToast('Quest non trovata, generandone una nuova...'); generateQuest(); }
+                    state.currentQuest = quest; saveLocal(); renderActiveQuest(); showToast('Sfida accettata!');
                     challengeBannerCont.innerHTML = '';
                 });
                 if (btnReject) btnReject.addEventListener('click', () => {
@@ -6624,6 +7269,497 @@
             location.hash = '';
         }
 
+        /* ── QUEST CHAINS ────────────────────────────────── */
+
+        function getChainProgress(chain) {
+            const completedTitles = new Set((state.completed || []).map(c => c.title));
+            const completedSteps = chain.quests.filter(q => completedTitles.has(q.ref));
+            return {
+                completed: completedSteps.length,
+                total: chain.quests.length,
+                isComplete: completedSteps.length === chain.quests.length,
+                nextStep: chain.quests.find(q => !completedTitles.has(q.ref)) || null,
+                percentage: Math.round((completedSteps.length / chain.quests.length) * 100)
+            };
+        }
+
+        function checkChainCompletions() {
+            if (!state.completedChains) state.completedChains = [];
+            if (!state.chainProgress) state.chainProgress = {};
+            QUEST_CHAINS.forEach(chain => {
+                const prog = getChainProgress(chain);
+                if (prog.isComplete && !state.completedChains.includes(chain.id)) {
+                    state.completedChains.push(chain.id);
+                    state.xp += chain.bonusXP;
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    let hist = state.xpHistory.find(h => h.date === todayStr);
+                    if (hist) hist.xp += chain.bonusXP;
+                    else state.xpHistory.push({ date: todayStr, xp: chain.bonusXP });
+                    if (chain.unlockTitleId && !state.achievements.includes(chain.unlockTitleId)) {
+                        state.achievements.push(chain.unlockTitleId);
+                    }
+                    saveState();
+                    updateXPUI();
+                    showChainCompleteModal(chain);
+                }
+            });
+        }
+
+        function showChainCompleteModal(chain) {
+            const existing = document.getElementById('chain-complete-modal');
+            if (existing) existing.remove();
+            const modal = document.createElement('div');
+            modal.id = 'chain-complete-modal';
+            modal.className = 'modal-overlay show';
+            modal.style.zIndex = '650';
+            modal.innerHTML = `
+              <div class="modal-content" style="
+                background: rgba(20,20,30,0.96);
+                border: 2px solid ${chain.color};
+                box-shadow: 0 0 40px ${chain.colorBg};
+                text-align: center;
+                padding: 36px 24px;
+              ">
+                <div style="
+                  width: 72px; height: 72px; border-radius: 50%;
+                  background: ${chain.colorBg};
+                  border: 2px solid ${chain.color};
+                  display: flex; align-items: center; justify-content: center;
+                  margin: 0 auto 20px;
+                  filter: drop-shadow(0 0 12px ${chain.color});
+                ">
+                  <svg style="width:36px;height:36px;stroke:${chain.color};fill:none;stroke-width:2;">
+                    <use href="#${chain.icon}"/>
+                  </svg>
+                </div>
+                <div style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${chain.color};margin-bottom:8px;font-family:var(--font-display);">
+                  Catena completata
+                </div>
+                <div style="font-family:var(--font-display);font-weight:800;font-size:26px;margin-bottom:8px;color:var(--text);">
+                  ${escapeHtml(chain.title)}
+                </div>
+                <div style="color:var(--text-dim);font-size:14px;margin-bottom:24px;line-height:1.5;">
+                  ${escapeHtml(chain.description)}
+                </div>
+                <div style="
+                  background:${chain.colorBg};border:1px solid ${chain.colorBorder};
+                  border-radius:var(--radius-sm);padding:16px;margin-bottom:24px;
+                  display:flex;align-items:center;justify-content:center;gap:16px;
+                ">
+                  <div style="text-align:center;">
+                    <div style="font-family:var(--font-display);font-weight:800;font-size:28px;color:${chain.color};">
+                      +${chain.bonusXP.toLocaleString('it-IT')}
+                    </div>
+                    <div style="font-size:11px;text-transform:uppercase;font-weight:700;color:var(--text-dim);">XP Bonus</div>
+                  </div>
+                  <div style="width:1px;height:40px;background:${chain.colorBorder};"></div>
+                  <div style="text-align:center;">
+                    <div style="font-family:var(--font-display);font-weight:800;font-size:16px;color:var(--text);">
+                      ${escapeHtml(chain.unlockTitle)}
+                    </div>
+                    <div style="font-size:11px;text-transform:uppercase;font-weight:700;color:var(--text-dim);">Titolo sbloccato</div>
+                  </div>
+                </div>
+                <button class="btn-complete" style="width:100%;padding:14px;font-size:15px;justify-content:center;"
+                  onclick="document.getElementById('chain-complete-modal').remove();">
+                  <svg><use href="#ico-check"/></svg>Epico!
+                </button>
+              </div>`;
+            document.body.appendChild(modal);
+            setTimeout(() => {
+                const el = document.getElementById('chain-complete-modal');
+                if (el) el.remove();
+            }, 10000);
+        }
+
+        function renderChainCard(chain, mode) {
+            const prog = getChainProgress(chain);
+            const isComplete = (state.completedChains || []).includes(chain.id);
+            const completedTitles = new Set((state.completed || []).map(c => c.title));
+
+            if (mode === 'compact') {
+                // Non-started chains open detail screen; in-progress chains activate next step
+                const clickAction = prog.completed === 0 && !isComplete
+                    ? `showChainDetailScreen('${chain.id}')`
+                    : `activateChainNextStep('${chain.id}')`;
+                return `
+                  <div onclick="${clickAction}" style="
+                    background:${chain.colorBg};border:1px solid ${chain.colorBorder};
+                    border-radius:var(--radius-sm);padding:14px 12px;cursor:pointer;
+                    transition:transform 0.2s var(--spring),border-color 0.2s;
+                    position:relative;overflow:hidden;${isComplete ? 'opacity:0.55;' : ''}
+                  ">
+                    ${isComplete ? `<div style="position:absolute;top:8px;right:8px;">
+                      <svg style="width:14px;height:14px;stroke:${chain.color};fill:none;stroke-width:2.5;"><use href="#ico-check"/></svg>
+                    </div>` : ''}
+                    <div style="width:32px;height:32px;border-radius:8px;background:${chain.colorBg};
+                      border:1px solid ${chain.colorBorder};display:flex;align-items:center;
+                      justify-content:center;margin-bottom:10px;">
+                      <svg style="width:16px;height:16px;stroke:${chain.color};fill:none;stroke-width:2;">
+                        <use href="#${chain.icon}"/>
+                      </svg>
+                    </div>
+                    <div style="font-family:var(--font-display);font-weight:800;font-size:13px;
+                      color:var(--text);margin-bottom:6px;line-height:1.3;${isComplete ? 'text-decoration:line-through;opacity:0.7;' : ''}">${escapeHtml(chain.title)}</div>
+                    <div style="font-size:10px;font-weight:700;color:${chain.color};margin-bottom:8px;">
+                      ${prog.completed}/${prog.total} step · +${chain.bonusXP.toLocaleString('it-IT')} XP
+                    </div>
+                    <div style="height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;">
+                      <div style="width:${prog.percentage}%;height:100%;background:${chain.color};border-radius:2px;transition:width 0.6s var(--ease);"></div>
+                    </div>
+                  </div>`;
+            }
+
+            // EXPANDED
+            const stepsHtml = chain.quests.map((q, i) => {
+                const done = completedTitles.has(q.ref);
+                const isNext = !done && (i === 0 || completedTitles.has(chain.quests[i - 1]?.ref));
+                const locked = !done && !isNext;
+                return `
+                  <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0;
+                    border-bottom:1px solid ${i < chain.quests.length - 1 ? 'rgba(255,255,255,0.05)' : 'transparent'};
+                    opacity:${locked ? 0.35 : 1};transition:opacity 0.2s;">
+                    <div style="width:24px;height:24px;border-radius:50%;flex-shrink:0;margin-top:2px;
+                      display:flex;align-items:center;justify-content:center;
+                      background:${done ? chain.color : isNext ? chain.colorBg : 'rgba(255,255,255,0.04)'};
+                      border:1.5px solid ${done ? chain.color : isNext ? chain.colorBorder : 'rgba(255,255,255,0.1)'};">
+                      ${done
+                        ? `<svg style="width:12px;height:12px;stroke:#0a0a0f;fill:none;stroke-width:3;"><use href="#ico-check"/></svg>`
+                        : `<span style="font-size:11px;font-weight:800;color:${isNext ? chain.color : 'var(--text-muted)'};">${i + 1}</span>`}
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;
+                        color:${done ? chain.color : isNext ? chain.color : 'var(--text-muted)'};margin-bottom:2px;">
+                        ${escapeHtml(q.stepLabel)}
+                      </div>
+                      <div style="font-size:13px;font-weight:${isNext ? 700 : 500};
+                        color:${done ? 'var(--text-dim)' : isNext ? 'var(--text)' : 'var(--text-muted)'};
+                        line-height:1.3;${done ? 'text-decoration:line-through;' : ''}">
+                        ${escapeHtml(q.ref)}
+                      </div>
+                    </div>
+                    ${isNext ? `
+                      <button class="btn-complete" style="padding:6px 12px;font-size:11px;flex-shrink:0;margin-top:2px;"
+                        onclick="setChainQuestActive('${chain.id}', ${i}); event.stopPropagation();">
+                        <svg><use href="#ico-check"/></svg>Vai
+                      </button>` : ''}
+                  </div>`;
+            }).join('');
+
+            return `
+              <div style="background:${chain.colorBg};border:1.5px solid ${chain.colorBorder};
+                border-radius:var(--radius);padding:20px 16px;margin-bottom:12px;
+                transition:transform 0.2s var(--spring);">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+                  <div style="width:40px;height:40px;border-radius:10px;background:${chain.colorBg};
+                    border:1.5px solid ${chain.colorBorder};display:flex;align-items:center;
+                    justify-content:center;flex-shrink:0;">
+                    <svg style="width:20px;height:20px;stroke:${chain.color};fill:none;stroke-width:2;">
+                      <use href="#${chain.icon}"/>
+                    </svg>
+                  </div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-family:var(--font-display);font-weight:800;font-size:16px;
+                      color:var(--text);margin-bottom:2px;">${escapeHtml(chain.title)}</div>
+                    <div style="font-size:12px;color:var(--text-dim);line-height:1.3;">
+                      ${escapeHtml(chain.description)}</div>
+                  </div>
+                  <div style="font-size:11px;font-weight:800;color:${chain.color};text-align:right;flex-shrink:0;">
+                    +${chain.bonusXP.toLocaleString('it-IT')}<br>
+                    <span style="font-weight:600;font-size:10px;">XP bonus</span>
+                  </div>
+                </div>
+                <div style="height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;margin-bottom:14px;">
+                  <div style="width:${prog.percentage}%;height:100%;background:${chain.color};border-radius:2px;
+                    transition:width 0.6s var(--ease);box-shadow:0 0 8px ${chain.colorBg};"></div>
+                </div>
+                ${stepsHtml}
+              </div>`;
+        }
+
+        /* ── CHAIN DETAIL SCREEN (pre-start overlay) ──── */
+        window.showChainDetailScreen = function (chainId) {
+            const chain = QUEST_CHAINS.find(c => c.id === chainId);
+            if (!chain) return;
+            const prog = getChainProgress(chain);
+            const completedTitles = new Set((state.completed || []).map(c => c.title));
+
+            // If already started, just activate next step inline
+            if (prog.completed > 0) {
+                activateChainNextStep(chainId);
+                return;
+            }
+
+            const existing = document.getElementById('chain-detail-overlay');
+            if (existing) existing.remove();
+
+            const stepsHtml = chain.quests.map((q, i) => {
+                const done = completedTitles.has(q.ref);
+                return `
+                  <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;
+                    border-bottom:1px solid ${i < chain.quests.length - 1 ? chain.colorBorder : 'transparent'};">
+                    <div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;
+                      display:flex;align-items:center;justify-content:center;
+                      background:${done ? chain.color : chain.colorBg};
+                      border:1.5px solid ${done ? chain.color : chain.colorBorder};">
+                      ${done
+                        ? `<svg style="width:13px;height:13px;stroke:#0a0a0f;fill:none;stroke-width:3;"><use href="#ico-check"/></svg>`
+                        : `<span style="font-size:12px;font-weight:800;color:${chain.color};">${i + 1}</span>`}
+                    </div>
+                    <div style="flex:1;min-width:0;padding-top:3px;">
+                      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;
+                        color:${chain.color};margin-bottom:3px;">
+                        ${escapeHtml(q.stepLabel)}
+                      </div>
+                      <div style="font-size:14px;font-weight:600;color:var(--text);line-height:1.4;">
+                        ${escapeHtml(q.ref)}
+                      </div>
+                    </div>
+                  </div>`;
+            }).join('');
+
+            const overlay = document.createElement('div');
+            overlay.id = 'chain-detail-overlay';
+            overlay.style.cssText = `
+                position:fixed;top:0;left:0;right:0;bottom:0;z-index:500;
+                background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;
+                animation:slideUp 0.35s var(--spring);
+            `;
+            overlay.innerHTML = `
+              <!-- Top blur bar (classic header) -->
+              <div style="position:sticky;top:0;z-index:10;
+                background:rgba(10,10,15,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+                border-bottom:1px solid var(--border);
+                padding:calc(12px + var(--safe-top, 0px)) 20px 12px;
+                display:flex;align-items:center;gap:12px;">
+                <img src="logo.png" alt="more logo" class="header-logo">
+                <span style="font-size:15px;font-weight:700;color:var(--text);">${document.getElementById('header-welcome-msg')?.textContent?.trim() || 'Bentornato/a'}</span>
+              </div>
+
+              <!-- Content -->
+              <div style="padding:24px 20px;padding-bottom:200px;">
+                <!-- Chain hero -->
+                <div style="text-align:center;margin-bottom:32px;">
+                  <div style="width:80px;height:80px;border-radius:50%;
+                    background:${chain.colorBg};border:2px solid ${chain.colorBorder};
+                    display:flex;align-items:center;justify-content:center;
+                    margin:0 auto 16px;filter:drop-shadow(0 0 16px ${chain.color}40);">
+                    <svg style="width:40px;height:40px;stroke:${chain.color};fill:none;stroke-width:2;">
+                      <use href="#${chain.icon}"/>
+                    </svg>
+                  </div>
+                  <div style="font-family:var(--font-display);font-weight:800;font-size:24px;
+                    color:var(--text);margin-bottom:8px;">${escapeHtml(chain.title)}</div>
+                  <div style="font-size:14px;color:var(--text-dim);line-height:1.5;max-width:300px;margin:0 auto;">
+                    ${escapeHtml(chain.description)}
+                  </div>
+                </div>
+
+                <!-- Rewards preview -->
+                <div style="background:${chain.colorBg};border:1px solid ${chain.colorBorder};
+                  border-radius:var(--radius-sm);padding:16px;margin-bottom:24px;
+                  display:flex;align-items:center;justify-content:center;gap:20px;">
+                  <div style="text-align:center;">
+                    <div style="font-family:var(--font-display);font-weight:800;font-size:22px;color:${chain.color};">
+                      +${chain.bonusXP.toLocaleString('it-IT')}
+                    </div>
+                    <div style="font-size:10px;text-transform:uppercase;font-weight:700;color:var(--text-dim);">XP Bonus</div>
+                  </div>
+                  <div style="width:1px;height:36px;background:${chain.colorBorder};"></div>
+                  <div style="text-align:center;">
+                    <div style="font-family:var(--font-display);font-weight:800;font-size:14px;color:var(--text);">
+                      ${escapeHtml(chain.unlockTitle)}
+                    </div>
+                    <div style="font-size:10px;text-transform:uppercase;font-weight:700;color:var(--text-dim);">Titolo sbloccato</div>
+                  </div>
+                </div>
+
+                <!-- Steps list -->
+                <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+                  color:${chain.color};margin-bottom:12px;">Sfide (${chain.quests.length})</div>
+                <div style="background:rgba(255,255,255,0.02);border:1px solid ${chain.colorBorder};
+                  border-radius:var(--radius);padding:4px 16px;margin-bottom:32px;">
+                  ${stepsHtml}
+                </div>
+              </div>
+
+              <!-- Bottom bar with buttons -->
+              <div style="position:fixed;bottom:0;left:0;right:0;z-index:10;
+                background:rgba(10,10,15,0.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+                border-top:1px solid var(--border);
+                padding:16px 20px calc(16px + var(--safe-bottom, 0px));
+                display:flex;flex-direction:column;gap:10px;">
+                <button class="btn-complete" onclick="startChainFromDetail('${chain.id}')" style="
+                  width:100%;padding:14px;font-size:15px;justify-content:center;">
+                  <svg><use href="#ico-check"/></svg>
+                  Avvia quest chain
+                </button>
+                <button onclick="document.getElementById('chain-detail-overlay').remove()" style="
+                  width:100%;padding:12px;border-radius:var(--radius-sm);
+                  border:1px solid var(--border);background:transparent;
+                  color:var(--text-dim);font-family:var(--font);
+                  font-weight:700;font-size:14px;cursor:pointer;">
+                  Indietro
+                </button>
+              </div>
+            `;
+            document.body.appendChild(overlay);
+        };
+
+        window.startChainFromDetail = function (chainId) {
+            const overlay = document.getElementById('chain-detail-overlay');
+            if (overlay) overlay.remove();
+            setChainQuestActive(chainId, 0);
+        };
+
+        function renderChainsSection() {
+            let zone = $('chains-zone');
+            if (!zone) return;
+            if (!state.completedChains) state.completedChains = [];
+
+            const inProgress = QUEST_CHAINS.filter(c => {
+                const prog = getChainProgress(c);
+                return prog.completed > 0 && !state.completedChains.includes(c.id);
+            });
+            const notStarted = QUEST_CHAINS.filter(c => {
+                const prog = getChainProgress(c);
+                return prog.completed === 0 && !state.completedChains.includes(c.id);
+            });
+            const completedChains = QUEST_CHAINS.filter(c => state.completedChains.includes(c.id));
+            const allAvailable = [...notStarted]; // chains available for the grid
+
+            let html = `
+              <div class="section-header" style="margin-bottom:14px;">
+                <span class="section-title">Quest chain</span>
+                <span style="font-size:13px;color:var(--text-muted);font-weight:600;">
+                  ${completedChains.length}/${QUEST_CHAINS.length} completate
+                </span>
+              </div>`;
+
+            // In-progress chains (expanded)
+            if (inProgress.length > 0) {
+                html += `<div style="margin-bottom:16px;">`;
+                inProgress.forEach(c => { html += renderChainCard(c, 'expanded'); });
+                html += `</div>`;
+            }
+
+            // Not-started chains (grid, first 4 visible)
+            if (allAvailable.length > 0) {
+                const visible = allAvailable.slice(0, 4);
+                html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">`;
+                visible.forEach(c => { html += renderChainCard(c, 'compact'); });
+                html += `</div>`;
+            }
+
+            // Hidden section: remaining not-started + completed chains
+            const hiddenNotStarted = allAvailable.slice(4);
+            const hasHidden = hiddenNotStarted.length > 0 || completedChains.length > 0;
+
+            if (hasHidden) {
+                const totalHidden = hiddenNotStarted.length + completedChains.length;
+                html += `
+                  <button class="btn-ghost" style="width:100%;justify-content:center;padding:10px;margin-bottom:8px;"
+                    onclick="toggleAllChains()" id="btn-toggle-chains">
+                    Tutte le chain (${allAvailable.length + completedChains.length})
+                  </button>
+                  <div id="all-chains-container" style="display:none;">`;
+
+                // Remaining not-started chains
+                if (hiddenNotStarted.length > 0) {
+                    html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">`;
+                    hiddenNotStarted.forEach(c => { html += renderChainCard(c, 'compact'); });
+                    html += `</div>`;
+                }
+
+                // Completed chains (barred, at bottom)
+                if (completedChains.length > 0) {
+                    html += `<div style="margin-top:8px;">
+                      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;
+                        color:var(--text-muted);margin-bottom:8px;padding-left:2px;">Completate</div>
+                      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">`;
+                    completedChains.forEach(c => { html += renderChainCard(c, 'compact'); });
+                    html += `</div></div>`;
+                }
+
+                html += `</div>`;
+            }
+
+            zone.innerHTML = html;
+            zone.style.display = (inProgress.length + allAvailable.length + completedChains.length > 0) ? 'block' : 'none';
+        }
+
+        window.toggleAllChains = function () {
+            const cont = $('all-chains-container');
+            const btn = $('btn-toggle-chains');
+            if (!cont || !btn) return;
+            const isHidden = cont.style.display === 'none';
+            cont.style.display = isHidden ? 'block' : 'none';
+            btn.textContent = isHidden ? 'Meno chain' : `Tutte le chain`;
+        };
+
+        window.setChainQuestActive = function (chainId, stepIndex) {
+            const chain = QUEST_CHAINS.find(c => c.id === chainId);
+            if (!chain) return;
+            const step = chain.quests[stepIndex];
+            if (!step) return;
+            const pool = getFullPool();
+            const found = pool.find(q => q.title === step.ref);
+            if (!found) { showToast('Quest non trovata nel pool'); return; }
+            state.currentQuest = { ...found, _chainId: chainId, _chainStep: stepIndex };
+            saveLocal();
+            renderActiveQuest();
+            renderChainsSection();
+            showToast('Quest chain avviata');
+            document.getElementById('quest-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+
+        window.activateChainNextStep = function (chainId) {
+            const chain = QUEST_CHAINS.find(c => c.id === chainId);
+            if (!chain) return;
+            if ((state.completedChains || []).includes(chainId)) { showToast('Chain già completata!'); return; }
+            const prog = getChainProgress(chain);
+            if (!prog.nextStep) return;
+            const stepIndex = chain.quests.findIndex(q => q.ref === prog.nextStep.ref);
+            setChainQuestActive(chainId, stepIndex);
+        };
+
+        function renderChainsStats() {
+            const el = $('chains-stats-card');
+            if (!el) return;
+            if (!state.completedChains) state.completedChains = [];
+            const completed = QUEST_CHAINS.filter(c => state.completedChains.includes(c.id));
+            const inProgress = QUEST_CHAINS.filter(c => {
+                const prog = getChainProgress(c);
+                return prog.completed > 0 && !state.completedChains.includes(c.id);
+            });
+            el.innerHTML = `
+              <div class="stats-header"><svg><use href="#ico-trophy"/></svg> Quest chain</div>
+              <div style="display:flex;gap:16px;margin-bottom:16px;">
+                <div style="text-align:center;flex:1;">
+                  <div style="font-family:var(--font-display);font-weight:800;font-size:28px;color:var(--accent);">${completed.length}</div>
+                  <div style="font-size:11px;text-transform:uppercase;color:var(--text-dim);font-weight:700;">Completate</div>
+                </div>
+                <div style="text-align:center;flex:1;">
+                  <div style="font-family:var(--font-display);font-weight:800;font-size:28px;color:var(--text);">${inProgress.length}</div>
+                  <div style="font-size:11px;text-transform:uppercase;color:var(--text-dim);font-weight:700;">In corso</div>
+                </div>
+                <div style="text-align:center;flex:1;">
+                  <div style="font-family:var(--font-display);font-weight:800;font-size:28px;color:var(--text-dim);">${QUEST_CHAINS.length - completed.length - inProgress.length}</div>
+                  <div style="font-size:11px;text-transform:uppercase;color:var(--text-dim);font-weight:700;">Da iniziare</div>
+                </div>
+              </div>
+              ${completed.length > 0 ? `
+                <div style="font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Completate</div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  ${completed.map(c => `
+                    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">
+                      <div style="width:8px;height:8px;border-radius:50%;background:${c.color};flex-shrink:0;box-shadow:0 0 6px ${c.color}66;"></div>
+                      <div style="flex:1;font-size:13px;font-weight:700;color:var(--text);">${c.title}</div>
+                      <div style="font-size:12px;font-weight:700;color:${c.color};">+${c.bonusXP.toLocaleString('it-IT')} XP</div>
+                    </div>`).join('')}
+                </div>` : ''}`;
+        }
+
         /* ── INIT ─────────────────────────────────────────── */
         loadState();
         updateXPUI();
@@ -6636,6 +7772,7 @@
         }
         renderCompleted();
         initSeasonalCarousel();
+        renderChainsSection();
         initAuth();
         initFilterBar();
         handleDeepLinks();
