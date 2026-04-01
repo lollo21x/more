@@ -1,4 +1,4 @@
-const CACHE_NAME = 'more-v6.5';
+const CACHE_NAME = 'more-v6.6';
 const ASSETS = [
     './index.html',
     './questpool.js',
