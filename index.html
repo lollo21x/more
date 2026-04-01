@@ -18,7 +18,8 @@
     <link rel="apple-touch-icon" sizes="167x167" href="logo.png">
     <link rel="icon" href="logo.png">
     <link rel="manifest" href="manifest.json?v=4">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -2788,6 +2789,83 @@
         .chain-card.chain-completed {
             animation: chainPulse 3s ease-in-out infinite;
         }
+
+        /* ── FONT AWESOME INTEGRATION ───────────────────── */
+        .tab-btn i {
+            font-size: 22px;
+        }
+
+        .tab-btn.active i {
+            color: var(--accent);
+        }
+
+        .tab-btn:not(.active) i {
+            color: var(--text-dim);
+        }
+
+        .quest-icon i {
+            font-size: 15px;
+            color: inherit;
+        }
+
+        .quest-icon.icon-easy i {
+            color: var(--diff-easy);
+        }
+
+        .quest-icon.icon-medium i {
+            color: var(--diff-medium);
+        }
+
+        .quest-icon.icon-hard i {
+            color: var(--diff-hard);
+        }
+
+        .quest-xp i {
+            color: var(--accent);
+            font-size: 16px;
+        }
+
+        .xp-level-badge i {
+            color: var(--badge-icon-fill, var(--accent));
+            font-size: 12px;
+        }
+
+        .streak-badge i {
+            color: #ffb347;
+            font-size: 13px;
+        }
+
+        .modal-icon i {
+            color: var(--accent);
+            font-size: 48px;
+            filter: drop-shadow(0 0 12px var(--accent-glow));
+        }
+
+        .btn-icon i {
+            color: var(--text-dim);
+            font-size: 18px;
+        }
+
+        .btn-complete i {
+            color: #0a0a0f;
+            font-size: 13px;
+        }
+
+        .btn-ghost i,
+        .btn-quest-action i {
+            font-size: 13px;
+            color: inherit;
+        }
+
+        .btn-share i {
+            color: var(--accent);
+            font-size: 13px;
+        }
+
+        .section-header i {
+            font-size: 16px;
+            color: var(--text-dim);
+        }
     </style>
 </head>
 
@@ -3103,9 +3181,7 @@
             <!-- XP CARD -->
             <div class="xp-card">
                 <div class="xp-level-badge" id="level-badge">
-                    <svg>
-                        <use href="#ico-crown" />
-                    </svg>
+                    <i class="fa-solid fa-crown"></i>
                     LVL 1 &middot; NOVICE
                 </div>
                 <div class="xp-number" id="xp-display">0</div>
@@ -3114,9 +3190,7 @@
                 </div>
                 <div class="xp-progress-label" id="xp-label">0 / 5.000 XP al prossimo livello</div>
                 <div class="streak-badge" id="streak-badge" style="display: none;">
-                    <svg>
-                        <use href="#ico-flame" />
-                    </svg> <span id="streak-count">0</span>&nbsp;giorni di fila
+                    <i class="fa-solid fa-fire"></i> <span id="streak-count">0</span>&nbsp;giorni di fila
                 </div>
             </div>
 
@@ -3127,15 +3201,11 @@
 
             <div style="display:flex; flex-direction:row; gap:8px; margin-bottom: 16px;">
                 <button class="btn-ghost" id="btn-create-quest"
-                    style="flex:1; justify-content:center; padding:12px; font-size:14px;"><svg
-                        style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:-3px;margin-right:6px">
-                        <use href="#ico-plus" />
-                    </svg>Crea</button>
+                    style="flex:1; justify-content:center; padding:12px; font-size:14px;"><i
+                        class="fa-solid fa-plus"></i>Crea</button>
                 <button class="btn-ghost" id="btn-new-quest"
-                    style="flex:1; justify-content:center; padding:12px; font-size:14px;"><svg
-                        style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;vertical-align:-3px;margin-right:6px">
-                        <use href="#ico-refresh" />
-                    </svg>Genera nuova</button>
+                    style="flex:1; justify-content:center; padding:12px; font-size:14px;"><i
+                        class="fa-solid fa-rotate"></i>Genera nuova</button>
             </div>
 
             <!-- DIFFICULTY FILTER -->
@@ -3167,12 +3237,10 @@
                     <span class="section-title">Quest stagionale <span id="seasonal-counter"
                             style="color:var(--text-muted); font-size:14px; font-weight:600; margin-left:8px;">0/0</span></span>
                     <div style="display:flex;gap:8px">
-                        <button class="btn-icon" id="btn-seasonal-prev" style="width:32px;height:32px;"><svg>
-                                <use href="#ico-arrow-left" />
-                            </svg></button>
-                        <button class="btn-icon" id="btn-seasonal-next" style="width:32px;height:32px;"><svg>
-                                <use href="#ico-arrow-right" />
-                            </svg></button>
+                        <button class="btn-icon" id="btn-seasonal-prev" style="width:32px;height:32px;"><i
+                                class="fa-solid fa-chevron-left"></i></button>
+                        <button class="btn-icon" id="btn-seasonal-next" style="width:32px;height:32px;"><i
+                                class="fa-solid fa-chevron-right"></i></button>
                     </div>
                 </div>
                 <div id="seasonal-countdown-display"
@@ -3208,15 +3276,14 @@
         <main class="content" id="stats-screen" style="display: none; flex-direction: column; flex: 1;">
             <div class="stats-card">
                 <div class="stats-header">
-                    <svg>
-                        <use href="#ico-chart" />
-                    </svg> Statistiche di gioco
+                    <i class="fa-solid fa-chart-column"></i> Statistiche di gioco
                 </div>
                 <div class="avg-time" id="avg-time">Media: -- ore tra le quest</div>
             </div>
 
             <div class="stats-card">
-                <div class="stats-header">Record personali</div>
+                <div class="stats-header"><i class="fa-solid fa-bullseye" style="color: #ffffff;"></i> Record
+                    personali</div>
                 <div class="records-grid">
                     <div class="record-card easy">
                         <div class="record-count" id="stat-easy-cnt">0</div>
@@ -3237,7 +3304,8 @@
             </div>
 
             <div class="stats-card">
-                <div class="stats-header">Cronologia XP (Ultime 16 settimane)</div>
+                <div class="stats-header"><i class="fa-solid fa-clock-rotate-left" style="color: #ffffff;"></i>
+                    Cronologia XP (Ultime 16 settimane)</div>
                 <div class="xp-graph-wrapper">
                     <div class="xp-grid" id="xp-graph"></div>
                 </div>
@@ -3372,7 +3440,6 @@
                 style="display:flex; justify-content:center; padding:calc(12px + var(--safe-top)) 16px 10px; background:rgba(10,10,15,0.85); backdrop-filter:blur(20px); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100;">
                 <div class="pill-segmented-control">
                     <button class="pill-tab active" data-target="profilo">Profilo</button>
-                    <button class="pill-tab" data-target="confronto">Confronto</button>
                     <button class="pill-tab" data-target="amici" style="position:relative;">
                         Amici
                         <span id="pending-friends-badge"
@@ -3385,10 +3452,8 @@
             <!-- SUB-SECTION 1: PROFILO -->
             <div id="sub-profilo" class="profile-sub-section" style="padding:24px 20px; padding-bottom:100px;">
                 <div id="profile-guest-view" style="display:none; text-align:center; padding-top:60px;">
-                    <svg
-                        style="width:64px;height:64px;stroke:var(--text-muted);fill:none;margin:0 auto 20px;display:block;">
-                        <use href="#ico-user" />
-                    </svg>
+                    <i class="fa-solid fa-user-astronaut"
+                        style="font-size:64px;color:var(--text-muted);display:block;margin:0 auto 20px;"></i>
                     <div style="font-family:var(--font-display); font-weight:800; font-size:24px; margin-bottom:12px;">
                         Accedi per il profilo</div>
                     <div style="color:var(--text-dim); font-size:15px; margin-bottom:32px; padding:0 20px;">Crea un
@@ -3403,31 +3468,14 @@
             </div>
 
             <!-- SUB-SECTION 2: CONFRONTO -->
-            <div id="sub-confronto" class="profile-sub-section"
-                style="display:none; padding:24px 20px; padding-bottom:100px;">
-                <div id="confronto-guest-view" style="display:none; text-align:center; padding-top:60px;">
-                    <svg
-                        style="width:64px;height:64px;stroke:var(--text-muted);fill:none;margin:0 auto 20px;display:block;">
-                        <use href="#ico-crosshair" />
-                    </svg>
-                    <div style="font-family:var(--font-display); font-weight:800; font-size:24px; margin-bottom:12px;">
-                        Confronto settimanale</div>
-                    <div style="color:var(--text-dim); font-size:15px; margin-bottom:32px; padding:0 20px;">Accedi per
-                        aggiungere amici e confrontare i vostri XP settimanali.</div>
-                </div>
-                <div id="confronto-logged-view" style="display:none;">
-                    <!-- Confronto layout will be populated by JS -->
-                </div>
-            </div>
+
 
             <!-- SUB-SECTION 3: AMICI -->
             <div id="sub-amici" class="profile-sub-section"
                 style="display:none; padding:24px 20px; padding-bottom:100px;">
                 <div id="amici-guest-view" style="display:none; text-align:center; padding-top:60px;">
-                    <svg
-                        style="width:64px;height:64px;stroke:var(--text-muted);fill:none;margin:0 auto 20px;display:block;">
-                        <use href="#ico-user" />
-                    </svg>
+                    <i class="fa-solid fa-user-astronaut"
+                        style="font-size:64px;color:var(--text-muted);display:block;margin:0 auto 20px;"></i>
                     <div style="font-family:var(--font-display); font-weight:800; font-size:24px; margin-bottom:12px;">
                         Trova amici</div>
                     <div style="color:var(--text-dim); font-size:15px; margin-bottom:32px; padding:0 20px;">Accedi per
@@ -3449,6 +3497,31 @@
 
                     <div class="section-title" style="margin-bottom:12px;">I tuoi amici</div>
                     <div id="friends-list"></div>
+
+                    <div class="section-title" style="margin-bottom:12px; margin-top:28px;">Confronto</div>
+                    <div id="confronto-guest-view" style="display:none; text-align:center; padding-top:20px;">
+                        <i class="fa-solid fa-ranking-star"
+                            style="font-size:64px;color:var(--text-muted);display:block;margin:0 auto 20px;"></i>
+                        <div
+                            style="font-family:var(--font-display); font-weight:800; font-size:24px; margin-bottom:12px;">
+                            Confronto settimanale</div>
+                        <div style="color:var(--text-dim); font-size:15px; margin-bottom:32px; padding:0 20px;">Accedi
+                            per
+                            aggiungere amici e confrontare i vostri XP settimanali.</div>
+                    </div>
+                    <div id="confronto-logged-view" style="display:none;">
+                        <!-- Confronto layout will be populated by JS -->
+                    </div>
+
+                    <div class="section-title" style="margin-bottom:12px; margin-top:28px;">Feed amici</div>
+                    <div id="squad-feed-list">
+                        <div class="quest-empty" style="padding:20px; font-size:13px;">
+                            <i class="fa-solid fa-ghost"
+                                style="font-size:32px; display:block; margin:0 auto 10px; color:var(--text-muted);"></i>
+                            Nessuna attività recente degli amici.
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -3463,24 +3536,16 @@
         <!-- TAB BAR -->
         <nav class="tab-bar">
             <button class="tab-btn active" id="btn-home">
-                <svg>
-                    <use href="#ico-home" />
-                </svg>
+                <i class="fa-solid fa-house"></i>
             </button>
             <button class="tab-btn" id="btn-tab-stats">
-                <svg>
-                    <use href="#ico-chart" />
-                </svg>
+                <i class="fa-solid fa-chart-simple"></i>
             </button>
             <button class="tab-btn" id="btn-tab-quests" title="Impostazioni">
-                <svg>
-                    <use href="#ico-settings" />
-                </svg>
+                <i class="fa-solid fa-gear"></i>
             </button>
             <button class="tab-btn" id="btn-tab-profile" title="Profilo">
-                <svg>
-                    <use href="#ico-user" />
-                </svg>
+                <i class="fa-solid fa-user"></i>
             </button>
         </nav>
     </div>
@@ -3489,9 +3554,7 @@
     <div class="modal-overlay" id="achievement-overlay" style="z-index: 600;">
         <div class="modal-content"
             style="background: rgba(200, 241, 53, 0.05); border: 2px solid var(--accent); animation: slideUp 0.5s var(--spring);">
-            <div class="modal-icon"><svg style="width:56px;height:56px;fill:var(--accent);">
-                    <use href="#ico-trophy" />
-                </svg></div>
+            <div class="modal-icon"><i class="fa-solid fa-trophy"></i></div>
             <div class="modal-hype" style="font-size:22px; color:var(--text); margin-bottom: 8px;">Obiettivo sbloccato
             </div>
             <div class="modal-xp" id="ach-title" style="font-size:32px; margin-bottom:12px;">Titolo</div>
@@ -3514,9 +3577,7 @@
             <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-bottom:16px;">
                 <label for="review-photo-upload" class="btn-ghost"
                     style="cursor:pointer; display:flex; align-items:center; gap:8px; border-color:var(--accent); color:var(--accent);">
-                    <svg style="width:16px;height:16px;stroke:var(--accent);fill:none;">
-                        <use href="#ico-plus" />
-                    </svg> <span style="font-weight: 800;">Aggiungi/cambia foto</span>
+                    <i class="fa-solid fa-plus"></i> <span style="font-weight: 800;">Aggiungi/cambia foto</span>
                 </label>
                 <button class="btn-ghost" id="btn-remove-photo"
                     style="display:none; padding:8px 12px; border-color:var(--diff-hard); color:var(--diff-hard);">Rimuovi</button>
@@ -3541,16 +3602,12 @@
     <!-- ────────── XP MODAL ────────── -->
     <div class="modal-overlay" id="xp-modal">
         <div class="modal-content">
-            <div class="modal-icon"><svg>
-                    <use href="#ico-diamond" />
-                </svg></div>
+            <div class="modal-icon"><i class="fa-solid fa-gem"></i></div>
             <div class="modal-xp" id="modal-xp-text">+1000 XP</div>
             <div class="modal-quest-name" id="modal-quest-name">Quest name</div>
             <div class="modal-hype" id="modal-hype">Leggendario!</div>
             <div class="modal-buttons">
-                <button class="btn-share" id="btn-share-card"><svg>
-                        <use href="#ico-share" />
-                    </svg>Condividi</button>
+                <button class="btn-share" id="btn-share-card"><i class="fa-solid fa-share-nodes"></i>Condividi</button>
                 <button class="btn-modal-close" id="btn-close-modal">Continua</button>
             </div>
         </div>
@@ -3830,7 +3887,7 @@
                 id: "chain_silence",
                 title: "Il monaco urbano",
                 description: "Disconnettiti dal rumore del mondo, un passo alla volta.",
-                icon: "ico-ghost",
+                icon: "fa-solid fa-city",
                 color: "#4fa3ff",
                 colorBg: "rgba(79, 163, 255, 0.08)",
                 colorBorder: "rgba(79, 163, 255, 0.22)",
@@ -3849,7 +3906,7 @@
                 id: "chain_explorer",
                 title: "L'esploratore",
                 description: "Il mondo è più grande di quanto pensi. Usalo.",
-                icon: "ico-crosshair",
+                icon: "fa-solid fa-compass",
                 color: "#c8f135",
                 colorBg: "rgba(200, 241, 53, 0.08)",
                 colorBorder: "rgba(200, 241, 53, 0.20)",
@@ -3868,7 +3925,7 @@
                 id: "chain_night",
                 title: "Il cacciatore notturno",
                 description: "Quando tutti dormono, tu sei sveglio e vivo.",
-                icon: "ico-flame",
+                icon: "fa-solid fa-cloud-moon",
                 color: "#a855f7",
                 colorBg: "rgba(168, 85, 247, 0.08)",
                 colorBorder: "rgba(168, 85, 247, 0.22)",
@@ -3887,7 +3944,7 @@
                 id: "chain_warrior",
                 title: "Il guerriero del corpo",
                 description: "Ogni limite è solo un confine da spostare.",
-                icon: "ico-shield",
+                icon: "fa-solid fa-shield",
                 color: "#ff4f4f",
                 colorBg: "rgba(255, 79, 79, 0.08)",
                 colorBorder: "rgba(255, 79, 79, 0.22)",
@@ -3906,7 +3963,7 @@
                 id: "chain_cook",
                 title: "Il cuoco del fuoco",
                 description: "Dal grano al pane, dalle mani al piatto.",
-                icon: "ico-diamond",
+                icon: "fa-solid fa-utensils",
                 color: "#ffb347",
                 colorBg: "rgba(255, 179, 71, 0.08)",
                 colorBorder: "rgba(255, 179, 71, 0.22)",
@@ -3926,7 +3983,7 @@
                 id: "chain_urbex",
                 title: "L'urbexer",
                 description: "Il mondo ha uno strato dimenticato. Tu sai vederlo.",
-                icon: "ico-crosshair",
+                icon: "fa-solid fa-house-chimney-crack",
                 color: "#94a3b8",
                 colorBg: "rgba(148, 163, 184, 0.07)",
                 colorBorder: "rgba(148, 163, 184, 0.20)",
@@ -3946,7 +4003,7 @@
                 id: "chain_solo",
                 title: "Il solitario",
                 description: "La compagnia migliore che puoi avere sei tu stesso.",
-                icon: "ico-user",
+                icon: "fa-solid fa-user",
                 color: "#38bdf8",
                 colorBg: "rgba(56, 189, 248, 0.07)",
                 colorBorder: "rgba(56, 189, 248, 0.20)",
@@ -3965,7 +4022,7 @@
                 id: "chain_writer",
                 title: "Il narratore",
                 description: "La tua storia merita di essere scritta. Inizia ora.",
-                icon: "ico-bookmark",
+                icon: "fa-solid fa-pen-fancy",
                 color: "#f472b6",
                 colorBg: "rgba(244, 114, 182, 0.07)",
                 colorBorder: "rgba(244, 114, 182, 0.20)",
@@ -3985,7 +4042,7 @@
                 id: "chain_survivor",
                 title: "Il sopravvissuto",
                 description: "Se sparisse tutto, sapresti cavartela?",
-                icon: "ico-shield",
+                icon: "fa-solid fa-binoculars",
                 color: "#84cc16",
                 colorBg: "rgba(132, 204, 22, 0.07)",
                 colorBorder: "rgba(132, 204, 22, 0.20)",
@@ -4005,7 +4062,7 @@
                 id: "chain_mind",
                 title: "L'atleta della mente",
                 description: "La tua mente è un muscolo. Allenala fino al limite.",
-                icon: "ico-crown",
+                icon: "fa-solid fa-brain",
                 color: "#e879f9",
                 colorBg: "rgba(232, 121, 249, 0.07)",
                 colorBorder: "rgba(232, 121, 249, 0.20)",
@@ -4024,7 +4081,7 @@
                 id: "chain_mountain",
                 title: "Il montanaro",
                 description: "La quota è una conquista. Ogni metro conta.",
-                icon: "ico-crosshair",
+                icon: "fa-solid fa-mountain",
                 color: "#f8fafc",
                 colorBg: "rgba(248, 250, 252, 0.05)",
                 colorBorder: "rgba(248, 250, 252, 0.15)",
@@ -4043,7 +4100,7 @@
                 id: "chain_maker",
                 title: "L'artigiano",
                 description: "Costruire con le mani è la forma più antica di magia.",
-                icon: "ico-sword",
+                icon: "fa-solid fa-hammer",
                 color: "#fb923c",
                 colorBg: "rgba(251, 146, 60, 0.07)",
                 colorBorder: "rgba(251, 146, 60, 0.20)",
@@ -4861,7 +4918,7 @@
                 levelBadge.style.setProperty('--badge-icon-fill', '');
             }
 
-            levelBadge.innerHTML = `<svg style="fill:${titleColor || 'var(--accent)'}"><use href="#ico-crown"/></svg> LVL ${info.level} &middot; ${displayTitle.toUpperCase()}`;
+            levelBadge.innerHTML = `<i class="fa-solid fa-crown"></i> LVL ${info.level} &middot; ${displayTitle.toUpperCase()}`;
 
             if (info.nextLevelXP) {
                 const progress = ((state.xp - info.prevLevelXP) / (info.nextLevelXP - info.prevLevelXP)) * 100;
@@ -4884,16 +4941,16 @@
 
         /* ── QUEST RENDERING ──────────────────────────────── */
         function getQuestIconSVG(difficulty) {
-            if (difficulty === 'boss') return '<svg><use href="#ico-trophy"/></svg>';
-            if (difficulty === 'hard') return '<svg><use href="#ico-shield"/></svg>';
-            if (difficulty === 'medium') return '<svg><use href="#ico-crosshair"/></svg>';
-            return '<svg><use href="#ico-crosshair"/></svg>';
+            if (difficulty === 'boss') return '<i class="fa-solid fa-dragon"></i>';
+            if (difficulty === 'hard') return '<i class="fa-solid fa-skull-crossbones"></i>';
+            if (difficulty === 'medium') return '<i class="fa-solid fa-bolt"></i>';
+            return '<i class="fa-solid fa-seedling"></i>';
         }
 
         function renderActiveQuest() {
             if (!state.currentQuest) {
                 questContainer.innerHTML = `<div class="quest-empty">
-      <svg><use href="#ico-sword"/></svg>
+      <i class="fa-solid fa-scroll" style="font-size:40px;display:block;margin:0 auto 10px;"></i>
       Nessuna quest attiva.<br>Genera la tua prima quest!
     </div>`;
                 return;
@@ -4915,13 +4972,13 @@
                   <p class="quest-desc" style="color:var(--text); font-size:15px; -webkit-line-clamp:unset; line-clamp:unset; margin-bottom: 20px;">${escapeHtml(q.description)}</p>
                   ${warningHtml}
                   <div class="quest-footer">
-                    <span class="quest-xp" style="color:var(--diff-hard); text-shadow:0 0 10px rgba(255, 79, 79, 0.5);"><svg style="fill:var(--diff-hard);"><use href="#ico-diamond"/></svg>+${q.xp.toLocaleString('it-IT')} XP</span>
+                    <span class="quest-xp" style="color:var(--diff-hard); text-shadow:0 0 10px rgba(255, 79, 79, 0.5);"><i class="fa-solid fa-gem"></i>+${q.xp.toLocaleString('it-IT')} XP</span>
                   </div>
                   <div class="quest-actions" style="margin-top:16px;">
-                    <button class="btn-quest-action qa-small" id="btn-challenge-quest"><svg><use href="#ico-send"/></svg><span class="qa-label">Sfida un amico</span></button>
-                    <button class="btn-quest-action qa-small" id="btn-bookmark-quest"><svg style="fill:none;stroke:currentColor;stroke-width:2;"><use href="#ico-bookmark"/></svg><span class="qa-label">Salva</span></button>
+                    <button class="btn-quest-action qa-small" id="btn-challenge-quest"><i class="fa-solid fa-arrow-up-from-bracket"></i><span class="qa-label">Sfida un amico</span></button>
+                    <button class="btn-quest-action qa-small" id="btn-bookmark-quest"><i class="fa-solid fa-bookmark"></i><span class="qa-label">Salva</span></button>
                   </div>
-                  <button class="btn-complete" id="btn-complete-quest" style="width:100%; margin-top:16px; padding:14px; font-size:15px; justify-content:center;"><svg><use href="#ico-check"/></svg>Sconfitto</button>
+                  <button class="btn-complete" id="btn-complete-quest" style="width:100%; margin-top:16px; padding:14px; font-size:15px; justify-content:center;"><i class="fa-solid fa-check"></i>Sconfitto</button>
                 </div>`;
             } else {
                 const diffClass = q.difficulty === 'easy' ? 'diff-easy' : q.difficulty === 'medium' ? 'diff-medium' : 'diff-hard';
@@ -4943,13 +5000,13 @@
           <p class="quest-desc">${escapeHtml(q.description)}</p>
           ${warningHtml}
               <div class="quest-footer">
-                <span class="quest-xp"><svg><use href="#ico-diamond"/></svg>+${q.xp.toLocaleString('it-IT')} XP</span>
+                <span class="quest-xp"><i class="fa-solid fa-gem"></i>+${q.xp.toLocaleString('it-IT')} XP</span>
               </div>
               <div class="quest-actions" style="margin-top:16px;">
-                <button class="btn-quest-action qa-small" id="btn-challenge-quest"><svg><use href="#ico-send"/></svg><span class="qa-label">Sfida un amico</span></button>
-                <button class="btn-quest-action qa-small" id="btn-bookmark-quest"><svg style="fill:none;stroke:currentColor;stroke-width:2;"><use href="#ico-bookmark"/></svg><span class="qa-label">Salva</span></button>
+                <button class="btn-quest-action qa-small" id="btn-challenge-quest"><i class="fa-solid fa-paper-plane"></i><span class="qa-label">Sfida un amico</span></button>
+                <button class="btn-quest-action qa-small" id="btn-bookmark-quest"><i class="fa-solid fa-bookmark"></i><span class="qa-label">Salva</span></button>
               </div>
-              <button class="btn-complete" id="btn-complete-quest" style="width:100%; margin-top:16px; padding:14px; font-size:15px; justify-content:center;"><svg><use href="#ico-check"/></svg>Completata</button>
+              <button class="btn-complete" id="btn-complete-quest" style="width:100%; margin-top:16px; padding:14px; font-size:15px; justify-content:center;"><i class="fa-solid fa-check"></i>Completata</button>
             </div>`;
             }
 
@@ -5024,7 +5081,7 @@
                         </div>
                         <p class="quest-desc">${escapeHtml(q.description || '')}</p>
                         <div class="quest-footer">
-                            <span class="quest-xp"><svg><use href="#ico-diamond"/></svg>+${(q.xp || 0).toLocaleString('it-IT')} XP</span>
+                            <span class="quest-xp"><i class="fa-solid fa-gem"></i>+${(q.xp || 0).toLocaleString('it-IT')} XP</span>
                             <div style="display:flex;gap:8px;">
                                 ${done
                         ? `<span style="font-size:12px; color:var(--diff-easy); font-weight:600;">✓ Completata</span>`
@@ -5062,7 +5119,7 @@
         function renderCompleted() {
             if (state.completed.length === 0) {
                 completedCont.innerHTML = `<div class="completed-empty">
-      <svg><use href="#ico-ghost"/></svg>
+      <i class="fa-solid fa-ghost" style="font-size:32px;display:block;margin:0 auto 8px;"></i>
       Nessuna quest completata... ancora.
     </div>`;
                 return;
@@ -5155,7 +5212,7 @@
                             <span class="quest-title" style="text-decoration: line-through;">${escapeHtml(state.dailyCompleted.questTitle)}</span>
                         </div>
                         <div class="quest-footer" style="margin-top:16px;">
-                            <button class="btn-ghost disabled"><svg style="width:14px;height:14px;stroke:currentColor;fill:none;vertical-align:-2px;margin-right:2px"><use href="#ico-check"/></svg>Completata oggi</button>
+                            <button class="btn-ghost disabled"><i class="fa-solid fa-check"></i>Completata oggi</button>
                         </div>
                     </div>`;
                 $('daily-countdown').innerText = 'Torna domani!';
@@ -5195,9 +5252,9 @@
                   </div>
                   <p class="quest-desc">${escapeHtml(dailyQuest.description)}</p>
                   <div class="quest-footer">
-                    <span class="quest-xp"><svg><use href="#ico-diamond"/></svg>+${(dailyQuest.xp + 500).toLocaleString('it-IT')} XP</span>
+                    <span class="quest-xp"><i class="fa-solid fa-gem"></i>+${(dailyQuest.xp + 500).toLocaleString('it-IT')} XP</span>
                   </div>
-                  <button class="btn-complete" id="btn-complete-daily" style="width:100%; margin-top:16px; padding:14px; font-size:15px; justify-content:center;"><svg><use href="#ico-check"/></svg>Completata</button>
+                  <button class="btn-complete" id="btn-complete-daily" style="width:100%; margin-top:16px; padding:14px; font-size:15px; justify-content:center;"><i class="fa-solid fa-check"></i>Completata</button>
                 </div>`;
 
             $('btn-complete-daily').addEventListener('click', () => promptQuestReview(dailyQuest, 'daily'));
@@ -5563,8 +5620,8 @@
                 const iconClass = `icon-${q.difficulty}`;
 
                 let actionBtn = isCompleted
-                    ? `<button class="btn-ghost disabled" style="width:100%; justify-content:center; padding:12px; font-size:15px; margin-top:16px;"><svg style="width:16px;height:16px;stroke:currentColor;fill:none;vertical-align:-3px;margin-right:6px"><use href="#ico-check"/></svg>Completata</button>`
-                    : `<button class="btn-complete" style="width:100%; justify-content:center; padding:12px; font-size:15px; margin-top:16px;" onclick="promptQuestReview(currentSeasonalQuests[${i}], 'seasonal', ${i})"><svg><use href="#ico-check"/></svg>Completata</button>`;
+                    ? `<button class="btn-ghost disabled" style="width:100%; justify-content:center; padding:12px; font-size:15px; margin-top:16px;"><i class="fa-solid fa-check"></i>Completata</button>`
+                    : `<button class="btn-complete" style="width:100%; justify-content:center; padding:12px; font-size:15px; margin-top:16px;" onclick="promptQuestReview(currentSeasonalQuests[${i}], 'seasonal', ${i})"><i class="fa-solid fa-check"></i>Completata</button>`;
 
                 return `
                     <div class="seasonal-card ${isCompleted ? 'completed' : ''}" style="border: 2px solid ${isCompleted ? 'var(--border)' : info.color}; box-shadow: ${isCompleted ? 'none' : `0 0 15px ${info.color}33`};">
@@ -5575,7 +5632,7 @@
                       </div>
                       <p class="quest-desc" style="margin-bottom:12px;">${escapeHtml(q.description)}</p>
                       <div class="quest-footer">
-                        <span class="quest-xp"><svg><use href="#ico-diamond"/></svg>+${q.xp.toLocaleString('it-IT')} XP</span>
+                        <span class="quest-xp"><i class="fa-solid fa-gem"></i>+${q.xp.toLocaleString('it-IT')} XP</span>
                       </div>
                       ${actionBtn}
                     </div>`;
@@ -5734,7 +5791,7 @@
             if (available.length === 0) {
                 questContainer.innerHTML = `
       <div class="victory-card">
-        <svg><use href="#ico-trophy"/></svg>
+        <i class="fa-solid fa-trophy"></i>
         <div class="victory-title">Tutte le quest completate!</div>
         <p class="victory-msg">Hai completato tutte le quest disponibili.<br>Sei una leggenda. Resetta per ricominciare l'avventura.</p>
         <button class="btn-victory" id="btn-victory-reset">Ricomincia</button>
@@ -5907,7 +5964,7 @@
 
             renderProfileScreen();
             // If we are on comparison tab, restart listener
-            if ($('sub-confronto').style.display === 'block') renderConfrontoTab();
+            if ($('sub-amici').style.display === 'block') renderConfrontoTab();
         });
 
         function renderStatsScreen() {
@@ -5977,77 +6034,77 @@
                 {
                     id: 'first_step',
                     name: 'Primo passo',
-                    icon: '#ico-check',
+                    icon: 'fa-solid fa-flag',
                     color: '#4fa3ff',
                     unlocked: totalQuests >= 1
                 },
                 {
                     id: 'explorer',
                     name: 'Esploratore',
-                    icon: '#ico-crosshair',
+                    icon: 'fa-solid fa-crosshairs',
                     color: '#4fa3ff',
                     unlocked: totalQuests >= 10
                 },
                 {
                     id: 'veteran',
                     name: 'Veterano',
-                    icon: '#ico-shield',
+                    icon: 'fa-solid fa-shield',
                     color: '#4fa3ff',
                     unlocked: totalQuests >= 25
                 },
                 {
                     id: 'trophy_collector',
                     name: 'Collezionista',
-                    icon: '#ico-bookmark',
+                    icon: 'fa-solid fa-bookmark',
                     color: '#a3ff4f',
                     unlocked: totalQuests >= 50
                 },
                 {
                     id: 'titan',
                     name: 'Titano',
-                    icon: '#ico-sword',
+                    icon: 'fa-solid fa-dumbbell',
                     color: '#ff4f4f',
                     unlocked: totalQuests >= 100
                 },
                 {
                     id: 'centurion',
                     name: 'Centurione',
-                    icon: '#ico-user',
+                    icon: 'fa-solid fa-user',
                     color: '#ff4f4f',
                     unlocked: totalQuests >= 250
                 },
                 {
                     id: 'streak_week',
                     name: 'Costanza',
-                    icon: '#ico-star',
+                    icon: 'fa-solid fa-star',
                     color: '#ffb347',
                     unlocked: streak >= 7
                 },
                 {
                     id: 'streak_month',
                     name: 'Instancabile',
-                    icon: '#ico-flame',
+                    icon: 'fa-solid fa-fire',
                     color: '#ffb347',
                     unlocked: streak >= 30
                 },
                 {
                     id: 'wealthy',
                     name: 'Ricco',
-                    icon: '#ico-diamond',
+                    icon: 'fa-solid fa-compass',
                     color: '#a3ff4f',
                     unlocked: totalXP >= 10000
                 },
                 {
                     id: 'xp_master',
                     name: 'Leggenda',
-                    icon: '#ico-trophy',
+                    icon: 'fa-solid fa-trophy',
                     color: '#ffb347',
                     unlocked: totalXP >= 50000
                 },
                 {
                     id: 'grandmaster',
                     name: 'Maestro',
-                    icon: '#ico-crown',
+                    icon: 'fa-solid fa-medal',
                     color: '#ffb347',
                     unlocked: totalXP >= 100000
                 }
@@ -6098,7 +6155,7 @@
             const initial = (cleanUsername || displayName || 'U').charAt(0).toUpperCase();
 
             // Render Recent Quests 
-            let recentHTML = '<div class="quest-empty"><svg><use href="#ico-sword"/></svg>Nessuna quest recente</div>';
+            let recentHTML = '<div class="quest-empty"><i class="fa-solid fa-scroll" style="font-size:40px;display:block;margin:0 auto 10px;"></i>Nessuna quest recente</div>';
             if (state.completed && state.completed.length > 0) {
                 const recent = [...state.completed].sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt)).slice(0, 5);
                 recentHTML = '<ul class="completed-list">';
@@ -6141,8 +6198,8 @@
                         bgStyle = `background:rgba(${r},${g},${b},0.15);color:${col};`;
                         colorStyle = col;
                     }
-                    return `<div class="xp-level-badge" style="margin-bottom:12px;${bgStyle}">
-                            <svg style="fill:${colorStyle || 'var(--accent)'}"><use href="#ico-crown"/></svg>
+                    return `<div class="xp-level-badge" style="margin-bottom:12px;${bgStyle};--badge-icon-fill:${colorStyle || 'var(--accent)'}">
+                            <i class="fa-solid fa-crown" style="color:var(--badge-icon-fill)"></i>
                             LVL ${lvl} &middot; ${titLabel.toUpperCase()}
                         </div>`;
                 })()}
@@ -6186,8 +6243,8 @@
                 </div>
 
                 <div style="display: flex; gap: 12px; margin-bottom: 32px;">
-                    <button id="btn-edit-profile" class="btn-ghost" style="flex: 1; padding: 12px; font-size: 14px; text-align: center;"><svg style="width:16px;height:16px;stroke:currentColor;fill:none;vertical-align:-3px;margin-right:6px"><use href="#ico-pen"/></svg>Modifica profilo</button>
-                    ${state.profilePublic ? `<button id="btn-share-profile" class="btn-complete" style="flex: 1; padding: 12px; font-size: 14px; text-align: center;"><svg style="width:16px;height:16px;stroke:#0a0a0f;fill:none;vertical-align:-3px;margin-right:6px"><use href="#ico-share"/></svg>Condividi</button>` : `<button class="btn-complete disabled" style="flex: 1; padding: 12px; font-size: 14px; text-align: center; opacity: 0.5;" title="Rendi il profilo pubblico per condividerlo"><svg style="width:16px;height:16px;stroke:#0a0a0f;fill:none;vertical-align:-3px;margin-right:6px"><use href="#ico-share"/></svg>Privato</button>`}
+                    <button id="btn-edit-profile" class="btn-ghost" style="flex: 1; padding: 12px; font-size: 14px; text-align: center;"><i class="fa-solid fa-pen-to-square"></i>Modifica profilo</button>
+                    ${state.profilePublic ? `<button id="btn-share-profile" class="btn-complete" style="flex: 1; padding: 12px; font-size: 14px; text-align: center;"><i class="fa-solid fa-share-nodes"></i>Condividi</button>` : `<button class="btn-complete disabled" style="flex: 1; padding: 12px; font-size: 14px; text-align: center; opacity: 0.5;" title="Rendi il profilo pubblico per condividerlo"><i class="fa-solid fa-share-nodes"></i>Privato</button>`}
                 </div>
             `;
 
@@ -6241,7 +6298,7 @@
                     targetSec.classList.add('tab-content-enter');
                 }
 
-                if (targetId === 'confronto') renderConfrontoTab();
+                if (targetId === 'amici') renderConfrontoTab();
                 if (targetId === 'salvati') renderSavedQuestsTab();
                 if (targetId === 'amici') {
                     if (unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
@@ -6274,7 +6331,7 @@
                 const accepted = allReqs.filter(r => r.status === 'accepted');
 
                 if (accepted.length === 0) {
-                    subConfronto.innerHTML = '<div class="quest-empty"><svg><use href="#ico-sword"/></svg>Aggiungi amici per confrontarti!</div>';
+                    subConfronto.innerHTML = '<div class="quest-empty"><i class="fa-solid fa-scroll" style="font-size:40px;display:block;margin:0 auto 10px;"></i>Aggiungi amici per confrontarti!</div>';
                     return;
                 }
 
@@ -6507,6 +6564,48 @@
             loadFriends();
         }
 
+
+        async function loadSquadFeed(friendUids) {
+            const container = $('squad-feed-list');
+            if (!container || !friendUids || friendUids.length === 0) return;
+
+            try {
+                const items = [];
+                for (const uid of friendUids.slice(0, 10)) {
+                    const snap = await fb.getDoc(fb.doc(fb.db, 'more_users', uid));
+                    if (!snap.exists()) continue;
+                    const d = snap.data();
+                    const name = d.displayName || (d.username || 'amico').replace(/^@/, '');
+                    const color = d.avatarColor || '#555';
+                    const init = name.charAt(0).toUpperCase();
+                    const allQ = [...(d.completed || []), ...(d.bossCompleted || [])];
+                    allQ.forEach(q => {
+                        if (q.completedAt) items.push({ ...q, _name: name, _color: color, _init: init });
+                    });
+                }
+                if (items.length === 0) return;
+
+                items.sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
+                const recent = items.slice(0, 20);
+
+                const diffClass = d => d === 'easy' ? 'diff-easy' : d === 'medium' ? 'diff-medium' : d === 'hard' ? 'diff-hard' : 'diff-hard';
+                const diffLabel = d => d === 'easy' ? 'Facile' : d === 'medium' ? 'Media' : d === 'hard' ? 'Difficile' : 'Boss';
+
+                container.innerHTML = recent.map(q => `
+            <div class="completed-item" style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
+                <div style="width:32px;height:32px;border-radius:50%;background:${q._color};display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:13px;color:#fff;flex-shrink:0;">${q._init}</div>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(q.title)}</div>
+                    <div style="font-size:11px;color:var(--text-dim);">${escapeHtml(q._name)} &middot; ${getRelativeTime(q.completedAt)}</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;">
+                    <span style="font-family:var(--font-display);font-weight:800;font-size:13px;color:var(--accent);">+${(q.xp || 0).toLocaleString('it-IT')}</span>
+                    <span class="diff-badge ${diffClass(q.difficulty)}" style="font-size:9px;padding:2px 6px;">${diffLabel(q.difficulty)}</span>
+                </div>
+            </div>`).join('');
+            } catch (e) { console.error('Squad feed error:', e); }
+        }
+
         async function loadFriends() {
             if (!currentUser || !fb) return;
             const pendingList = $('pending-requests-list');
@@ -6600,9 +6699,12 @@
                         `;
                     }
                     if (aHTML) friendsList.innerHTML = aHTML;
-                    else friendsList.innerHTML = '<div class="quest-empty"><svg><use href="#ico-user"/></svg>Nessun amico aggiunto</div>';
+                    else friendsList.innerHTML = '<div class="quest-empty"><i class="fa-solid fa-user" style="color: rgb(0, 0, 0);"></i>Nessun amico aggiunto</div>';
+
+                    const friendUids = accepted.map(r => r.from === currentUser.uid ? r.to : r.from);
+                    loadSquadFeed(friendUids);
                 } else if (friendsList) {
-                    friendsList.innerHTML = '<div class="quest-empty"><svg><use href="#ico-user"/></svg>Nessun amico aggiunto</div>';
+                    friendsList.innerHTML = '<div class="quest-empty"><i class="fa-solid fa-user" style="color: rgb(0, 0, 0);"></i>Nessun amico aggiunto</div>';
                 }
 
             } catch (err) {
@@ -6903,7 +7005,7 @@
                         <div style="width:72px;height:72px;border-radius:50%;background:${avatarBg};margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:28px;color:#fff;">${initial}</div>
                         <div style="font-family:var(--font-display);font-weight:800;font-size:20px;margin-bottom:4px;">${escapeHtml(userData.displayName || cleanUsername)}</div>
                         <div style="color:var(--text-dim);font-size:14px;margin-bottom:12px;">@${escapeHtml(cleanUsername)}</div>
-                        <div class="xp-level-badge" style="margin-bottom:12px;"><svg><use href="#ico-crown"/></svg>LVL ${pInfo.level} &middot; ${pInfo.name.toUpperCase()}</div>
+                        <div class="xp-level-badge" style="margin-bottom:12px;"><i class="fa-solid fa-crown"></i>LVL ${pInfo.level} &middot; ${pInfo.name.toUpperCase()}</div>
                         ${userData.bio ? `<div style="font-size:14px;background:rgba(255,255,255,0.03);padding:12px;border-radius:12px;font-style:italic;">"${escapeHtml(userData.bio)}"</div>` : ''}
                     </div>
                     <div class="xp-card" style="display:flex;justify-content:space-around;padding:16px;margin-bottom:24px;">
@@ -7009,7 +7111,7 @@
                 challengeBannerCont.innerHTML = `
                     <div class="challenge-banner" style="flex-direction:column; align-items:flex-start; gap:8px; padding:14px 16px; background:rgba(79,163,255,0.08); border:1px solid rgba(79,163,255,0.2); border-radius:var(--radius-sm); margin-bottom:16px;">
                         <div style="display:flex; align-items:center; gap:8px;">
-                            <svg style="width:16px;height:16px;stroke:var(--diff-easy);fill:none;flex-shrink:0;stroke-width:2;"><use href="#ico-send"/></svg>
+                            <i class="fa-solid fa-paper-plane"></i>
                             <span style="font-weight:700; color:var(--text); font-size:14px;">Sfida da <strong style="color:var(--diff-easy);">${escapeHtml(_decodedFrom)}</strong></span>
                         </div>
                         <div style="font-size:13px; color:var(--text-dim); padding-left:24px; font-style:italic;">"${escapeHtml(_decodedTitle)}"</div>
@@ -7238,7 +7340,7 @@
                                 <div style="width:72px;height:72px;border-radius:50%;background:${avatarBg};margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:28px;color:#fff;">${initial}</div>
                                 <div style="font-family:var(--font-display);font-weight:800;font-size:20px;margin-bottom:4px;">${escapeHtml(data.displayName || cleanU)}</div>
                                 <div style="color:var(--text-dim);font-size:14px;margin-bottom:12px;">@${escapeHtml(cleanU)}</div>
-                                <div class="xp-level-badge" style="margin-bottom:12px;"><svg><use href="#ico-crown"/></svg>LVL ${pInfo.level} &middot; ${pInfo.name.toUpperCase()}</div>
+                                <div class="xp-level-badge" style="margin-bottom:12px;"><i class="fa-solid fa-crown"></i>LVL ${pInfo.level} &middot; ${pInfo.name.toUpperCase()}</div>
                                 ${data.bio ? `<div style="font-size:14px;background:rgba(255,255,255,0.03);padding:12px;border-radius:12px;font-style:italic;">"${escapeHtml(data.bio)}"</div>` : ''}
                             </div>
                             
@@ -7330,9 +7432,7 @@
                   margin: 0 auto 20px;
                   filter: drop-shadow(0 0 12px ${chain.color});
                 ">
-                  <svg style="width:36px;height:36px;stroke:${chain.color};fill:none;stroke-width:2;">
-                    <use href="#${chain.icon}"/>
-                  </svg>
+                  <i class="${chain.icon}" style="font-size:36px;color:${chain.color};"></i>
                 </div>
                 <div style="font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${chain.color};margin-bottom:8px;font-family:var(--font-display);">
                   Catena completata
@@ -7364,7 +7464,7 @@
                 </div>
                 <button class="btn-complete" style="width:100%;padding:14px;font-size:15px;justify-content:center;"
                   onclick="document.getElementById('chain-complete-modal').remove();">
-                  <svg><use href="#ico-check"/></svg>Epico!
+                  <i class="fa-solid fa-check"></i>Epico!
                 </button>
               </div>`;
             document.body.appendChild(modal);
@@ -7392,14 +7492,12 @@
                     position:relative;overflow:hidden;${isComplete ? 'opacity:0.55;' : ''}
                   ">
                     ${isComplete ? `<div style="position:absolute;top:8px;right:8px;">
-                      <svg style="width:14px;height:14px;stroke:${chain.color};fill:none;stroke-width:2.5;"><use href="#ico-check"/></svg>
+                      <i class="fa-solid fa-check"></i>
                     </div>` : ''}
                     <div style="width:32px;height:32px;border-radius:8px;background:${chain.colorBg};
                       border:1px solid ${chain.colorBorder};display:flex;align-items:center;
                       justify-content:center;margin-bottom:10px;">
-                      <svg style="width:16px;height:16px;stroke:${chain.color};fill:none;stroke-width:2;">
-                        <use href="#${chain.icon}"/>
-                      </svg>
+                      <i class="${chain.icon}" style="font-size:16px;color:${chain.color};"></i>
                     </div>
                     <div style="font-family:var(--font-display);font-weight:800;font-size:13px;
                       color:var(--text);margin-bottom:6px;line-height:1.3;${isComplete ? 'text-decoration:line-through;opacity:0.7;' : ''}">${escapeHtml(chain.title)}</div>
@@ -7426,7 +7524,7 @@
                       background:${done ? chain.color : isNext ? chain.colorBg : 'rgba(255,255,255,0.04)'};
                       border:1.5px solid ${done ? chain.color : isNext ? chain.colorBorder : 'rgba(255,255,255,0.1)'};">
                       ${done
-                        ? `<svg style="width:12px;height:12px;stroke:#0a0a0f;fill:none;stroke-width:3;"><use href="#ico-check"/></svg>`
+                        ? `<i class="fa-solid fa-check"></i>`
                         : `<span style="font-size:11px;font-weight:800;color:${isNext ? chain.color : 'var(--text-muted)'};">${i + 1}</span>`}
                     </div>
                     <div style="flex:1;min-width:0;">
@@ -7443,7 +7541,7 @@
                     ${isNext ? `
                       <button class="btn-complete" style="padding:6px 12px;font-size:11px;flex-shrink:0;margin-top:2px;"
                         onclick="setChainQuestActive('${chain.id}', ${i}); event.stopPropagation();">
-                        <svg><use href="#ico-check"/></svg>Vai
+                        <i class="fa-solid fa-check"></i>Vai
                       </button>` : ''}
                   </div>`;
             }).join('');
@@ -7456,9 +7554,7 @@
                   <div style="width:40px;height:40px;border-radius:10px;background:${chain.colorBg};
                     border:1.5px solid ${chain.colorBorder};display:flex;align-items:center;
                     justify-content:center;flex-shrink:0;">
-                    <svg style="width:20px;height:20px;stroke:${chain.color};fill:none;stroke-width:2;">
-                      <use href="#${chain.icon}"/>
-                    </svg>
+                    <i class="${chain.icon}" style="font-size:20px;color:${chain.color};"></i>
                   </div>
                   <div style="flex:1;min-width:0;">
                     <div style="font-family:var(--font-display);font-weight:800;font-size:16px;
@@ -7505,7 +7601,7 @@
                       background:${done ? chain.color : chain.colorBg};
                       border:1.5px solid ${done ? chain.color : chain.colorBorder};">
                       ${done
-                        ? `<svg style="width:13px;height:13px;stroke:#0a0a0f;fill:none;stroke-width:3;"><use href="#ico-check"/></svg>`
+                        ? `<i class="fa-solid fa-check"></i>`
                         : `<span style="font-size:12px;font-weight:800;color:${chain.color};">${i + 1}</span>`}
                     </div>
                     <div style="flex:1;min-width:0;padding-top:3px;">
@@ -7546,9 +7642,7 @@
                     background:${chain.colorBg};border:2px solid ${chain.colorBorder};
                     display:flex;align-items:center;justify-content:center;
                     margin:0 auto 16px;filter:drop-shadow(0 0 16px ${chain.color}40);">
-                    <svg style="width:40px;height:40px;stroke:${chain.color};fill:none;stroke-width:2;">
-                      <use href="#${chain.icon}"/>
-                    </svg>
+                    <i class="${chain.icon}" style="font-size:40px;color:${chain.color};"></i>
                   </div>
                   <div style="font-family:var(--font-display);font-weight:800;font-size:24px;
                     color:var(--text);margin-bottom:8px;">${escapeHtml(chain.title)}</div>
@@ -7593,7 +7687,7 @@
                 display:flex;flex-direction:column;gap:10px;">
                 <button class="btn-complete" onclick="startChainFromDetail('${chain.id}')" style="
                   width:100%;padding:14px;font-size:15px;justify-content:center;">
-                  <svg><use href="#ico-check"/></svg>
+                  <i class="fa-solid fa-check"></i>
                   Avvia quest chain
                 </button>
                 <button onclick="document.getElementById('chain-detail-overlay').remove()" style="
@@ -7735,7 +7829,7 @@
                 return prog.completed > 0 && !state.completedChains.includes(c.id);
             });
             el.innerHTML = `
-              <div class="stats-header"><svg><use href="#ico-trophy"/></svg> Quest chain</div>
+              <div class="stats-header"><i class="fa-solid fa-code-compare" style="color: #ffffff;"></i> Quest chain</div>
               <div style="display:flex;gap:16px;margin-bottom:16px;">
                 <div style="text-align:center;flex:1;">
                   <div style="font-family:var(--font-display);font-weight:800;font-size:28px;color:var(--accent);">${completed.length}</div>
