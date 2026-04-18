@@ -293,6 +293,20 @@
             -webkit-backdrop-filter: blur(16px);
             margin-bottom: 28px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .xp-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius);
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(200,241,53,0.25) 0%, rgba(200,241,53,0.04) 50%, transparent 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
         }
 
         .xp-level-badge {
@@ -414,9 +428,10 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             margin-bottom: 28px;
-            transition: transform .2s var(--spring);
+            transition: transform .2s var(--spring), box-shadow .3s var(--ease);
             overflow: hidden;
             word-break: break-word;
+            position: relative;
         }
 
         .quest-card:active {
@@ -861,6 +876,147 @@
             transform: scale(0.96)
         }
 
+        /* ── WEEKLY RECAP SCREEN ─────────────────────────── */
+        .recap-overlay {
+            position: fixed; inset: 0; z-index: 8500;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; padding: 20px;
+            animation: fadeOverlay .3s var(--ease) forwards;
+        }
+        .recap-card {
+            background: #141420; border-radius: 20px; width: 100%; max-width: 400px;
+            padding: 30px 24px; text-align: center;
+            transform: scale(0.9);
+            animation: popCard .4s var(--spring) forwards;
+            position: relative; overflow: hidden;
+        }
+        @keyframes popCard { to { transform: scale(1); } }
+        .recap-card::before {
+            content:''; position: absolute; top:0; left:0; right:0; height:4px;
+            background: var(--accent);
+        }
+        .recap-icon {
+            font-size: 40px; color: var(--accent); margin-bottom: 16px;
+        }
+        .recap-title {
+            font-family: var(--font-display); font-size: 22px; font-weight: 800;
+            color: var(--text); margin-bottom: 8px;
+        }
+        .recap-subtitle {
+            font-size: 14px; color: var(--text-dim); margin-bottom: 24px; line-height: 1.4;
+        }
+        .recap-stats {
+            display: flex; justify-content: center; gap: 24px; margin-bottom: 30px;
+        }
+        .recap-stat {
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .recap-stat-val {
+            font-family: var(--font-display); font-size: 32px; font-weight: 800;
+            color: var(--text); line-height: 1; margin-bottom: 4px;
+        }
+        .recap-stat-lbl {
+            font-size: 12px; color: var(--text-dim); font-weight: 700; text-transform: uppercase;
+        }
+        .recap-close {
+            width: 100%; padding: 16px; background: rgba(255,255,255,0.06);
+            border: none; border-radius: 12px; color: var(--text);
+            font-family: var(--font-display); font-size: 15px; font-weight: 800;
+            cursor: pointer; transition: background .2s;
+        }
+        .recap-close:active { background: rgba(255,255,255,0.1); }
+
+        /* ── DIARY TAB ───────────────────────────────────── */
+        .diary-empty {
+            padding: 48px 24px; text-align: center;
+        }
+        .diary-empty-icon {
+            font-size: 40px; color: rgba(255,255,255,0.15); margin-bottom: 16px;
+        }
+        .diary-empty-title {
+            font-family: var(--font-display); font-weight: 800;
+            font-size: 18px; color: var(--text); margin-bottom: 8px;
+        }
+        .diary-empty-desc {
+            font-size: 14px; color: var(--text-dim); line-height: 1.6; max-width: 260px; margin: 0 auto;
+        }
+        .diary-timeline {
+            position: relative; padding-left: 26px;
+        }
+        .diary-timeline::before {
+            content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent), rgba(200,241,53,0.1));
+            border-radius: 2px;
+        }
+        .diary-item {
+            position: relative; margin-bottom: 20px;
+            animation: fadeIn .35s var(--ease) both;
+        }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(8px);} to {opacity:1; transform:none;} }
+        .diary-dot {
+            position: absolute; left: -26px; top: 14px;
+            width: 16px; height: 16px; border-radius: 50%;
+            border: 3px solid #0a0a0f;
+            box-shadow: 0 0 8px currentColor;
+        }
+        .diary-card {
+            background: rgba(255,255,255,0.035);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 14px; overflow: hidden;
+            transition: border-color .2s;
+        }
+        .diary-card:active { border-color: rgba(255,255,255,0.15); }
+        .diary-card-accent {
+            height: 3px; width: 100%;
+        }
+        .diary-card-body {
+            padding: 14px 16px;
+        }
+        .diary-header {
+            display: flex; align-items: flex-start;
+            justify-content: space-between; gap: 8px; margin-bottom: 10px;
+        }
+        .diary-title {
+            font-family: var(--font-display); font-weight: 800;
+            font-size: 15px; color: var(--text); line-height: 1.3;
+            flex: 1;
+        }
+        .diary-date-pill {
+            font-size: 10px; font-weight: 700; letter-spacing: .5px;
+            color: var(--text-muted); background: rgba(255,255,255,0.05);
+            padding: 3px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+            text-transform: uppercase;
+        }
+        .diary-photo {
+            width: 100%; max-height: 220px; object-fit: cover;
+            display: block; margin-bottom: 12px; border-radius: 8px;
+        }
+        .diary-note {
+            font-size: 13.5px; color: var(--text-dim); line-height: 1.6;
+            font-style: italic; margin-bottom: 10px;
+            padding: 10px 12px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border-left: 3px solid rgba(200,241,53,0.3);
+        }
+        .diary-feeling-row {
+            display: flex; align-items: center; gap: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .diary-feeling-emoji {
+            font-size: 18px; line-height: 1;
+        }
+        .diary-feeling-label {
+            font-size: 12px; font-weight: 700; color: var(--text-dim);
+        }
+        .diary-xp-chip {
+            margin-left: auto; font-size: 11px; font-weight: 700;
+            color: var(--accent); background: rgba(200,241,53,0.1);
+            padding: 3px 10px; border-radius: 20px;
+        }
 
         /* ── SETTINGS SHEET ───────────────────────────────── */
         .sheet-overlay {
@@ -1391,6 +1547,82 @@
             font-size: 14px;
             color: var(--text-dim);
             margin-top: 4px;
+        }
+
+
+        /* ── LIFE SCORE ──────────────────────────────────── */
+        .life-score-top {
+            display: flex; align-items: center; gap: 20px;
+        }
+        .life-score-ring-wrap {
+            flex-shrink: 0; width: 100px; height: 100px; position: relative;
+        }
+        .life-score-ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .life-score-ring-bg {
+            fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 6;
+        }
+        .life-score-ring-fg {
+            fill: none; stroke: var(--accent); stroke-width: 6;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1.2s var(--ease);
+        }
+        .life-score-val {
+            position: absolute; inset: 0; display: flex;
+            align-items: center; justify-content: center;
+            flex-direction: column;
+        }
+        .life-score-num {
+            font-family: var(--font-display); font-weight: 800;
+            font-size: 28px; color: var(--accent); line-height: 1;
+        }
+        .life-score-max {
+            font-size: 11px; color: var(--text-muted); font-weight: 600;
+        }
+        .life-score-info { flex: 1; }
+        .life-score-title {
+            font-family: var(--font-display); font-weight: 800;
+            font-size: 17px; color: var(--text); margin-bottom: 4px;
+        }
+        .life-score-subtitle {
+            font-size: 13px; color: var(--text-dim); line-height: 1.5;
+        }
+        .life-score-pills {
+            display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;
+        }
+        .life-score-pill {
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 12px; border-radius: 20px;
+            background: rgba(255,255,255,0.04);
+            font-size: 12px; font-weight: 700;
+        }
+        .life-score-pill-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+        }
+        .life-score-pill-label { color: var(--text-dim); }
+        .life-score-pill-val { color: var(--text); }
+
+        /* ── FEELING PILLS ───────────────────────────────── */
+        .feeling-label {
+            font-size: 11px; letter-spacing: 1px; color: var(--text-muted);
+            text-transform: uppercase; font-weight: 700; margin-bottom: 8px;
+        }
+        .feeling-pills {
+            display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
+        }
+        .feeling-pill {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+            color: var(--text); padding: 8px 14px; border-radius: 20px;
+            font-size: 13px; font-weight: 600; cursor: pointer;
+            transition: all .2s var(--ease);
+        }
+        .feeling-pill.selected {
+            background: rgba(200,241,53,0.15); border-color: var(--accent);
+            color: var(--accent);
+        }
+        .feeling-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 22px; height: 22px; border-radius: 50%;
+            background: rgba(255,255,255,0.08); margin-left: 8px; font-size: 12px;
         }
 
         /* Records Category Grid */
@@ -4149,6 +4381,28 @@
 
         <!-- STATS SCREEN -->
         <main class="content" id="stats-screen" style="display: none; flex-direction: column; flex: 1;">
+
+            <div class="stats-card" id="life-score-card">
+                <div class="stats-header"><i class="fa-solid fa-heart-pulse" style="color:#ffffff;"></i> Life score</div>
+                <div class="life-score-top">
+                    <div class="life-score-ring-wrap">
+                        <svg viewBox="0 0 100 100">
+                            <circle class="life-score-ring-bg" cx="50" cy="50" r="42"/>
+                            <circle class="life-score-ring-fg" id="ls-ring" cx="50" cy="50" r="42"
+                                stroke-dasharray="263.9" stroke-dashoffset="263.9"/>
+                        </svg>
+                        <div class="life-score-val">
+                            <span class="life-score-num" id="ls-num">0</span>
+                            <span class="life-score-max">/ 100</span>
+                        </div>
+                    </div>
+                    <div class="life-score-info">
+                        <div class="life-score-title" id="ls-title">Inizia a vivere</div>
+                        <div class="life-score-subtitle" id="ls-subtitle">Completa quest diverse per aumentare il tuo punteggio di vita.</div>
+                    </div>
+                </div>
+                <div class="life-score-pills" id="ls-pills"></div>
+            </div>
             <div class="stats-card">
                 <div class="stats-header">
                     <i class="fa-solid fa-chart-column"></i> Statistiche di gioco
@@ -4363,6 +4617,7 @@
                             style="display:none; position:absolute; top:2px; right:2px; width:8px; height:8px; border-radius:50%; background:var(--diff-hard);"></span>
                     </button>
                     <button class="pill-tab" data-target="salvati">Salvati</button>
+                    <button class="pill-tab" data-target="diario">Diario</button>
                 </div>
             </div>
 
@@ -4449,6 +4704,11 @@
             <div id="sub-salvati" class="profile-sub-section" style="display:none; padding: 20px;">
                 <div id="salvati-content"></div>
             </div>
+
+            <!-- ── SUB-SECTION: DIARIO ── -->
+            <div id="sub-diario" class="profile-sub-section" style="display:none; padding: 20px;">
+                <div id="diario-content" style="display:flex; flex-direction:column; gap:16px;"></div>
+            </div>
         </main>
 
 
@@ -4505,6 +4765,18 @@
 
             <img id="review-photo-preview"
                 style="display:none; width:100%; border-radius:var(--radius); margin-bottom:16px; object-fit:cover; max-height:200px;">
+
+            <div id="feeling-section" style="display:none;">
+                <div class="feeling-label">Come ti sei sentito?</div>
+                <div class="feeling-pills" id="feeling-pills-container">
+                    <button class="feeling-pill" data-feeling="⚡ Energico">Energico ⚡</button>
+                    <button class="feeling-pill" data-feeling="🏆 Orgoglioso">Orgoglioso 🏆</button>
+                    <button class="feeling-pill" data-feeling="🌿 Rilassato">Rilassato 🌿</button>
+                    <button class="feeling-pill" data-feeling="😮‍💨 Stanco">Stanco 😮‍💨</button>
+                    <button class="feeling-pill" data-feeling="🧗 Alla prova">Alla prova 🧗</button>
+                    <button class="feeling-pill" data-feeling="😊 Felice">Felice 😊</button>
+                </div>
+            </div>
 
             <div class="modal-buttons" style="display:flex; flex-direction:column; gap:12px; width:100%;">
                 <button class="btn-complete" id="btn-review-save" style="width:100%;">Ok</button>
@@ -6058,9 +6330,10 @@
 
                 return `<li class="completed-item">
                   <div style="display:flex; width: 100%; align-items: flex-start; justify-content: space-between; gap: 12px;">
-                      <div style="display:flex; align-items:center; flex:1; min-width:0;">
+                      <div style="display:flex; align-items:center; flex:1; min-width:0; flex-wrap:wrap;">
                           <span class="completed-dot" style="margin-right: 10px; flex-shrink:0;"></span>
                           <span class="completed-name" style="margin-right:0; line-height: 1.3;">${escapeHtml(q.title)}</span>
+                          ${q.feeling ? `<span class="feeling-badge">${q.feeling.split(' ')[0]}</span>` : ''}
                       </div>
                       <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0;">
                         <span class="completed-xp" style="margin-left:0;">+${(q.xp || 0).toLocaleString('it-IT')} XP</span>
@@ -6184,7 +6457,7 @@
             }
         }
 
-        function completeDaily(q, note = null, photo = null) {
+        function completeDaily(q, note = null, photo = null, feeling = null) {
             const DAILY_BONUS = 500;
             const baseXp = Number(q.xp) || 1000;
             const totalXp = baseXp + DAILY_BONUS;
@@ -6216,6 +6489,7 @@
                 completedAt: today.toISOString(),
                 note,
                 photo,
+                feeling,
                 _dailyBonus: DAILY_BONUS
             });
 
@@ -6262,6 +6536,34 @@
         /* ── QUEST REVIEW LOGIC ───────────────────────────── */
         let pendingCompletion = null;
         let currentPhotoBase64 = null;
+        let currentFeeling = null;
+
+        document.querySelectorAll('.feeling-pill').forEach(btn => {
+            btn.addEventListener('click', () => {
+                let isActive = btn.classList.contains('selected');
+                document.querySelectorAll('.feeling-pill').forEach(b => b.classList.remove('selected'));
+                if (!isActive) {
+                    btn.classList.add('selected');
+                    currentFeeling = btn.getAttribute('data-feeling');
+                } else {
+                    currentFeeling = null;
+                }
+            });
+        });
+
+        function resetFeelingUI() {
+            currentFeeling = null;
+            document.querySelectorAll('.feeling-pill').forEach(b => b.classList.remove('selected'));
+        }
+
+        function setFeelingUI(feeling) {
+            resetFeelingUI();
+            if (feeling) {
+                currentFeeling = feeling;
+                const btn = document.querySelector(`.feeling-pill[data-feeling="${feeling}"]`);
+                if (btn) btn.classList.add('selected');
+            }
+        }
 
         function promptQuestReview(quest, type, index = -1) {
             pendingCompletion = { quest, type, index };
@@ -6274,7 +6576,19 @@
             }
             $('review-photo-upload').value = '';
             currentPhotoBase64 = null;
+            resetFeelingUI();
+
             if ($('btn-remove-photo')) $('btn-remove-photo').style.display = 'none';
+
+            // Setup feeling UI visibility
+            const sect = $('feeling-section');
+            if (sect) {
+                if (quest && (quest.difficulty === 'medium' || quest.difficulty === 'hard' || quest.isBoss)) {
+                    sect.style.display = 'block';
+                } else {
+                    sect.style.display = 'none';
+                }
+            }
 
             // Setup buttons
             $('btn-review-delete').style.display = 'none';
@@ -6308,6 +6622,18 @@
 
             $('review-photo-upload').value = '';
 
+            // Setup feeling UI visibility and value
+            const sect = $('feeling-section');
+            if (sect) {
+                if (q.difficulty === 'medium' || q.difficulty === 'hard' || q.isBoss) {
+                    sect.style.display = 'block';
+                    setFeelingUI(q.feeling || null);
+                } else {
+                    sect.style.display = 'none';
+                    resetFeelingUI();
+                }
+            }
+
             // Setup buttons for edit mode
             $('btn-review-delete').style.display = 'block';
             $('btn-review-share').style.display = 'block';
@@ -6320,15 +6646,17 @@
             if (!pendingCompletion) return;
             const note = $('review-note').value.trim() || null;
             const photo = currentPhotoBase64;
+            const feeling = currentFeeling;
 
-            if (pendingCompletion.type === 'normal') completeQuest(note, photo);
-            else if (pendingCompletion.type === 'seasonal') completeSeasonal(pendingCompletion.index, note, photo);
-            else if (pendingCompletion.type === 'daily') completeDaily(pendingCompletion.quest, note, photo);
+            if (pendingCompletion.type === 'normal') completeQuest(note, photo, feeling);
+            else if (pendingCompletion.type === 'seasonal') completeSeasonal(pendingCompletion.index, note, photo, feeling);
+            else if (pendingCompletion.type === 'daily') completeDaily(pendingCompletion.quest, note, photo, feeling);
             else if (pendingCompletion.type === 'edit') {
                 // Update existing quest
                 const editedQ = state.completed[pendingCompletion.index];
                 editedQ.note = note;
                 editedQ.photo = photo;
+                editedQ.feeling = feeling;
                 saveState();
                 renderCompleted();
                 if (state.profilePublic) syncToFirestore();
@@ -6580,7 +6908,7 @@
             }
         });
 
-        function completeSeasonal(index, note = null, photo = null) {
+        function completeSeasonal(index, note = null, photo = null, feeling = null) {
             const q = currentSeasonalQuests[index];
             if (!q) return;
 
@@ -6609,7 +6937,7 @@
             }
             state.questTimestamps.push(Date.now());
 
-            state.completed.push({ title: q.title, xp: q.xp, difficulty: q.difficulty, category: q.category, completedAt: today.toISOString(), note, photo });
+            state.completed.push({ title: q.title, xp: q.xp, difficulty: q.difficulty, category: q.category, completedAt: today.toISOString(), note, photo, feeling });
 
             // Recalculate XP from full history for consistency
             state.xp = state.completed.reduce((s, c) => s + (Number(c.xp) || 0), 0)
@@ -6734,7 +7062,7 @@
         }
 
         /* ── QUEST COMPLETION ─────────────────────────────── */
-        function completeQuest(note = null, photo = null) {
+        function completeQuest(note = null, photo = null, feeling = null) {
             if (!state.currentQuest) return;
             const q = state.currentQuest;
             if (!state.bossCompleted) state.bossCompleted = [];
@@ -6742,10 +7070,10 @@
             const today = new Date();
 
             if (q.isBoss) {
-                state.bossCompleted.push({ title: q.title, xp: q.xp, category: q.category, completedAt: today.toISOString(), note, photo });
+                state.bossCompleted.push({ title: q.title, xp: q.xp, category: q.category, completedAt: today.toISOString(), note, photo, feeling });
             } else {
                 state.questsSinceBoss = (state.questsSinceBoss || 0) + 1;
-                state.completed.push({ title: q.title, xp: q.xp, difficulty: q.difficulty, category: q.category, completedAt: today.toISOString(), note, photo });
+                state.completed.push({ title: q.title, xp: q.xp, difficulty: q.difficulty, category: q.category, completedAt: today.toISOString(), note, photo, feeling });
             }
 
             // Recalculate XP from source of truth
@@ -6885,7 +7213,87 @@
             if ($('sub-amici').style.display === 'block') renderConfrontoTab();
         });
 
+        /* ── LIFE SCORE ────────────────────────────────────── */
+        function computeLifeScore() {
+            const completed = state.completed || [];
+            const bossCompleted = state.bossCompleted || [];
+            const all = [...completed, ...bossCompleted];
+
+            // Diversity: unique categories (0-25)
+            const cats = new Set(all.map(q => q.category).filter(Boolean));
+            const diversity = Math.min(cats.size * 4, 25);
+
+            // Streak (0-25)
+            const streakScore = Math.min((state.streak || 0) * 2, 25);
+
+            // Difficulty mix (0-25): weighted avg
+            const diffWeights = { easy: 1, medium: 2, hard: 3, boss: 5 };
+            let totalWeight = 0, questCount = 0;
+            all.forEach(q => {
+                const w = q.isBoss ? 5 : (diffWeights[q.difficulty] || 1);
+                totalWeight += w;
+                questCount++;
+            });
+            const avgDiff = questCount > 0 ? totalWeight / questCount : 0;
+            const difficultyScore = Math.min(Math.round(avgDiff * 8), 25);
+
+            // Consistency: months with ≥1 quest (0-25)
+            const months = new Set();
+            all.forEach(q => {
+                if (q.completedAt) months.add(q.completedAt.substring(0, 7));
+            });
+            const consistency = Math.min(months.size * 3, 25);
+
+            const total = diversity + streakScore + difficultyScore + consistency;
+            return { total, diversity, streak: streakScore, difficulty: difficultyScore, consistency };
+        }
+
+        function renderLifeScore() {
+            const ls = computeLifeScore();
+            const ring = $('ls-ring');
+            const numEl = $('ls-num');
+            const titleEl = $('ls-title');
+            const subEl = $('ls-subtitle');
+            const pillsEl = $('ls-pills');
+            if (!ring) return;
+
+            // Animate ring
+            const circumference = 2 * Math.PI * 42; // ~263.9
+            const offset = circumference - (ls.total / 100) * circumference;
+            requestAnimationFrame(() => {
+                ring.style.strokeDashoffset = offset;
+            });
+
+            if (numEl) numEl.textContent = ls.total;
+
+            // Title based on score
+            let title = 'Inizia a vivere';
+            let sub = 'Completa quest diverse per aumentare il tuo punteggio.';
+            if (ls.total >= 80) { title = 'Vita straordinaria'; sub = 'Stai vivendo al massimo. Sei un esempio.'; }
+            else if (ls.total >= 60) { title = 'Esploratore della vita'; sub = 'Ottimo equilibrio tra varietà e costanza!'; }
+            else if (ls.total >= 40) { title = 'In crescita'; sub = 'Stai costruendo abitudini forti. Continua così!'; }
+            else if (ls.total >= 20) { title = 'Primi passi'; sub = 'Buon inizio! Prova quest di difficoltà diverse.'; }
+            if (titleEl) titleEl.textContent = title;
+            if (subEl) subEl.textContent = sub;
+
+            // Sub-metric pills
+            const pills = [
+                { label: 'Varietà', val: ls.diversity, color: '#4fa3ff' },
+                { label: 'Streak', val: ls.streak, color: '#ffb347' },
+                { label: 'Difficoltà', val: ls.difficulty, color: '#ff4f4f' },
+                { label: 'Costanza', val: ls.consistency, color: '#c8f135' },
+            ];
+            if (pillsEl) pillsEl.innerHTML = pills.map(p => `
+                <div class="life-score-pill">
+                    <div class="life-score-pill-dot" style="background:${p.color};"></div>
+                    <span class="life-score-pill-label">${p.label}</span>
+                    <span class="life-score-pill-val">${p.val}/25</span>
+                </div>
+            `).join('');
+        }
+
         function renderStatsScreen() {
+            renderLifeScore();
             const _stats = state.stats || { easy: { count: 0, totalXp: 0 }, medium: { count: 0, totalXp: 0 }, hard: { count: 0, totalXp: 0 } };
             statEasyCnt.textContent = (_stats.easy || { count: 0 }).count || 0;
             statEasyXp.textContent = ((_stats.easy || { totalXp: 0 }).totalXp || 0).toLocaleString('it-IT');
@@ -6941,6 +7349,7 @@
 
             renderChainsStats();
         }
+
 
         /* ── ACHIEVEMENT LOGIC ────────────────────────────────── */
         function getAchievementBadges() {
@@ -7029,7 +7438,76 @@
             ];
         }
 
-        /* ── PROFILE SCREEN ────────────────────────────────── */
+        /* ── PROFILE & DIARY FUNCTIONS ────────────────────────── */
+        function renderDiaryTab() {
+            const cont = $('diario-content');
+            if (!cont) return;
+
+            const allQuests = [...(state.completed || []), ...(state.bossCompleted || [])];
+            // Filter quests with a note, photo, or feeling
+            const diaryEntries = allQuests.filter(q => q.note || q.photo || q.feeling).sort((a, b) => {
+                const dateA = a.completedAt ? new Date(a.completedAt).getTime() : 0;
+                const dateB = b.completedAt ? new Date(b.completedAt).getTime() : 0;
+                return dateB - dateA;
+            });
+
+            if (diaryEntries.length === 0) {
+                cont.innerHTML = `
+                    <div class="diary-empty">
+                        <div class="diary-empty-icon"><i class="fa-solid fa-book-open"></i></div>
+                        <div class="diary-empty-title">Il tuo diario è vuoto</div>
+                        <div class="diary-empty-desc">Aggiungi foto, note o sensazioni quando completi le quest per creare i tuoi ricordi.</div>
+                    </div>`;
+                return;
+            }
+
+            let html = '<div class="diary-timeline">';
+            diaryEntries.forEach((q, i) => {
+                const d = new Date(q.completedAt);
+                const dateStr = d.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+                
+                const dotColor = q.difficulty === 'easy' ? 'var(--diff-easy)' : q.difficulty === 'medium' ? 'var(--diff-medium)' : (q.difficulty === 'hard' ? 'var(--diff-hard)' : 'var(--accent)');
+                const accentHex = q.difficulty === 'easy' ? 'rgba(79,163,255,0.6)' : q.difficulty === 'medium' ? 'rgba(255,200,60,0.6)' : (q.difficulty === 'hard' ? 'rgba(255,79,79,0.6)' : 'rgba(200,241,53,0.6)');
+
+                let bodyHtml = '';
+                if (q.photo) bodyHtml += `<img src="${q.photo}" class="diary-photo" loading="lazy">`;
+                if (q.note) bodyHtml += `<div class="diary-note">"${escapeHtml(q.note)}"</div>`;
+                
+                let feelingHtml = '';
+                if (q.feeling) {
+                    feelingHtml = `<div class="diary-feeling-row">
+                        <span class="diary-feeling-emoji">${q.feeling.split(' ')[0]}</span>
+                        <span class="diary-feeling-label">${q.feeling.substring(q.feeling.indexOf(' ')+1)}</span>
+                        <span class="diary-xp-chip">+${(q.xp || 0).toLocaleString('it-IT')} XP</span>
+                    </div>`;
+                } else {
+                    feelingHtml = `<div class="diary-feeling-row">
+                        <span class="diary-xp-chip">+${(q.xp || 0).toLocaleString('it-IT')} XP</span>
+                    </div>`;
+                }
+
+                html += `
+                    <div class="diary-item" style="animation-delay:${i * 0.06}s;">
+                        <div class="diary-dot" style="color:${dotColor}; background:${dotColor};"></div>
+                        <div class="diary-card">
+                            <div class="diary-card-accent" style="background:${accentHex};"></div>
+                            <div class="diary-card-body">
+                                <div class="diary-header">
+                                    <div class="diary-title">${escapeHtml(q.title)}</div>
+                                    <span class="diary-date-pill">${dateStr}</span>
+                                </div>
+                                ${bodyHtml}
+                                ${feelingHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+
+            cont.innerHTML = html;
+        }
+
         function renderProfileScreen() {
             const guestView = $('profile-guest-view');
             const loggedView = $('profile-logged-view');
@@ -7215,6 +7693,7 @@
 
                 if (targetId === 'amici') renderConfrontoTab();
                 if (targetId === 'salvati') renderSavedQuestsTab();
+                if (targetId === 'diario') renderDiaryTab();
                 if (targetId === 'amici') {
                     if (unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
                     renderAmiciTab();
@@ -8802,6 +9281,86 @@
         initAuth();
         initFilterBar();
         handleDeepLinks();
+
+        /* ── WEEKLY RECAP ────────────────────────────────── */
+        function checkAndShowWeeklyRecap() {
+            const now = new Date();
+            // Show recap only on Mondays
+            if (now.getDay() !== 1) return;
+
+            function getWeekString(d) {
+                const date = new Date(d.getTime());
+                date.setHours(0, 0, 0, 0);
+                date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+                const week1 = new Date(date.getFullYear(), 0, 4);
+                return date.getFullYear() + '-W' + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7 + 1);
+            }
+
+            const currentWeekStr = getWeekString(now);
+            const prevDate = new Date(now); prevDate.setDate(now.getDate() - 7);
+            const prevWeekStr = getWeekString(prevDate);
+
+            if (state.lastRecapWeek === prevWeekStr) return; // Already seen
+
+            const allQuests = [...(state.completed || []), ...(state.bossCompleted || [])];
+            
+            let thisWeekCount = 0;
+            let lastWeekCount = 0; // "last week" from the perspective of the recap means 2 weeks ago
+            const twoWeeksAgoStr = getWeekString(new Date(prevDate.getTime() - 7 * 86400000));
+
+            allQuests.forEach(q => {
+                if (!q.completedAt) return;
+                const qw = getWeekString(new Date(q.completedAt));
+                if (qw === prevWeekStr) thisWeekCount++;
+                else if (qw === twoWeeksAgoStr) lastWeekCount++;
+            });
+
+            // Don't show if they didn't do anything for 2 weeks
+            if (thisWeekCount === 0 && lastWeekCount === 0) return;
+
+            const diff = thisWeekCount - lastWeekCount;
+            let sign = diff > 0 ? '+' : '';
+            let subtitle = diff >= 0 
+                ? `Hai completato ${diff} quest in più rispetto alla settimana prima. Continua così!`
+                : `Hai completato ${Math.abs(diff)} quest in meno rispetto alla settimana prima. Riprendi il ritmo!`;
+
+            if (thisWeekCount === 0) subtitle = "Settimana di pausa. È il momento di ricominciare!";
+
+            const overlay = document.createElement('div');
+            overlay.className = 'recap-overlay';
+            overlay.innerHTML = `
+                <div class="recap-card">
+                    <div class="recap-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                    <div class="recap-title">Resoconto Settimanale</div>
+                    <div class="recap-subtitle">${subtitle}</div>
+                    
+                    <div class="recap-stats">
+                        <div class="recap-stat">
+                            <span class="recap-stat-val">${thisWeekCount}</span>
+                            <span class="recap-stat-lbl">Quest</span>
+                        </div>
+                        <div class="recap-stat">
+                            <span class="recap-stat-val" style="color: ${diff > 0 ? 'var(--accent)' : (diff < 0 ? 'var(--diff-hard)' : 'var(--text-dim)')}">${sign}${diff}</span>
+                            <span class="recap-stat-lbl">Vs Prima</span>
+                        </div>
+                    </div>
+                    
+                    <button class="recap-close">Chiudi</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            state.lastRecapWeek = prevWeekStr;
+            saveState();
+
+            overlay.querySelector('.recap-close').addEventListener('click', () => {
+                overlay.style.opacity = '0';
+                overlay.style.transition = 'opacity 0.2s';
+                setTimeout(() => overlay.remove(), 250);
+            });
+        }
+        // Small delay to let the UI finish rendering
+        setTimeout(checkAndShowWeeklyRecap, 1000);
 
         /* ── INSTALL PROMPT ──────────────────────────────── */
         (function initInstallPrompt() {
