@@ -242,6 +242,34 @@
             }
         }
 
+        /* softRiseModal / softExitModal: come softRise/softExit ma SENZA filter:blur.
+           Necessario per i figli di elementi con backdrop-filter: su iOS Safari
+           animare filter:blur su un figlio di un contenitore con backdrop-filter
+           crea conflitti GPU che lasciano i contenuti permanentemente sfocati. */
+        @keyframes softRiseModal {
+            0% {
+                opacity: 0;
+                transform: translateY(14px) scale(0.98);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes softExitModal {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(10px) scale(0.975);
+            }
+        }
+
         @keyframes blurReveal {
             0% {
                 opacity: 0;
@@ -503,6 +531,19 @@
             border: 1px solid var(--accent-dim);
             transition: transform .15s var(--spring), background .15s, opacity .15s, border-color .2s var(--ease), box-shadow .2s var(--ease);
             white-space: nowrap;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-ghost:focus,
+        .btn-ghost:focus-visible {
+            outline: none;
+            box-shadow: none;
+        }
+
+        @media (hover: hover) {
+            .btn-ghost:hover {
+                background: rgba(255, 255, 255, 0.04);
+            }
         }
 
         .btn-ghost:active {
@@ -537,6 +578,13 @@
             white-space: normal;
             text-align: left;
             box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .home-cta-btn:focus,
+        .home-cta-btn:focus-visible {
+            outline: none;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
         }
 
         .home-cta-btn::before {
@@ -548,9 +596,11 @@
             pointer-events: none;
         }
 
-        .home-cta-btn:hover {
-            border-color: rgba(200, 241, 53, 0.24);
-            box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+        @media (hover: hover) {
+            .home-cta-btn:hover {
+                border-color: rgba(200, 241, 53, 0.24);
+                box-shadow: 0 18px 36px rgba(0, 0, 0, 0.22);
+            }
         }
 
         .home-cta-btn:active {
@@ -1050,7 +1100,6 @@
         .modal-overlay.closing .modal-content {
             transform: translateY(14px) scale(0.965);
             opacity: 0;
-            filter: blur(8px);
         }
 
         .modal-overlay.show .modal-content>*,
@@ -1058,7 +1107,7 @@
         #auth-screen.show .auth-container>*,
         .intro-overlay.show .intro-panel>* {
             opacity: 0;
-            animation: softRise 0.48s var(--spring) forwards;
+            animation: softRiseModal 0.48s var(--spring) forwards;
         }
 
         .modal-overlay.show .modal-content>*:nth-child(1),
@@ -2965,7 +3014,6 @@
         .create-modal-overlay.closing .create-modal {
             transform: translateY(14px) scale(0.965);
             opacity: 0;
-            filter: blur(8px);
         }
 
         .create-modal-title {
@@ -4821,13 +4869,7 @@
         }
 
 
-        /* ── CONTENT VISIBILITY (off-screen optimization) ── */
-        #stats-screen,
-        #settings-screen,
-        #my-profile-screen {
-            content-visibility: auto;
-            contain-intrinsic-size: 0 800px;
-        }
+        /* ── CONTENT VISIBILITY: removed — caused blank screens on iOS Safari ── */
 
         /* ── QUEST CHAINS ─────────────────────────────────── */
         .chains-section {
@@ -8932,8 +8974,13 @@
             const displayType = SCREEN_DISPLAY[screenEl.id] || 'block';
             screenEl.style.display = displayType;
             screenEl.classList.remove('tab-content-enter');
-            void screenEl.offsetWidth; // force reflow
-            screenEl.classList.add('tab-content-enter');
+            // Double rAF: il primo frame commette il display change,
+            // il secondo triggera l'animazione — più affidabile di offsetWidth su iOS Safari
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    screenEl.classList.add('tab-content-enter');
+                });
+            });
         }
 
         /* ── NAVIGATION & REALTIME ────────────────────────── */
@@ -9461,8 +9508,9 @@
                 if (targetSec) {
                     targetSec.style.display = 'block';
                     targetSec.classList.remove('tab-content-enter');
-                    void targetSec.offsetWidth;
-                    targetSec.classList.add('tab-content-enter');
+                    requestAnimationFrame(() => requestAnimationFrame(() => {
+                        targetSec.classList.add('tab-content-enter');
+                    }));
                 }
 
                 if (targetId === 'amici') renderConfrontoTab();
@@ -10995,8 +11043,9 @@
                 cont.style.display = 'block';
                 cont.style.animation = 'none';
                 cont.classList.remove('tab-content-enter');
-                void cont.offsetWidth;
-                cont.classList.add('tab-content-enter');
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                    cont.classList.add('tab-content-enter');
+                }));
             } else {
                 cont.classList.remove('tab-content-enter');
                 cont.style.animation = 'softExit 0.2s var(--ease) both';
