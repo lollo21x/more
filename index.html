@@ -320,44 +320,58 @@
             -webkit-overflow-scrolling: touch;
             overflow-y: auto;
             overflow-x: hidden;
-            animation: fadeInScale 0.4s var(--spring);
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+        }
+
+        .content.tab-content-enter {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .content>* {
+            opacity: 0;
+            transform: translateY(14px) scale(0.98);
+            transition: opacity 0.45s ease, transform 0.5s var(--spring);
+            will-change: transform, opacity;
         }
 
         .tab-content-enter>* {
-            opacity: 0;
-            animation: softRise 0.55s var(--spring) forwards;
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
 
         .tab-content-enter>*:nth-child(1) {
-            animation-delay: 0.02s;
+            transition-delay: 0.01s;
         }
 
         .tab-content-enter>*:nth-child(2) {
-            animation-delay: 0.06s;
+            transition-delay: 0.04s;
         }
 
         .tab-content-enter>*:nth-child(3) {
-            animation-delay: 0.10s;
+            transition-delay: 0.07s;
         }
 
         .tab-content-enter>*:nth-child(4) {
-            animation-delay: 0.14s;
+            transition-delay: 0.10s;
         }
 
         .tab-content-enter>*:nth-child(5) {
-            animation-delay: 0.18s;
+            transition-delay: 0.13s;
         }
 
         .tab-content-enter>*:nth-child(6) {
-            animation-delay: 0.22s;
+            transition-delay: 0.16s;
         }
 
         .tab-content-enter>*:nth-child(7) {
-            animation-delay: 0.26s;
+            transition-delay: 0.19s;
         }
 
         .tab-content-enter>*:nth-child(8) {
-            animation-delay: 0.30s;
+            transition-delay: 0.22s;
         }
 
         /* ── TAB BAR ───────────────────────────────────────── */
@@ -424,6 +438,7 @@
             padding: 1px;
             background: linear-gradient(135deg, rgba(200, 241, 53, 0.25) 0%, rgba(200, 241, 53, 0.04) 50%, transparent 100%);
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
             mask-composite: exclude;
             pointer-events: none;
@@ -646,6 +661,7 @@
             font-size: 13px;
             line-height: 1.1;
             letter-spacing: -0.2px;
+            color: #ffffff;
         }
 
         .home-cta-sub,
@@ -2032,7 +2048,7 @@
         }
 
         .card-pop-in {
-            animation: softRise 0.5s var(--spring) both;
+            animation: softRiseModal 0.5s var(--spring) both;
             animation-delay: var(--enter-delay, 0s);
         }
 
@@ -2053,7 +2069,7 @@
         }
 
         .fullscreen-sheet .fullscreen-sheet-inner {
-            animation: softRise 0.34s var(--spring) both;
+            animation: softRiseModal 0.34s var(--spring) both;
         }
 
         .fullscreen-sheet.closing {
@@ -2062,7 +2078,7 @@
         }
 
         .fullscreen-sheet.closing .fullscreen-sheet-inner {
-            animation: softExit 0.22s var(--ease) both;
+            animation: softExitModal 0.22s var(--ease) both;
         }
 
         @keyframes fadeInFullscreenSheet {
@@ -3154,11 +3170,11 @@
         }
 
         #profile-screen.show .profile-screen-panel {
-            animation: softRise 0.34s var(--spring) both;
+            animation: softRiseModal 0.34s var(--spring) both;
         }
 
         #profile-screen.closing .profile-screen-panel {
-            animation: softExit 0.22s var(--ease) both;
+            animation: softExitModal 0.22s var(--ease) both;
         }
 
         .profile-card {
@@ -4741,9 +4757,7 @@
             }
         }
 
-        .tab-content-enter {
-            animation: tabFadeIn 0.22s var(--ease) forwards;
-        }
+        /* Transitions are now handled via class toggles on .content and children */
 
 
         /* Better tap highlight */
@@ -8970,16 +8984,28 @@
             'my-profile-screen': 'flex',
         };
 
+        let currentScreen = null;
+        let pendingRAF = null;
+
         function switchToScreen(screenEl) {
+            if (pendingRAF !== null) {
+                cancelAnimationFrame(pendingRAF);
+                pendingRAF = null;
+            }
+
             const displayType = SCREEN_DISPLAY[screenEl.id] || 'block';
             screenEl.style.display = displayType;
             screenEl.classList.remove('tab-content-enter');
-            // Double rAF: il primo frame commette il display change,
-            // il secondo triggera l'animazione — più affidabile di offsetWidth su iOS Safari
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    screenEl.classList.add('tab-content-enter');
-                });
+
+            // Forza il reflow per catturare lo stato base (trasparente)
+            void screenEl.offsetWidth;
+
+            currentScreen = screenEl;
+
+            // Avviamo la transizione nel prossimo frame
+            pendingRAF = requestAnimationFrame(() => {
+                screenEl.classList.add('tab-content-enter');
+                pendingRAF = null;
             });
         }
 
@@ -8987,6 +9013,7 @@
         let unsubscribeComparison = null;
 
         btnHome.addEventListener('click', () => {
+            // Re-trigger logic allowed to fix occasional empty-screen bugs on iOS PWA
             homeScreen.scrollTo({ top: 0, behavior: 'smooth' });
             document.querySelector('.header').classList.remove('tab-profile-active');
             btnHome.classList.add('active');
@@ -9001,6 +9028,7 @@
         });
 
         btnTabStats.addEventListener('click', () => {
+            // Re-trigger logic allowed
             statsScreen.scrollTo({ top: 0, behavior: 'smooth' });
             document.querySelector('.header').classList.remove('tab-profile-active');
             btnHome.classList.remove('active');
@@ -9017,6 +9045,7 @@
 
         // Profile Tab Handler
         btnTabProfile.addEventListener('click', () => {
+            // Re-trigger logic allowed
             myProfileScreen.scrollTo({ top: 0, behavior: 'smooth' });
             btnHome.classList.remove('active');
             btnTabStats.classList.remove('active');
@@ -9492,25 +9521,39 @@
         }
 
         // Segmented Control Tabs Logic
+        let pendingPillRAF = null;
         document.querySelectorAll('.pill-tab').forEach(btn => {
             btn.addEventListener('click', (e) => {
+                const target = e.target.closest('.pill-tab');
+                if (!target) return;
+                // Nota: rimosso early return se già active per permettere il re-trigger
+                // qualora l'animazione si bloccasse (necessario per iOS PWA)
+
                 document.querySelectorAll('.pill-tab').forEach(b => {
                     b.classList.remove('active');
                     b.style.color = '';
                 });
-                const target = e.target.closest('.pill-tab');
                 target.classList.add('active');
                 target.style.color = '';
 
                 const targetId = target.getAttribute('data-target');
                 document.querySelectorAll('.profile-sub-section').forEach(sec => sec.style.display = 'none');
                 const targetSec = $('sub-' + targetId);
+
+                if (pendingPillRAF) {
+                    cancelAnimationFrame(pendingPillRAF);
+                    pendingPillRAF = null;
+                }
+
                 if (targetSec) {
                     targetSec.style.display = 'block';
                     targetSec.classList.remove('tab-content-enter');
-                    requestAnimationFrame(() => requestAnimationFrame(() => {
+                    void targetSec.offsetWidth;
+
+                    pendingPillRAF = requestAnimationFrame(() => {
                         targetSec.classList.add('tab-content-enter');
-                    }));
+                        pendingPillRAF = null;
+                    });
                 }
 
                 if (targetId === 'amici') renderConfrontoTab();
@@ -9948,6 +9991,7 @@
 
         /* ── SETTINGS / QUESTS ─────────────────────────────────────── */
         btnSettings.addEventListener('click', () => {
+            // Re-trigger logic allowed
             openSettings();
             document.querySelector('.header').classList.remove('tab-profile-active');
             btnHome.classList.remove('active');
@@ -11034,21 +11078,31 @@
             zone.style.display = (inProgress.length + allAvailable.length + completedChains.length > 0) ? 'block' : 'none';
         }
 
+        let pendingChainsRAF = null;
         window.toggleAllChains = function () {
             const cont = $('all-chains-container');
             const btn = $('btn-toggle-chains');
             if (!cont || !btn) return;
+
+            if (pendingChainsRAF) {
+                cancelAnimationFrame(pendingChainsRAF);
+                pendingChainsRAF = null;
+            }
+
             const isHidden = cont.style.display === 'none';
             if (isHidden) {
                 cont.style.display = 'block';
                 cont.style.animation = 'none';
                 cont.classList.remove('tab-content-enter');
-                requestAnimationFrame(() => requestAnimationFrame(() => {
+                void cont.offsetWidth;
+
+                pendingChainsRAF = requestAnimationFrame(() => {
                     cont.classList.add('tab-content-enter');
-                }));
+                    pendingChainsRAF = null;
+                });
             } else {
                 cont.classList.remove('tab-content-enter');
-                cont.style.animation = 'softExit 0.2s var(--ease) both';
+                cont.style.animation = 'softExitModal 0.2s var(--ease) both';
                 setTimeout(() => {
                     if (btn.textContent === 'Tutte le chain') cont.style.display = 'none';
                     cont.style.animation = '';
