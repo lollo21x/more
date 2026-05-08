@@ -3,32 +3,45 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="more">
     <meta name="theme-color" content="#0a0a0f">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>more — Gamify Your Life</title>
+    <title>more - Gamify Your Life</title>
     <meta name="description"
         content="more turns your real life into a video game. Complete side quests, earn XP, and level up.">
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LS1NZTXR1Q"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-    
-      gtag('config', 'G-LS1NZTXR1Q');
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = window.gtag || function gtag() { dataLayer.push(arguments); };
+        window.deferAnalytics = function deferAnalytics() {
+            if (window.__moreAnalyticsLoaded) return;
+            window.__moreAnalyticsLoaded = true;
+            const tag = document.createElement('script');
+            tag.async = true;
+            tag.src = 'https://www.googletagmanager.com/gtag/js?id=G-LS1NZTXR1Q';
+            document.head.appendChild(tag);
+            window.gtag('js', new Date());
+            window.gtag('config', 'G-LS1NZTXR1Q');
+        };
+        const loadAnalytics = () => window.deferAnalytics();
+        if ('requestIdleCallback' in window) requestIdleCallback(loadAnalytics, { timeout: 3500 });
+        else window.addEventListener('load', () => setTimeout(loadAnalytics, 1200), { once: true });
     </script>
-    <link rel="apple-touch-icon" href="logo.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="logo.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="logo.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="logo.png">
-    <link rel="icon" href="logo.png">
-    <link rel="manifest" href="manifest.json?v=5">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+    <link rel="icon" href="icons/icon-192.png">
+    <link rel="manifest" href="manifest.json?v=7">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
-        crossorigin="anonymous" referrerpolicy="no-referrer">
+        crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+            crossorigin="anonymous" referrerpolicy="no-referrer">
+    </noscript>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -77,6 +90,13 @@
             --safe-bottom: env(safe-area-inset-bottom, 0px);
             --safe-left: env(safe-area-inset-left, 0px);
             --safe-right: env(safe-area-inset-right, 0px);
+            --app-height: 100vh;
+        }
+
+        @supports (height: 100svh) {
+            :root {
+                --app-height: 100svh;
+            }
         }
 
         /* ── RESET ────────────────────────────────────────── */
@@ -90,14 +110,15 @@
 
         html {
             -webkit-text-size-adjust: 100%;
-            height: 100%
+            height: 100%;
+            min-height: var(--app-height);
         }
 
         body {
             font-family: var(--font-body);
             background: var(--bg);
             color: var(--text);
-            min-height: 100%;
+            min-height: var(--app-height);
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
@@ -114,7 +135,42 @@
         }
 
         button {
-            cursor: pointer
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        @media (pointer: coarse) {
+
+            button,
+            .sett-btn,
+            .friend-btn,
+            .filter-pill,
+            .feeling-pill,
+            .pill-tab,
+            .prof-search-btn,
+            .recap-close {
+                position: relative;
+                touch-action: manipulation;
+            }
+
+            button::after,
+            .sett-btn::after,
+            .friend-btn::after,
+            .filter-pill::after,
+            .feeling-pill::after,
+            .pill-tab::after,
+            .prof-search-btn::after,
+            .recap-close::after {
+                content: "";
+                position: absolute;
+                inset: -6px;
+            }
+        }
+
+        input,
+        textarea,
+        select {
+            font-size: 16px;
         }
 
         a {
@@ -156,7 +212,7 @@
         #main-screen {
             display: flex;
             flex-direction: column;
-            min-height: 100dvh;
+            min-height: var(--app-height);
             position: relative;
             z-index: 1;
         }
@@ -172,6 +228,8 @@
             justify-content: space-between;
             padding: 12px 20px;
             padding-top: calc(12px + var(--safe-top));
+            padding-left: max(20px, var(--safe-left));
+            padding-right: max(20px, var(--safe-right));
             background: rgba(10, 10, 15, 0.75);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -325,6 +383,8 @@
             flex: 1;
             padding: 20px;
             padding-top: calc(60px + var(--safe-top) + 20px);
+            padding-left: max(20px, var(--safe-left));
+            padding-right: max(20px, var(--safe-right));
             padding-bottom: calc(84px + var(--safe-bottom));
             -webkit-overflow-scrolling: touch;
             overflow-y: auto;
@@ -343,7 +403,6 @@
             opacity: 0;
             transform: translateY(14px) scale(0.98);
             transition: opacity 0.45s ease, transform 0.5s var(--spring);
-            will-change: transform, opacity;
         }
 
         .tab-content-enter>* {
@@ -397,6 +456,8 @@
             justify-content: space-around;
             align-items: center;
             padding-bottom: var(--safe-bottom);
+            padding-left: var(--safe-left);
+            padding-right: var(--safe-right);
             z-index: 300;
         }
 
@@ -1123,13 +1184,14 @@
             display: none;
             position: fixed;
             inset: 0;
+            min-height: var(--app-height);
             z-index: 500;
             background: rgba(0, 0, 0, 0.65);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             align-items: center;
             justify-content: center;
-            padding: 24px;
+            padding: max(24px, var(--safe-top)) max(24px, var(--safe-right)) max(24px, var(--safe-bottom)) max(24px, var(--safe-left));
             opacity: 0;
             pointer-events: none;
             transition: opacity .25s var(--ease);
@@ -1575,6 +1637,7 @@
             display: none;
             position: fixed;
             inset: 0;
+            min-height: var(--app-height);
             z-index: 400;
             background: rgba(0, 0, 0, 0.5);
             opacity: 0;
@@ -1841,12 +1904,13 @@
             display: none;
             position: fixed;
             inset: 0;
+            min-height: var(--app-height);
             z-index: 999;
             background: rgba(10, 10, 15, 0.98);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             flex-direction: column;
-            padding: 24px;
+            padding: max(24px, var(--safe-top)) max(24px, var(--safe-right)) max(24px, var(--safe-bottom)) max(24px, var(--safe-left));
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             opacity: 0;
@@ -1901,7 +1965,7 @@
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
             color: var(--text);
-            font-size: 15px;
+            font-size: 16px;
             transition: border-color .2s, background .2s;
         }
 
@@ -2003,11 +2067,12 @@
             display: none;
             position: fixed;
             inset: 0;
+            min-height: var(--app-height);
             z-index: 1002;
             background: rgba(10, 10, 15, 0.98);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            padding: 24px;
+            padding: max(24px, var(--safe-top)) max(24px, var(--safe-right)) max(24px, var(--safe-bottom)) max(24px, var(--safe-left));
             opacity: 0;
             transition: opacity .32s var(--ease);
             overflow-y: auto;
@@ -2025,7 +2090,7 @@
         }
 
         .intro-panel {
-            min-height: calc(100dvh - 48px);
+            min-height: calc(var(--app-height) - 48px);
             max-width: 420px;
             margin: 0 auto;
             display: flex;
@@ -2126,6 +2191,7 @@
         .fullscreen-sheet {
             position: fixed;
             inset: 0;
+            min-height: var(--app-height);
             z-index: 500;
             background: rgba(10, 10, 15, 0.28);
             overflow-y: auto;
@@ -2158,7 +2224,7 @@
         }
 
         .chain-detail-screen {
-            min-height: 100dvh;
+            min-height: var(--app-height);
             display: flex;
             flex-direction: column;
             color: var(--text);
@@ -3054,13 +3120,14 @@
             display: none;
             position: fixed;
             inset: 0;
+            min-height: var(--app-height);
             z-index: 550;
             background: rgba(0, 0, 0, 0.65);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             align-items: center;
             justify-content: center;
-            padding: 24px;
+            padding: max(24px, var(--safe-top)) max(24px, var(--safe-right)) max(24px, var(--safe-bottom)) max(24px, var(--safe-left));
             opacity: 0;
             transition: opacity .25s var(--ease);
         }
@@ -3128,7 +3195,7 @@
             border: 1px solid var(--border);
             border-radius: var(--radius-xs);
             color: var(--text);
-            font-size: 14px;
+            font-size: 16px;
             transition: border-color .2s;
         }
 
@@ -3210,13 +3277,14 @@
             display: none;
             position: fixed;
             inset: 0;
+            min-height: var(--app-height);
             z-index: 1000;
             background: rgba(10, 10, 15, 0.94);
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
             flex-direction: column;
             align-items: center;
-            padding: calc(40px + env(safe-area-inset-top, 0px)) 24px 24px;
+            padding: calc(40px + var(--safe-top)) max(24px, var(--safe-right)) max(24px, var(--safe-bottom)) max(24px, var(--safe-left));
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             opacity: 0;
@@ -3488,8 +3556,6 @@
             stroke-linejoin: round;
             flex-shrink: 0;
         }
-
-        @media (hover: hover) {}
 
         .btn-complete.disabled {
             opacity: 0.4;
@@ -4218,7 +4284,7 @@
             border: 1px solid var(--border-light);
             border-radius: var(--radius-sm);
             padding: 13px 80px 13px 16px;
-            font-size: 15px;
+            font-size: 16px;
             color: var(--text);
             font-family: var(--font-body);
             outline: none;
@@ -4571,7 +4637,7 @@
             border-radius: var(--radius-sm);
             color: var(--text);
             font-family: var(--font-body);
-            font-size: 15px;
+            font-size: 16px;
             transition: border-color .2s, background .2s;
             outline: none;
         }
@@ -5008,16 +5074,32 @@
             contain: layout style;
         }
 
-        /* Smoother tab transitions */
-        .content {
-            will-change: auto;
-        }
-
         /* Better touch scrolling */
         .content,
         .profile-sub-section,
         #settings-screen {
             -webkit-overflow-scrolling: touch;
+        }
+
+        .btn-complete,
+        .btn-ghost,
+        .btn-quest-action,
+        .btn-modal-close,
+        .btn-sheet-danger,
+        .btn-share,
+        .friend-btn,
+        .filter-pill,
+        .feeling-pill,
+        .pill-tab,
+        .prof-search-btn,
+        .seasonal-nav-btn,
+        .home-cta-btn,
+        .btn-create-save,
+        .btn-cancel,
+        .btn-confirm-danger,
+        .btn-victory,
+        .recap-close {
+            touch-action: manipulation;
         }
 
         /* Prevent filter-bar from layout-thrashing */
@@ -5085,11 +5167,11 @@
         @media (max-width: 430px),
         (max-height: 820px) {
             .intro-overlay {
-                padding: 16px;
+                padding: max(16px, var(--safe-top)) max(16px, var(--safe-right)) max(16px, var(--safe-bottom)) max(16px, var(--safe-left));
             }
 
             .intro-panel {
-                min-height: calc(100dvh - 32px);
+                min-height: calc(var(--app-height) - 32px);
                 gap: 12px;
             }
 
@@ -5527,7 +5609,7 @@
     <!-- ────────── FIRST OPEN ONBOARDING ────────── -->
     <div id="intro-overlay" class="intro-overlay">
         <div class="intro-panel">
-            <img src="logo.png" alt="more" class="auth-logo" style="margin-bottom: 6px;">
+            <img src="icons/logo.png" alt="more" class="auth-logo" style="margin-bottom: 6px;">
             <div class="intro-kicker"><i class="fa-solid fa-sparkles"></i> Benvenuto</div>
             <div class="intro-title">Trasforma le tue giornate in un gioco.</div>
             <div class="intro-subtitle">
@@ -5569,7 +5651,7 @@
     <!-- ────────── AUTH SCREEN ────────── -->
     <div id="auth-screen">
         <div class="auth-container">
-            <img src="logo.png" alt="more" class="auth-logo">
+            <img src="icons/logo.png" alt="more" class="auth-logo">
             <div class="auth-title" id="auth-title">Bentornato/a</div>
             <div class="auth-subtitle" id="auth-subtitle">Accedi con Google per salvare i tuoi progressi.</div>
 
@@ -5759,7 +5841,7 @@
 
             <div class="install-header">
                 <div class="install-app-icon">
-                    <img src="logo.png" alt="more">
+                    <img src="icons/logo.png" alt="more">
                 </div>
                 <div class="install-app-info">
                     <h3>Installa more</h3>
@@ -5863,7 +5945,7 @@
     <div id="main-screen">
         <header class="header">
             <div style="display:flex; align-items:center; gap: 12px;">
-                <img src="logo.png" alt="more logo" class="header-logo">
+                <img src="icons/logo.png" alt="more logo" class="header-logo">
                 <span id="header-welcome-msg"
                     style="font-size: 15px; font-weight: 700; color: var(--text);">Bentornato/a,
                     Ospite</span>
@@ -6574,7 +6656,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, serverTimestamp, collection, query, where, limit, getDocs, updateDoc, deleteDoc, onSnapshot, documentId, runTransaction, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, getDoc, serverTimestamp, collection, query, where, limit, getDocs, updateDoc, deleteDoc, onSnapshot, documentId, runTransaction, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA27qqn90L4cs21nnlk9v3Erf6Svo82lQY",
@@ -6588,10 +6670,26 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
+        let db;
+        let persistenceReady;
+        try {
+            db = initializeFirestore(app, {
+                localCache: persistentLocalCache({
+                    tabManager: persistentMultipleTabManager()
+                })
+            });
+            persistenceReady = Promise.resolve({ enabled: true });
+        } catch (error) {
+            db = getFirestore(app);
+            persistenceReady = Promise.resolve({
+                enabled: false,
+                code: error?.code || 'unknown',
+                message: error?.message || 'Offline persistence unavailable'
+            });
+        }
         const googleProvider = new GoogleAuthProvider();
 
-        window.firebaseApp = { auth, db, googleProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, doc, setDoc, getDoc, serverTimestamp, collection, query, where, limit, getDocs, updateDoc, deleteDoc, onSnapshot, documentId, runTransaction, addDoc };
+        window.firebaseApp = { auth, db, googleProvider, persistenceReady, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, doc, setDoc, getDoc, serverTimestamp, collection, query, where, limit, getDocs, updateDoc, deleteDoc, onSnapshot, documentId, runTransaction, addDoc };
     </script>
     <script src="questpool.js?v=2"></script>
 
@@ -7135,8 +7233,8 @@
                 try {
                     new Notification("⚔️ Quest in attesa!", {
                         body: `Hai ancora la quest "${questTitle}" aperta. È il momento di completarla!`,
-                        icon: "./logo.png",
-                        badge: "./logo.png",
+                        icon: "./icons/logo.png",
+                        badge: "./icons/logo.png",
                         tag: "stale-quest"
                     });
                     state.currentQuest.lastStaleReminderAt = Date.now();
@@ -7317,7 +7415,9 @@
                     if (!state.chainProgress) state.chainProgress = {};
                     if (!state.partyQuestsCompleted) state.partyQuestsCompleted = [];
                 }
-            } catch (e) { }
+            } catch (e) {
+                showAppError(e, 'Progressi locali non leggibili. Avvio con uno stato pulito.');
+            }
 
             ensureStateShape();
             migrateLegacyDailyBonuses();
@@ -7372,24 +7472,127 @@
 
         function saveLocal() {
             state.updatedAt = Date.now();
-            localStorage.setItem('more_state', JSON.stringify(state));
+            try {
+                localStorage.setItem('more_state', JSON.stringify(state));
+                rememberCloudSyncedState();
+            } catch (error) {
+                showFirestoreError(error, 'Salvataggio locale non riuscito. Libera spazio e riprova.');
+            }
         }
 
         function saveState() {
             saveLocal();
-            syncToFirestore();
+            scheduleCloudSync({ reason: 'state' });
+        }
+
+        let cloudSyncInFlight = false;
+        let cloudSyncQueued = false;
+        let cloudSyncTimer = null;
+        let cloudSyncRetryTimer = null;
+        let cloudSyncRetryDelay = 4000;
+        let lastSyncedCloudFingerprint = null;
+
+        function stableStringify(value) {
+            if (value === null || typeof value !== 'object') return JSON.stringify(value);
+            if (Array.isArray(value)) return `[${value.map(stableStringify).join(',')}]`;
+            return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stableStringify(value[key])}`).join(',')}}`;
+        }
+
+        function getCloudSyncPayload() {
+            const pureState = sanitizeForFirestore(state);
+            const fingerprintSource = { ...pureState };
+            delete fingerprintSource.updatedAt;
+            return {
+                pureState,
+                fingerprint: stableStringify(fingerprintSource)
+            };
+        }
+
+        function rememberCloudSyncedState(pureState = sanitizeForFirestore(state)) {
+            const fingerprintSource = { ...pureState };
+            delete fingerprintSource.updatedAt;
+            lastSyncedCloudFingerprint = stableStringify(fingerprintSource);
+        }
+
+        function scheduleCloudSync({ immediate = false, reason = 'state' } = {}) {
+            if (!currentUser || !fb) return Promise.resolve(false);
+            cloudSyncQueued = true;
+            if (cloudSyncRetryTimer) {
+                clearTimeout(cloudSyncRetryTimer);
+                cloudSyncRetryTimer = null;
+            }
+            if (cloudSyncTimer) {
+                clearTimeout(cloudSyncTimer);
+                cloudSyncTimer = null;
+            }
+            if (immediate) return flushCloudSync(reason);
+            cloudSyncTimer = setTimeout(() => {
+                cloudSyncTimer = null;
+                flushCloudSync(reason);
+            }, 900);
+            return Promise.resolve(true);
+        }
+
+        async function flushCloudSync(reason = 'state') {
+            if (!currentUser || !fb) return false;
+            if (cloudSyncTimer) {
+                clearTimeout(cloudSyncTimer);
+                cloudSyncTimer = null;
+            }
+
+            // Safety: never push empty state to cloud before loading cloud data
+            if (!cloudLoadedOnce && state.xp === 0 && (!state.completed || state.completed.length === 0)) return false;
+            if (cloudSyncInFlight) {
+                cloudSyncQueued = true;
+                return false;
+            }
+
+            const syncUid = currentUser.uid;
+            const { pureState, fingerprint } = getCloudSyncPayload();
+            if (fingerprint === lastSyncedCloudFingerprint) {
+                cloudSyncQueued = false;
+                return false;
+            }
+
+            cloudSyncInFlight = true;
+            cloudSyncQueued = false;
+
+            try {
+                await fb.setDoc(fb.doc(fb.db, 'more_users', syncUid), pureState, { merge: true });
+                lastSyncedCloudFingerprint = fingerprint;
+                cloudSyncRetryDelay = 4000;
+                return true;
+            } catch (e) {
+                cloudSyncQueued = true;
+                const retryDelay = navigator.onLine ? cloudSyncRetryDelay : 15000;
+                cloudSyncRetryDelay = Math.min(cloudSyncRetryDelay * 2, 30000);
+                if (cloudSyncRetryTimer) clearTimeout(cloudSyncRetryTimer);
+                cloudSyncRetryTimer = setTimeout(() => {
+                    cloudSyncRetryTimer = null;
+                    flushCloudSync('retry');
+                }, retryDelay);
+                showFirestoreError(e, 'Sync cloud non riuscita. Riprovo automaticamente.');
+                return false;
+            } finally {
+                cloudSyncInFlight = false;
+                if (cloudSyncQueued && !cloudSyncRetryTimer && currentUser?.uid === syncUid) {
+                    flushCloudSync('queued');
+                }
+            }
         }
 
         function syncToFirestore() {
-            if (!currentUser || !navigator.onLine || !fb) return;
-            // Safety: never push empty state to cloud before loading cloud data
-            if (!cloudLoadedOnce && state.xp === 0 && (!state.completed || state.completed.length === 0)) return;
-            const pureState = sanitizeForFirestore(state);
-            fb.setDoc(fb.doc(fb.db, 'more_users', currentUser.uid), pureState, { merge: true })
-                .catch(e => console.error("Sync error:", e));
+            return scheduleCloudSync({ immediate: true, reason: 'legacy' });
         }
 
-        window.addEventListener('online', syncToFirestore);
+        window.addEventListener('online', () => {
+            showToast('Connessione ripristinata. Sincronizzo...');
+            scheduleCloudSync({ immediate: true, reason: 'online' });
+            refreshProfileAlertCounts();
+        });
+        window.addEventListener('offline', () => {
+            showToast('Sei offline: salvo tutto sul dispositivo.');
+        });
 
         /* ── DOM REFS ─────────────────────────────────────── */
         const $ = id => document.getElementById(id);
@@ -7534,7 +7737,7 @@
                         // Make sure cloudLoadedOnce allows the new local state to sync
                         state.updatedAt = Date.now();
                         saveLocal();
-                        syncToFirestore();
+                        scheduleCloudSync({ immediate: true, reason: 'restore-local' });
 
                         // Force UI refresh
                         updateXPUI();
@@ -7574,6 +7777,11 @@
                     clearInterval(checkFb);
                     fb = window.firebaseApp;
                     setupAuthVars();
+                    fb.persistenceReady?.then(status => {
+                        if (!status?.enabled && status?.code !== 'failed-precondition') {
+                            showFirestoreError(status, 'Modalita offline non disponibile su questo dispositivo.');
+                        }
+                    });
                     initDailyQuest();
                 }
             }, 50);
@@ -7615,6 +7823,7 @@
         }
 
         let initialSnapshotDone = false;
+        let notificationPromptedForUid = null;
         function completeLoginFlow(user, cloudState) {
             currentUser = user;
             isGuest = false;
@@ -7690,9 +7899,11 @@
                 processCompletedPartyInvitesForCurrentUser({ notify: true });
                 refreshProfileAlertCounts();
                 scheduleStaleQuestReminder();
-            } else if (localT >= cloudT && cloudLoadedOnce) {
-                // If local is newer OR EQUAL, push it — but ONLY if we've loaded cloud once already
-                syncToFirestore();
+            } else if (localT > cloudT || (localT >= cloudT && cloudLoadedOnce)) {
+                // If local is newer, push it after reading cloud once enough to prevent empty overwrites.
+                scheduleCloudSync({ immediate: true, reason: 'login-local-newer' });
+            } else if (cloudState) {
+                rememberCloudSyncedState(sanitizeForFirestore(cloudState));
             }
             cloudLoadedOnce = true;
 
@@ -7727,7 +7938,10 @@
             processCompletedPartyInvitesForCurrentUser({ notify: true });
             refreshProfileAlertCounts();
             setupProfileAlertListeners();
-            setTimeout(requestNotificationPermission, 1500);
+            if (notificationPromptedForUid !== user.uid) {
+                notificationPromptedForUid = user.uid;
+                setTimeout(requestNotificationPermission, 1500);
+            }
             scheduleStaleQuestReminder();
         }
 
@@ -7789,6 +8003,7 @@
                                     migrateLegacyChainBonuses();
                                     rebuildProgressFromSource({ notifyAchievements: false });
                                     localStorage.setItem('more_state', JSON.stringify(state));
+                                    rememberCloudSyncedState();
                                     updateXPUI();
                                     renderActiveQuest();
                                     renderCompleted();
@@ -7810,7 +8025,7 @@
                                 handleMissingUsername(user);
                             }
                         }, (e) => {
-                            console.error("Snapshot error:", e);
+                            showFirestoreError(e, 'Realtime profilo interrotto. Riprovo al prossimo cambio rete.');
                         });
 
                         function handleMissingUsername(u) {
@@ -7832,14 +8047,21 @@
                             btnAuthGoogle.style.display = 'none';
                             btnAuthGuest.style.display = 'none';
                         }
-                    } catch (e) { console.error(e); }
+                    } catch (e) {
+                        showFirestoreError(e, 'Autenticazione non completata. Riprova.');
+                    }
                 }
                 else {
                     if (unsubSnapshot) unsubSnapshot();
                     teardownProfileAlertListeners();
                     unsubSnapshot = null;
                     initialSnapshotDone = false;
+                    notificationPromptedForUid = null;
                     currentUser = null;
+                    lastSyncedCloudFingerprint = null;
+                    cloudSyncQueued = false;
+                    if (cloudSyncTimer) { clearTimeout(cloudSyncTimer); cloudSyncTimer = null; }
+                    if (cloudSyncRetryTimer) { clearTimeout(cloudSyncRetryTimer); cloudSyncRetryTimer = null; }
                     window._pendingFriendRequestCount = 0;
                     window._pendingPartyInviteCount = 0;
                     window._pendingFriendRequestKeys = [];
@@ -7923,21 +8145,19 @@
                 closeSettings();
                 if (headerWelcomeMsg) headerWelcomeMsg.textContent = "Bentornato/a";
                 showToast('Disconnesso');
-            });
+            }).catch(err => showFirestoreError(err, 'Disconnessione non riuscita. Riprova.'));
         });
 
-        btnAuthGoogle.addEventListener('click', async () => {
+        btnAuthGoogle.addEventListener('click', safeAsyncAction(async () => {
             if (btnAuthGoogle.classList.contains('disabled')) return;
             btnAuthGoogle.classList.add('disabled');
             try {
                 await fb.signInWithPopup(fb.auth, fb.googleProvider);
                 // onAuthStateChanged takes over completely!
-            } catch (error) {
-                showToast(error.message.replace('Firebase: ', ''));
             } finally {
                 btnAuthGoogle.classList.remove('disabled');
             }
-        });
+        }, 'Accesso Google non completato. Riprova.'));
 
         authUsername.addEventListener('input', () => {
             authUsername.value = authUsername.value.toLowerCase().replace(/[^a-z0-9_.]/g, '');
@@ -7977,12 +8197,13 @@
                     };
                     const pureNewState = sanitizeForFirestore(newState);
                     await fb.setDoc(fb.doc(fb.db, 'more_users', pendingGoogleCreds.uid), pureNewState, { merge: true });
+                    rememberCloudSyncedState(pureNewState);
 
                     completeLoginFlow(pendingGoogleCreds, newState);
                     showToast('Account completato con successo!');
                 }
             } catch (err) {
-                showToast(err.message.replace('Firebase: ', ''));
+                showFirestoreError(err, (err.message || 'Registrazione non completata.').replace('Firebase: ', ''));
             } finally {
                 btnAuthSubmit.classList.remove('disabled');
             }
@@ -8411,17 +8632,34 @@
             return docs;
         }
 
+        function getCanonicalFriendshipId(uidA, uidB) {
+            return [uidA, uidB].filter(Boolean).sort().join("_");
+        }
+
+        function uniqueDocRefs(refs) {
+            const seen = new Set();
+            return refs.filter(ref => {
+                if (!ref?.path || seen.has(ref.path)) return false;
+                seen.add(ref.path);
+                return true;
+            });
+        }
+
         async function getAcceptedFriendRequestDoc(friendUid) {
             if (!currentUser || !friendUid || !fb) return null;
             const reqId1 = currentUser.uid + "_" + friendUid;
             const reqId2 = friendUid + "_" + currentUser.uid;
-            const [snap1, snap2] = await Promise.all([
-                fb.getDoc(fb.doc(fb.db, "comparison_requests", reqId1)),
-                fb.getDoc(fb.doc(fb.db, "comparison_requests", reqId2))
+            const canonicalId = getCanonicalFriendshipId(currentUser.uid, friendUid);
+            const refs = uniqueDocRefs([
+                fb.doc(fb.db, "comparison_requests", canonicalId),
+                fb.doc(fb.db, "comparison_requests", reqId1),
+                fb.doc(fb.db, "comparison_requests", reqId2)
             ]);
+            const snaps = await Promise.all(refs.map(ref => fb.getDoc(ref)));
             const candidates = [];
-            if (snap1.exists()) candidates.push({ id: snap1.id, ref: snap1.ref, data: snap1.data() });
-            if (snap2.exists()) candidates.push({ id: snap2.id, ref: snap2.ref, data: snap2.data() });
+            snaps.forEach(snap => {
+                if (snap.exists()) candidates.push({ id: snap.id, ref: snap.ref, data: snap.data() });
+            });
             return candidates.find(d => d.data && d.data.status === 'accepted') || null;
         }
 
@@ -8609,14 +8847,14 @@
                         added++;
                         fb.updateDoc(fb.doc(fb.db, 'comparison_requests', invite.relationDocId), {
                             'partyInvite.recipientSyncedAt': fb.serverTimestamp()
-                        }).catch(() => { });
+                        }).catch(err => showFirestoreError(err, 'Sync party parziale. Riprovero automaticamente.'));
                     }
 
                     if (invite.status === 'deleted') {
                         if (removeLocalPartyInviteCompletion(invite)) removed++;
                         fb.updateDoc(fb.doc(fb.db, 'comparison_requests', invite.relationDocId), {
                             'partyInvite.recipientDeleteSyncedAt': fb.serverTimestamp()
-                        }).catch(() => { });
+                        }).catch(err => showFirestoreError(err, 'Sync rimozione party parziale. Riprovero automaticamente.'));
                     }
                 }
 
@@ -8633,7 +8871,7 @@
                 }
                 return added;
             } catch (err) {
-                console.error('Completed party sync error:', err);
+                showFirestoreError(err, 'Impossibile sincronizzare le quest party.');
                 return 0;
             }
         }
@@ -8724,8 +8962,8 @@
                 scheduleProfileAlertRefresh({ notify: true });
             };
             unsubscribeProfileAlerts = [
-                fb.onSnapshot(qIncoming, onChange, err => console.error('Incoming social listener error:', err)),
-                fb.onSnapshot(qOutgoing, onChange, err => console.error('Outgoing social listener error:', err))
+                fb.onSnapshot(qIncoming, onChange, err => showFirestoreError(err, 'Realtime richieste interrotto. Riprovo al prossimo accesso.')),
+                fb.onSnapshot(qOutgoing, onChange, err => showFirestoreError(err, 'Realtime amicizie interrotto. Riprovo al prossimo accesso.'))
             ];
             profileAlertsListenerUid = currentUser.uid;
         }
@@ -8753,7 +8991,7 @@
                 window._pendingPartyInviteKeys = partyPending.map(invite => `party:${invite.id || invite.relationDocId}`);
                 updatePendingFriendsBadge();
             } catch (err) {
-                console.error('Profile alert count error:', err);
+                showFirestoreError(err, 'Impossibile aggiornare notifiche profilo.');
             }
         }
 
@@ -8844,17 +9082,6 @@
                 const friendshipDoc = await getAcceptedFriendRequestDoc(userDoc.id);
                 if (!friendshipDoc) throw new Error('Amicizia non trovata. Ricarica la pagina e riprova.');
 
-                const activeInvite = normalizePartyInviteFromFriendDoc(friendshipDoc.data, friendshipDoc.id, friendshipDoc.ref);
-                if (activeInvite && ['pending', 'accepted'].includes(activeInvite.status)) {
-                    throw new Error('Hai gia un invito party attivo con questo amico.');
-                }
-                if (activeInvite && activeInvite.status === 'completed' && !activeInvite.recipientSyncedAt) {
-                    throw new Error('La quest party precedente si sta ancora sincronizzando con questo amico.');
-                }
-                if (activeInvite && activeInvite.status === 'deleted' && !activeInvite.recipientDeleteSyncedAt) {
-                    throw new Error('La rimozione party precedente si sta ancora sincronizzando con questo amico.');
-                }
-
                 const targetData = userDoc.data();
                 const q = state.currentQuest;
                 const fromUsername = ensureAtUsername(state.username || currentUser.displayName || 'utente');
@@ -8865,33 +9092,59 @@
                 const toAvatarColor = getAvatarColor(targetData, toUsername);
                 const inviteId = currentUser.uid + "_" + userDoc.id + "_" + Date.now();
 
-                await fb.updateDoc(friendshipDoc.ref, {
-                    partyInvite: {
-                        id: inviteId,
-                        relationDocId: friendshipDoc.id,
-                        fromUid: currentUser.uid,
-                        fromUsername,
-                        fromDisplayName,
-                        fromAvatarColor,
-                        toUid: userDoc.id,
-                        toUsername,
-                        toDisplayName,
-                        toAvatarColor,
-                        questTitle: q.title || '',
-                        questDescription: q.description || '',
-                        questDifficulty: q.difficulty || 'easy',
-                        questXP: Number(q.xp) || 0,
-                        questCategory: q.category || 'sfida',
-                        questRef: q.ref || q.title || '',
-                        status: 'pending',
-                        createdAt: fb.serverTimestamp(),
-                        acceptedAt: null,
-                        completedAt: null,
-                        completedByUid: null,
-                        completionNote: null,
-                        completionPhoto: null,
-                        completionFeeling: null
+                const partyInvitePayload = {
+                    id: inviteId,
+                    relationDocId: friendshipDoc.id,
+                    fromUid: currentUser.uid,
+                    fromUsername,
+                    fromDisplayName,
+                    fromAvatarColor,
+                    toUid: userDoc.id,
+                    toUsername,
+                    toDisplayName,
+                    toAvatarColor,
+                    questTitle: q.title || '',
+                    questDescription: q.description || '',
+                    questDifficulty: q.difficulty || 'easy',
+                    questXP: Number(q.xp) || 0,
+                    questCategory: q.category || 'sfida',
+                    questRef: q.ref || q.title || '',
+                    status: 'pending',
+                    createdAt: fb.serverTimestamp(),
+                    acceptedAt: null,
+                    completedAt: null,
+                    completedByUid: null,
+                    completionNote: null,
+                    completionPhoto: null,
+                    completionFeeling: null,
+                    recipientSyncedAt: null,
+                    recipientDeleteSyncedAt: null
+                };
+
+                await fb.runTransaction(fb.db, async (transaction) => {
+                    const friendshipSnap = await transaction.get(friendshipDoc.ref);
+                    if (!friendshipSnap.exists()) throw new Error('Amicizia non trovata.');
+                    const friendship = friendshipSnap.data();
+                    if (friendship.status !== 'accepted') throw new Error('Amicizia non attiva.');
+                    if (![friendship.from, friendship.to].includes(currentUser.uid) || ![friendship.from, friendship.to].includes(userDoc.id)) {
+                        throw new Error('Amicizia non valida per questo invito.');
                     }
+
+                    const activeInvite = normalizePartyInviteFromFriendDoc(friendship, friendshipDoc.id, friendshipDoc.ref);
+                    if (activeInvite && ['pending', 'accepted'].includes(activeInvite.status)) {
+                        throw new Error('Hai gia un invito party attivo con questo amico.');
+                    }
+                    if (activeInvite && activeInvite.status === 'completed' && !activeInvite.recipientSyncedAt) {
+                        throw new Error('La quest party precedente si sta ancora sincronizzando con questo amico.');
+                    }
+                    if (activeInvite && activeInvite.status === 'deleted' && !activeInvite.recipientDeleteSyncedAt) {
+                        throw new Error('La rimozione party precedente si sta ancora sincronizzando con questo amico.');
+                    }
+
+                    transaction.update(friendshipDoc.ref, {
+                        partyInvite: partyInvitePayload,
+                        updatedAt: fb.serverTimestamp()
+                    });
                 });
 
                 state.currentQuest.partyInviteId = inviteId;
@@ -8905,7 +9158,7 @@
                 closePartyInviteSheet();
                 showToast(`Invito inviato a ${toUsername}!`);
             } catch (err) {
-                showToast((err.message || 'Errore invio invito').replace('Firebase: ', ''));
+                showFirestoreError(err, (err.message || 'Errore invio invito').replace('Firebase: ', ''));
             } finally {
                 if (submit) submit.classList.remove('disabled');
             }
@@ -8979,7 +9232,7 @@
                 }
                 list.innerHTML = cards.join('');
             } catch (err) {
-                console.error('Party invites error:', err);
+                showFirestoreError(err, 'Errore caricamento inviti.');
                 list.innerHTML = '<div style="color:var(--text-muted); font-size:14px; text-align:center;">Errore caricamento inviti.</div>';
             }
         }
@@ -8987,27 +9240,48 @@
         window.acceptPartyInvite = async function (inviteId) {
             if (isGuest || !currentUser || !fb || !inviteId) return;
             try {
-                await fb.updateDoc(fb.doc(fb.db, 'comparison_requests', inviteId), {
-                    'partyInvite.status': 'accepted',
-                    'partyInvite.acceptedAt': fb.serverTimestamp()
+                const inviteRef = fb.doc(fb.db, 'comparison_requests', inviteId);
+                await fb.runTransaction(fb.db, async (transaction) => {
+                    const snap = await transaction.get(inviteRef);
+                    if (!snap.exists()) throw new Error('Invito non trovato.');
+                    const invite = normalizePartyInviteFromFriendDoc(snap.data(), snap.id, inviteRef);
+                    if (!invite || invite.toUid !== currentUser.uid) throw new Error('Questo invito non e tuo.');
+                    if (invite.status !== 'pending') throw new Error('Invito non piu disponibile.');
+                    transaction.update(inviteRef, {
+                        'partyInvite.status': 'accepted',
+                        'partyInvite.acceptedAt': fb.serverTimestamp(),
+                        updatedAt: fb.serverTimestamp()
+                    });
                 });
                 showToast('Quest accettata! Aspetta che il tuo amico la completi.');
                 await renderPartyInvites();
+                await refreshProfileAlertCounts();
             } catch (err) {
-                showToast((err.message || 'Errore accettazione invito').replace('Firebase: ', ''));
+                showFirestoreError(err, 'Errore accettazione invito.');
             }
         };
 
         window.declinePartyInvite = async function (inviteId) {
             if (isGuest || !currentUser || !fb || !inviteId) return;
             try {
-                await fb.updateDoc(fb.doc(fb.db, 'comparison_requests', inviteId), {
-                    'partyInvite.status': 'declined',
-                    'partyInvite.declinedAt': fb.serverTimestamp()
+                const inviteRef = fb.doc(fb.db, 'comparison_requests', inviteId);
+                await fb.runTransaction(fb.db, async (transaction) => {
+                    const snap = await transaction.get(inviteRef);
+                    if (!snap.exists()) return;
+                    const invite = normalizePartyInviteFromFriendDoc(snap.data(), snap.id, inviteRef);
+                    if (!invite || invite.toUid !== currentUser.uid) throw new Error('Questo invito non e tuo.');
+                    if (invite.status !== 'pending') return;
+                    transaction.update(inviteRef, {
+                        'partyInvite.status': 'declined',
+                        'partyInvite.declinedAt': fb.serverTimestamp(),
+                        updatedAt: fb.serverTimestamp()
+                    });
                 });
                 await renderPartyInvites();
+                await refreshProfileAlertCounts();
+                showToast('Invito rifiutato');
             } catch (err) {
-                showToast((err.message || 'Errore rifiuto invito').replace('Firebase: ', ''));
+                showFirestoreError(err, 'Errore rifiuto invito.');
             }
         };
 
@@ -9056,7 +9330,8 @@
                     'partyInvite.completionNote': note || null,
                     'partyInvite.completionPhoto': photo || null,
                     'partyInvite.completionFeeling': feeling || null,
-                    'partyInvite.recipientSyncedAt': null
+                    'partyInvite.recipientSyncedAt': null,
+                    updatedAt: fb.serverTimestamp()
                 });
 
                 return { completed: true, friendUsername: toUsername, questTitle, xp: questXP };
@@ -9069,11 +9344,22 @@
             if (!invite?.relationDocId) return false;
             if (invite.fromUid !== currentUser.uid && invite.toUid !== currentUser.uid) return false;
 
-            await fb.updateDoc(fb.doc(fb.db, 'comparison_requests', invite.relationDocId), {
-                'partyInvite.status': 'deleted',
-                'partyInvite.deletedAt': fb.serverTimestamp(),
-                'partyInvite.deletedByUid': currentUser.uid,
-                'partyInvite.recipientDeleteSyncedAt': invite.toUid === currentUser.uid ? fb.serverTimestamp() : null
+            const inviteRef = fb.doc(fb.db, 'comparison_requests', invite.relationDocId);
+            await fb.runTransaction(fb.db, async (transaction) => {
+                const snap = await transaction.get(inviteRef);
+                if (!snap.exists()) return;
+                const freshInvite = normalizePartyInviteFromFriendDoc(snap.data(), snap.id, inviteRef);
+                if (!freshInvite || freshInvite.id !== q.partyInviteId) return;
+                if (freshInvite.fromUid !== currentUser.uid && freshInvite.toUid !== currentUser.uid) {
+                    throw new Error('Non puoi modificare questa quest party.');
+                }
+                transaction.update(inviteRef, {
+                    'partyInvite.status': 'deleted',
+                    'partyInvite.deletedAt': fb.serverTimestamp(),
+                    'partyInvite.deletedByUid': currentUser.uid,
+                    'partyInvite.recipientDeleteSyncedAt': freshInvite.toUid === currentUser.uid ? fb.serverTimestamp() : null,
+                    updatedAt: fb.serverTimestamp()
+                });
             });
             return true;
         }
@@ -9217,7 +9503,7 @@
                     sharedDailyQuestCache = { date: dateStr, quest };
                     return quest;
                 } catch (err) {
-                    console.warn('Shared daily quest fallback:', err);
+                    showFirestoreError(err, 'Daily condivisa non disponibile. Uso una daily locale.');
                     const fallback = getFallbackDailyQuest(dateStr);
                     sharedDailyQuestCache = { date: dateStr, quest: fallback };
                     return fallback;
@@ -9835,7 +10121,7 @@
                 editedQ.feeling = feeling;
                 saveState();
                 renderCompleted();
-                if (state.profilePublic) syncToFirestore();
+                if (state.profilePublic) scheduleCloudSync({ immediate: true, reason: 'profile-public-edit' });
                 // Apre il modal XP per permettere ricondivisione
                 lastCompletedQuest = editedQ;
                 modalXpText.textContent = `+ ${(editedQ.xp || 0).toLocaleString('it-IT')} XP`;
@@ -9862,8 +10148,7 @@
                             try {
                                 await markPartyInviteDeletedForQuest(removedQ);
                             } catch (err) {
-                                console.error('Party delete sync error:', err);
-                                showToast((err.message || 'Quest eliminata, ma sync party fallita').replace('Firebase: ', ''));
+                                showFirestoreError(err, (err.message || 'Quest eliminata, ma sync party fallita').replace('Firebase: ', ''));
                             }
                         }
 
@@ -9884,7 +10169,7 @@
                     renderProfileScreen();
                     renderChainsSection();
                     renderChainsStats();
-                    if (state.profilePublic) syncToFirestore();
+                    if (state.profilePublic) scheduleCloudSync({ immediate: true, reason: 'profile-public-delete' });
                     closeOverlayAnimated($('quest-review-overlay'));
                     pendingCompletion = null;
                     showToast(`Quest eliminata — XP rimossi`);
@@ -10208,8 +10493,7 @@
                         return;
                     }
                 } catch (err) {
-                    console.error('Party completion error:', err);
-                    showToast((err.message || 'Sync party fallita: quest non completata').replace('Firebase: ', ''));
+                    showFirestoreError(err, (err.message || 'Sync party fallita: quest non completata').replace('Firebase: ', ''));
                     return;
                 }
             }
@@ -10368,6 +10652,15 @@
 
         /* ── NAVIGATION & REALTIME ────────────────────────── */
         let unsubscribeComparison = null;
+        let confrontoRenderToken = 0;
+
+        function teardownComparisonListener() {
+            confrontoRenderToken++;
+            if (unsubscribeComparison) {
+                try { unsubscribeComparison(); } catch { }
+                unsubscribeComparison = null;
+            }
+        }
 
         btnHome.addEventListener('click', () => {
             // Re-trigger logic allowed to fix occasional empty-screen bugs on iOS PWA
@@ -10381,7 +10674,7 @@
             settingsScreen.style.display = 'none';
             myProfileScreen.style.display = 'none';
             switchToScreen(homeScreen);
-            if (unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
+            teardownComparisonListener();
         });
 
         btnTabStats.addEventListener('click', () => {
@@ -10397,7 +10690,7 @@
             myProfileScreen.style.display = 'none';
             switchToScreen(statsScreen);
             renderStatsScreen();
-            if (unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
+            teardownComparisonListener();
         });
 
         // Profile Tab Handler
@@ -10418,8 +10711,8 @@
             renderProfileScreen();
             // If we are on comparison tab, restart listener
             if ($('sub-amici').style.display === 'block') {
-                renderConfrontoTab();
                 renderAmiciTab();
+                renderConfrontoTab();
             }
         });
 
@@ -10895,9 +11188,9 @@
                     const url = window.location.origin + window.location.pathname + "#profile/" + currentUser.uid;
                     if (navigator.share) {
                         navigator.share({ title: 'more - Il mio Profilo', text: 'Guarda i miei progressi su more! 🎮', url })
-                            .catch(() => navigator.clipboard.writeText(url).then(() => showToast('Link copiato!')));
+                            .catch(() => copyToClipboard(url));
                     } else {
-                        navigator.clipboard.writeText(url).then(() => showToast('Link copiato!'));
+                        copyToClipboard(url);
                     }
                 });
             }
@@ -10939,15 +11232,14 @@
                     });
                 }
 
-                if (targetId === 'amici') renderConfrontoTab();
                 if (targetId === 'salvati') renderSavedQuestsTab();
                 if (targetId === 'diario') renderDiaryTab();
                 if (targetId === 'amici') {
-                    if (unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
                     renderAmiciTab();
+                    renderConfrontoTab();
                 }
-                if (targetId === 'profilo') {
-                    if (unsubscribeComparison) { unsubscribeComparison(); unsubscribeComparison = null; }
+                if (targetId !== 'amici') {
+                    teardownComparisonListener();
                 }
             });
         });
@@ -10955,8 +11247,12 @@
         async function renderConfrontoTab() {
             if (!currentUser || !fb) { $('confronto-logged-view').innerHTML = '<div class="spinner"></div>'; return; }
             const subConfronto = $('confronto-logged-view');
+            const renderToken = ++confrontoRenderToken;
 
-            if (unsubscribeComparison) { unsubscribeComparison(); }
+            if (unsubscribeComparison) {
+                try { unsubscribeComparison(); } catch { }
+                unsubscribeComparison = null;
+            }
 
             subConfronto.innerHTML = '<div class="spinner"></div>';
 
@@ -10972,6 +11268,8 @@
                 snap2.forEach(d => allReqs.push(d.data()));
                 const accepted = allReqs.filter(r => r.status === 'accepted');
 
+                if (renderToken !== confrontoRenderToken || $('sub-amici')?.style.display !== 'block') return;
+
                 if (accepted.length === 0) {
                     subConfronto.innerHTML = '<div class="quest-empty"><i class="fa-solid fa-scroll" style="font-size:40px;display:block;margin:0 auto 10px;"></i>Aggiungi amici per confrontarti!</div>';
                     return;
@@ -10985,11 +11283,15 @@
                 const qUsers = fb.query(usersRef, fb.where(fb.documentId(), 'in', friendUids.slice(0, 10)));
 
                 unsubscribeComparison = fb.onSnapshot(qUsers, (userSnaps) => {
+                    if (renderToken !== confrontoRenderToken || $('sub-amici')?.style.display !== 'block') return;
                     updateConfrontoUI(userSnaps.docs, subConfronto);
+                }, (err) => {
+                    showFirestoreError(err, 'Realtime confronto interrotto.');
+                    subConfronto.innerHTML = '<div style="color:var(--text-muted); font-size:14px; text-align:center;">Errore realtime confronti.</div>';
                 });
 
             } catch (err) {
-                console.error(err);
+                showFirestoreError(err, 'Errore caricamento confronti.');
                 subConfronto.innerHTML = '<div style="color:var(--text-muted); font-size:14px; text-align:center;">Errore caricamento confronti.</div>';
             }
         }
@@ -11049,8 +11351,8 @@
                         <li class="completed-item" style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
                             <div style="width: 28px; height: 28px; border-radius: 50%; background: ${isMe ? state.avatarColor : q.ownerColor}; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 12px; color: #fff; flex-shrink: 0;">${isMe ? myInit : q.ownerInit}</div>
                             <div style="flex:1; line-height:1.2;">
-                                <div class="completed-name" style="font-size:13px; font-weight:700;">${q.title}</div>
-                                <div style="font-size:11px; color:var(--text-dim);">${isMe ? 'Tu' : q.ownerName} &middot; ${new Date(q.timestamp).toLocaleString('it-IT', { weekday: 'short', hour: '2-digit', minute: '2-digit' })}</div>
+                                <div class="completed-name" style="font-size:13px; font-weight:700;">${escapeHtml(q.title)}</div>
+                                <div style="font-size:11px; color:var(--text-dim);">${isMe ? 'Tu' : escapeHtml(q.ownerName || 'Amico')} &middot; ${new Date(q.timestamp).toLocaleString('it-IT', { weekday: 'short', hour: '2-digit', minute: '2-digit' })}</div>
                             </div>
                             <div class="completed-xp" style="font-size:13px; font-weight:800; color:var(--accent);">+${(q.xp || 0).toLocaleString('it-IT')}</div>
                         </li>`;
@@ -11075,7 +11377,7 @@
 
                         <div style="display:flex; align-items:center; gap:12px; text-align:right;">
                             <div>
-                                <div style="font-weight:700; font-size:15px; font-family:var(--font-display);">${friendData.displayName || 'Amico'}</div>
+                                <div style="font-weight:700; font-size:15px; font-family:var(--font-display);">${escapeHtml(friendData.displayName || 'Amico')}</div>
                                 <div style="color:var(--text-dim); font-size:12px;">${friendWeeklyXp.toLocaleString('it-IT')} XP</div>
                             </div>
                             <div style="width: 48px; height: 48px; border-radius: 50%; background: ${friendData.avatarColor || '#555'}; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 20px; color: #fff;">${fInit}</div>
@@ -11094,6 +11396,49 @@
                 `;
             });
             container.innerHTML = htmlStr;
+        }
+
+        async function sendFriendRequest(targetUid, targetData = {}) {
+            if (!currentUser || !fb || !targetUid) throw new Error('Sessione non pronta.');
+            if (targetUid === currentUser.uid) throw new Error('Non puoi aggiungere te stesso.');
+
+            const canonicalId = getCanonicalFriendshipId(currentUser.uid, targetUid);
+            const reqId1 = currentUser.uid + "_" + targetUid;
+            const reqId2 = targetUid + "_" + currentUser.uid;
+            const refs = uniqueDocRefs([
+                fb.doc(fb.db, "comparison_requests", canonicalId),
+                fb.doc(fb.db, "comparison_requests", reqId1),
+                fb.doc(fb.db, "comparison_requests", reqId2)
+            ]);
+            const canonicalRef = fb.doc(fb.db, "comparison_requests", canonicalId);
+            const myUsername = ensureAtUsername(state.username || currentUser.displayName || 'utente');
+            const targetUsername = ensureAtUsername(targetData.username || 'utente');
+
+            return fb.runTransaction(fb.db, async (transaction) => {
+                const snaps = [];
+                for (const ref of refs) snaps.push(await transaction.get(ref));
+                const existingSnap = snaps.find(snap => snap.exists());
+
+                if (existingSnap) {
+                    const existing = existingSnap.data();
+                    if (existing.status === 'accepted') return { status: 'accepted' };
+                    if (existing.status === 'pending') return { status: 'pending' };
+                    if (existing.status && !['declined', 'removed'].includes(existing.status)) {
+                        throw new Error('Richiesta gia presente.');
+                    }
+                }
+
+                transaction.set(canonicalRef, {
+                    from: currentUser.uid,
+                    fromUsername: myUsername,
+                    to: targetUid,
+                    toUsername: targetUsername,
+                    status: 'pending',
+                    createdAt: fb.serverTimestamp(),
+                    updatedAt: fb.serverTimestamp()
+                });
+                return { status: 'created' };
+            });
         }
 
         async function renderAmiciTab() {
@@ -11156,11 +11501,17 @@
                         // Check existing request status
                         const reqId1 = currentUser.uid + "_" + targetUid;
                         const reqId2 = targetUid + "_" + currentUser.uid;
-                        const reqDoc1 = await fb.getDoc(fb.doc(fb.db, "comparison_requests", reqId1));
-                        const reqDoc2 = await fb.getDoc(fb.doc(fb.db, "comparison_requests", reqId2));
+                        const canonicalId = getCanonicalFriendshipId(currentUser.uid, targetUid);
+                        const refs = uniqueDocRefs([
+                            fb.doc(fb.db, "comparison_requests", canonicalId),
+                            fb.doc(fb.db, "comparison_requests", reqId1),
+                            fb.doc(fb.db, "comparison_requests", reqId2)
+                        ]);
+                        const [reqDoc1, reqDoc2, reqDoc3] = await Promise.all(refs.map(ref => fb.getDoc(ref)));
                         let existingReq = null;
                         if (reqDoc1.exists()) { existingReq = reqDoc1.data(); }
                         else if (reqDoc2.exists()) { existingReq = reqDoc2.data(); }
+                        else if (reqDoc3?.exists()) { existingReq = reqDoc3.data(); }
 
                         if (existingReq && existingReq.status === 'accepted') {
                             actionBtn = `<span style="color:var(--diff-easy); font-size:12px; font-weight:700;">Amici</span>`;
@@ -11182,23 +11533,25 @@
 
                         if (document.getElementById(`btn-send-req-${targetUid}`)) {
                             document.getElementById(`btn-send-req-${targetUid}`).onclick = async () => {
-                                const reqId = currentUser.uid + "_" + targetUid;
-                                await fb.setDoc(fb.doc(fb.db, "comparison_requests", reqId), {
-                                    from: currentUser.uid,
-                                    fromUsername: myUsername || state.username,
-                                    to: targetUid,
-                                    status: 'pending',
-                                    createdAt: fb.serverTimestamp()
-                                });
-                                resultDiv.innerHTML = '<div style="color:var(--diff-easy); font-size:14px; text-align:center;">Richiesta inviata!</div>';
-                                loadFriends();
+                                try {
+                                    const btn = document.getElementById(`btn-send-req-${targetUid}`);
+                                    if (btn) btn.classList.add('disabled');
+                                    const result = await sendFriendRequest(targetUid, userData);
+                                    resultDiv.innerHTML = result.status === 'accepted'
+                                        ? '<div style="color:var(--diff-easy); font-size:14px; text-align:center;">Siete gia amici!</div>'
+                                        : '<div style="color:var(--diff-easy); font-size:14px; text-align:center;">Richiesta inviata!</div>';
+                                    await loadFriends();
+                                    await refreshProfileAlertCounts();
+                                } catch (err) {
+                                    showFirestoreError(err, 'Richiesta non inviata. Riprova.');
+                                    resultDiv.innerHTML = `<div style="color:var(--diff-hard); font-size:14px; text-align:center;">Errore: ${escapeHtml((err.message || 'riprova').replace('Firebase: ', ''))}</div>`;
+                                }
                             };
                         }
 
                     } catch (err) {
-                        console.error(err);
-                        resultDiv.innerHTML = `<div style="color:var(--diff-hard); font-size:14px; text-align:center;">Errore: ${err.message}</div>`;
-                        showToast(`Errore ricerca: ${err.message}`);
+                        showFirestoreError(err, 'Errore ricerca utenti.');
+                        resultDiv.innerHTML = `<div style="color:var(--diff-hard); font-size:14px; text-align:center;">Errore: ${escapeHtml((err.message || 'riprova').replace('Firebase: ', ''))}</div>`;
                     }
                 };
             }
@@ -11228,7 +11581,10 @@
                         if (q.completedAt) items.push({ ...q, _name: name, _color: color, _init: init });
                     });
                 }
-                if (items.length === 0) return;
+                if (items.length === 0) {
+                    container.innerHTML = '<div class="prof-activity-card" style="padding:20px;text-align:center;color:var(--text-muted);font-size:14px;">Nessuna attività recente degli amici.</div>';
+                    return;
+                }
 
                 items.sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
                 const recent = items.slice(0, 20);
@@ -11248,7 +11604,7 @@
                     <span class="diff-badge ${diffClass(q.difficulty)}" style="font-size:9px;padding:2px 6px;">${diffLabel(q.difficulty)}</span>
                 </div>
             </div>`).join('');
-            } catch (e) { console.error('Squad feed error:', e); }
+            } catch (e) { showFirestoreError(e, 'Errore caricamento feed amici.'); }
         }
 
         let _loadingFriendsInProgress = false;
@@ -11370,7 +11726,7 @@
                 }
 
             } catch (err) {
-                console.error(err);
+                showFirestoreError(err, 'Errore caricamento amici.');
                 if (friendsList) friendsList.innerHTML = '<div style="color:var(--text-muted); font-size:14px; text-align:center;">Errore caricamento amici.</div>';
             } finally {
                 _loadingFriendsInProgress = false;
@@ -11380,14 +11736,29 @@
         window.replyRequest = async (reqId, status) => {
             if (!fb) return;
             try {
-                // Determine the correct updated status: if declined, we might want to just delete the document realistically
-                if (status === 'declined') {
-                    await fb.deleteDoc(fb.doc(fb.db, "comparison_requests", reqId));
-                } else {
-                    await fb.updateDoc(fb.doc(fb.db, "comparison_requests", reqId), { status });
-                }
-                loadFriends();
-            } catch (e) { console.error('Error replying', e); }
+                const reqRef = fb.doc(fb.db, "comparison_requests", reqId);
+                await fb.runTransaction(fb.db, async (transaction) => {
+                    const snap = await transaction.get(reqRef);
+                    if (!snap.exists()) return;
+                    const data = snap.data();
+                    if (data.to !== currentUser?.uid && data.from !== currentUser?.uid) {
+                        throw new Error('Non puoi modificare questa richiesta.');
+                    }
+                    if (status === 'declined') {
+                        transaction.delete(reqRef);
+                    } else {
+                        if (data.status === 'accepted') return;
+                        if (data.status !== 'pending') throw new Error('Richiesta non piu valida.');
+                        transaction.update(reqRef, { status: 'accepted', acceptedAt: fb.serverTimestamp(), updatedAt: fb.serverTimestamp() });
+                    }
+                });
+                window._moreFriendUids = null;
+                await loadFriends();
+                await refreshProfileAlertCounts();
+                showToast(status === 'declined' ? 'Richiesta rimossa' : 'Richiesta accettata');
+            } catch (e) {
+                showFirestoreError(e, 'Impossibile aggiornare la richiesta.');
+            }
         };
 
         window.viewPublicProfile = (uid) => {
@@ -11430,7 +11801,10 @@
                         const lbl = document.getElementById('app-version-label');
                         if (lbl) lbl.textContent = match[1].replace('more-', 'more ');
                     }
-                }).catch(() => { });
+                }).catch(() => {
+                    const lbl = document.getElementById('app-version-label');
+                    if (lbl) lbl.textContent = 'offline';
+                });
 
             const pool = getFullPool();
             const completedTitles = new Set(state.completed.map(c => c.title));
@@ -11615,8 +11989,8 @@
                 chainProgress: {},
                 partyQuestsCompleted: []
             };
-            localStorage.setItem('more_state', JSON.stringify(state));
-            syncToFirestore();
+            saveLocal();
+            scheduleCloudSync({ immediate: true, reason: 'reset' });
             scheduleStaleQuestReminder();
             updateXPUI();
             if (!state.currentQuest) generateQuest();
@@ -11636,6 +12010,54 @@
             clearTimeout(toastTimer);
             toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
         }
+
+        function showFirestoreError(error, fallback = 'Operazione non riuscita. Riprova tra poco.') {
+            console.warn('Firestore operation failed:', error);
+            const now = Date.now();
+            const code = error?.code || '';
+            const message = String(error?.message || '').replace('Firebase: ', '');
+            const isPermission = code === 'permission-denied' || /permission/i.test(message);
+            const visibleMessage = isPermission
+                ? 'Permessi insufficienti o sessione non ancora pronta. Riapri il profilo e riprova.'
+                : (fallback || message || 'Operazione non riuscita. Riprova tra poco.');
+
+            if (!showFirestoreError._lastAt || now - showFirestoreError._lastAt > 2500 || showFirestoreError._lastMsg !== visibleMessage) {
+                showFirestoreError._lastAt = now;
+                showFirestoreError._lastMsg = visibleMessage;
+                showToast(visibleMessage);
+            }
+        }
+
+        function showAppError(error, fallback = 'Qualcosa non ha risposto. Ho mantenuto i dati locali al sicuro.') {
+            console.warn('App operation failed:', error);
+            const message = String(error?.message || error || '').replace('Firebase: ', '');
+            const visibleMessage = fallback || message || 'Operazione non riuscita.';
+            const now = Date.now();
+            if (!showAppError._lastAt || now - showAppError._lastAt > 3000 || showAppError._lastMsg !== visibleMessage) {
+                showAppError._lastAt = now;
+                showAppError._lastMsg = visibleMessage;
+                showToast(visibleMessage);
+            }
+        }
+
+        function safeAsyncAction(fn, fallback) {
+            return async function (...args) {
+                try {
+                    return await fn.apply(this, args);
+                } catch (error) {
+                    showAppError(error, fallback);
+                    return null;
+                }
+            };
+        }
+
+        window.addEventListener('error', (event) => {
+            showAppError(event.error || event.message, 'Errore risolto in background. Puoi continuare.');
+        });
+
+        window.addEventListener('unhandledrejection', (event) => {
+            showAppError(event.reason, 'Operazione non completata. Riprova tra poco.');
+        });
 
         /* ── UTILS ────────────────────────────────────────── */
         function escapeHtml(str) {
@@ -11760,7 +12182,13 @@
         }
 
         function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => showToast('Link copiato!')).catch(() => showToast('Impossibile copiare'));
+            if (!navigator.clipboard?.writeText) {
+                showToast('Copia manuale non supportata da questo browser.');
+                return;
+            }
+            navigator.clipboard.writeText(text)
+                .then(() => showToast('Link copiato!'))
+                .catch(() => showToast('Impossibile copiare'));
         }
 
         function getCurrentUsername() {
@@ -12049,6 +12477,7 @@
                     `;
                     $('btn-close-profile').addEventListener('click', closeProfile);
                 }).catch(err => {
+                    showFirestoreError(err, 'Errore caricamento profilo.');
                     profileContent.innerHTML = '<div class="profile-private">Errore nel caricamento.</div><button class="btn-profile-close" id="btn-close-profile">Chiudi</button>';
                     $('btn-close-profile').addEventListener('click', closeProfile);
                 });
@@ -12333,7 +12762,7 @@
                 <div class="chain-detail-topbar">
                   <div class="chain-detail-topbar-inner">
                     <div class="chain-detail-topbar-meta">
-                      <img src="logo.png" alt="more logo" class="header-logo">
+                      <img src="icons/logo.png" alt="more logo" class="header-logo">
                       <div class="chain-detail-topbar-copy">
                         <div class="chain-detail-topbar-label">Quest chain</div>
                         <div class="chain-detail-topbar-title">${escapeHtml(chain.title)}</div>
@@ -12754,7 +13183,7 @@
 
             // Pulsante installa nativo Android
             if (androidInstallBtn) {
-                androidInstallBtn.addEventListener('click', async () => {
+                androidInstallBtn.addEventListener('click', safeAsyncAction(async () => {
                     if (!deferredPrompt) return;
                     deferredPrompt.prompt();
                     const { outcome } = await deferredPrompt.userChoice;
@@ -12762,7 +13191,7 @@
                     if (outcome === 'accepted') {
                         dismissPrompt();
                     }
-                });
+                }, 'Installazione non completata. Puoi riprovare dal browser.'));
             }
 
             // Mostra dopo 1.5s per non interrompere il caricamento
@@ -12775,6 +13204,7 @@
             if (document.hidden) {
                 if (window.dailyInterval) { clearInterval(window.dailyInterval); window.dailyInterval = null; }
                 if (window.seasonalInterval) { clearInterval(window.seasonalInterval); window.seasonalInterval = null; }
+                scheduleCloudSync({ immediate: true, reason: 'hidden' });
             } else {
                 // Resume intervals on page focus
                 if (!window.dailyInterval) {
@@ -12789,12 +13219,14 @@
                 schedulePendingChainBonusProcessing({ delayMs: 0, notify: false });
                 processCompletedPartyInvitesForCurrentUser({ notify: true });
                 refreshProfileAlertCounts();
+                scheduleCloudSync({ immediate: true, reason: 'visible' });
                 scheduleStaleQuestReminder();
                 // Re-init daily quest in case date changed while page was hidden
                 const todayStr = getRomeDateString();
                 if (state.dailyCompleted && state.dailyCompleted.date !== todayStr) {
                     state.dailyCompleted = null;
                     saveLocal();
+                    scheduleCloudSync({ immediate: true, reason: 'daily-date-rollover' });
                     initDailyQuest();
                 }
             }
@@ -12802,10 +13234,20 @@
 
         /* ── SERVICE WORKER ──────────────────────────────── */
         if ('serviceWorker' in navigator) {
+            let swReloading = false;
+            const hadServiceWorkerController = !!navigator.serviceWorker.controller;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!hadServiceWorkerController || swReloading) return;
+                swReloading = true;
+                window.location.reload();
+            });
+
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('SW Registered', reg))
-                    .catch(err => console.log('SW Error', err));
+                    .then(reg => {
+                        reg.update().catch(() => { });
+                    })
+                    .catch(err => showToast(`Service worker non attivo: ${(err.message || 'riprova').replace('Firebase: ', '')}`));
 
                 // GitHub Update Notifier Check
                 setTimeout(checkForUpdates, 4000);
@@ -12866,7 +13308,7 @@
                         };
 
                         // Aggiorna
-                        $('btn-update-confirm').onclick = async () => {
+                        $('btn-update-confirm').onclick = safeAsyncAction(async () => {
                             const btn = $('btn-update-confirm');
                             if (btn) {
                                 btn.innerHTML = '<div class="spinner" style="width:20px;height:20px;margin:0;border-width:2px;"></div>';
@@ -12888,15 +13330,15 @@
                                     await Promise.all(regs.map(r => r.unregister()));
                                 }
                             } catch (e) {
-                                console.warn('Cache clear parziale:', e);
+                                showToast('Pulizia cache parziale. Ricarico comunque.');
                             }
 
                             window.location.reload();
-                        };
+                        }, 'Aggiornamento non completato. Riprova tra poco.');
                     })
-                    .catch(err => console.log('Update check skipped:', err));
+                    .catch(() => { });
             } catch (e) {
-                console.error('Update logic error:', e);
+                showToast('Controllo aggiornamenti non disponibile.');
             }
         }
     </script>
