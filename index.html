@@ -7563,6 +7563,17 @@
                 cloudSyncRetryDelay = 4000;
                 return true;
             } catch (e) {
+                const code = e?.code || '';
+                const message = String(e?.message || '').toLowerCase();
+                const isPermission = code === 'permission-denied' || message.includes('permission');
+
+                if (isPermission) {
+                    // Do not retry on permission errors as they won't recover without re-authentication
+                    cloudSyncQueued = false;
+                    showFirestoreError(e, 'Sincronizzazione non autorizzata. Riapri il profilo o effettua nuovamente l\'accesso.');
+                    return false;
+                }
+
                 cloudSyncQueued = true;
                 const retryDelay = navigator.onLine ? cloudSyncRetryDelay : 15000;
                 cloudSyncRetryDelay = Math.min(cloudSyncRetryDelay * 2, 30000);
@@ -8585,6 +8596,8 @@
         }
 
         let partyFriendCachePromise = null;
+        let cachedIncomingReqs = null;
+        let cachedOutgoingReqs = null;
 
         async function getAcceptedFriendUidsForCurrentUser({ force = false } = {}) {
             if (isGuest || !currentUser || !fb) {
@@ -8595,18 +8608,11 @@
             if (partyFriendCachePromise) return partyFriendCachePromise;
 
             partyFriendCachePromise = (async () => {
-                const reqsRef = fb.collection(fb.db, "comparison_requests");
-                const q1 = fb.query(reqsRef, fb.where("to", "==", currentUser.uid));
-                const q2 = fb.query(reqsRef, fb.where("from", "==", currentUser.uid));
-                const [snap1, snap2] = await Promise.all([fb.getDocs(q1), fb.getDocs(q2)]);
-
-                const allReqs = [];
-                snap1.forEach(d => allReqs.push(d.data()));
-                snap2.forEach(d => allReqs.push(d.data()));
+                const allReqs = await getCurrentUserComparisonDocs();
                 const friendUids = [...new Set(
                     allReqs
-                        .filter(r => r.status === 'accepted')
-                        .map(r => r.from === currentUser.uid ? r.to : r.from)
+                        .filter(r => r.data && r.data.status === 'accepted')
+                        .map(r => r.data.from === currentUser.uid ? r.data.to : r.data.from)
                         .filter(Boolean)
                 )];
                 window._moreFriendUids = friendUids;
@@ -8622,6 +8628,9 @@
 
         async function getCurrentUserComparisonDocs() {
             if (isGuest || !currentUser || !fb) return [];
+            if (cachedIncomingReqs !== null && cachedOutgoingReqs !== null) {
+                return [...cachedIncomingReqs, ...cachedOutgoingReqs];
+            }
             const reqsRef = fb.collection(fb.db, "comparison_requests");
             const q1 = fb.query(reqsRef, fb.where("to", "==", currentUser.uid));
             const q2 = fb.query(reqsRef, fb.where("from", "==", currentUser.uid));
@@ -8675,6 +8684,40 @@
         }
 
         const userPreviewCache = new Map();
+        const friendProfilesCache = new Map();
+
+        async function fetchUserProfiles(uids) {
+            if (!uids || uids.length === 0 || !fb) return [];
+            const uniqueUids = [...new Set(uids)].filter(Boolean);
+            const promises = uniqueUids.map(async (uid) => {
+                try {
+                    const cached = friendProfilesCache.get(uid);
+                    // If cached and fresh (e.g. less than 15 seconds old), return cached document
+                    if (cached && Date.now() - cached.timestamp < 15000) {
+                        return cached.doc;
+                    }
+                    const snap = await fb.getDoc(fb.doc(fb.db, 'more_users', uid));
+                    if (snap.exists()) {
+                        friendProfilesCache.set(uid, { doc: snap, timestamp: Date.now() });
+                        // Also populate userPreviewCache
+                        const data = snap.data();
+                        userPreviewCache.set(uid, {
+                            displayName: data.displayName || cleanUsername(data.username) || 'Utente',
+                            username: data.username || 'utente',
+                            avatarColor: data.avatarColor || '#333'
+                        });
+                    }
+                    return snap;
+                } catch (e) {
+                    console.warn(`Failed to fetch profile for ${uid}:`, e);
+                    const cached = friendProfilesCache.get(uid);
+                    if (cached) return cached.doc; // fallback to expired cache if offline/error
+                    return null;
+                }
+            });
+            const results = await Promise.all(promises);
+            return results.filter(Boolean);
+        }
 
         async function getUserPreview(uid, fallback = {}) {
             const fallbackUsername = fallback.username || fallback.fromUsername || fallback.toUsername || 'utente';
@@ -8925,6 +8968,8 @@
             }
             unsubscribeProfileAlerts = null;
             profileAlertsListenerUid = null;
+            cachedIncomingReqs = null;
+            cachedOutgoingReqs = null;
             if (profileAlertsRefreshTimer) {
                 clearTimeout(profileAlertsRefreshTimer);
                 profileAlertsRefreshTimer = null;
@@ -8953,17 +8998,18 @@
             const reqsRef = fb.collection(fb.db, "comparison_requests");
             const qIncoming = fb.query(reqsRef, fb.where("to", "==", currentUser.uid));
             const qOutgoing = fb.query(reqsRef, fb.where("from", "==", currentUser.uid));
-            const onChange = (snapshot) => {
-                // Ignore events that only update metadata (like getDocs cache updates)
-                if (snapshot && typeof snapshot.docChanges === 'function') {
-                    const changes = snapshot.docChanges();
-                    if (!changes || changes.length === 0) return;
-                }
-                scheduleProfileAlertRefresh({ notify: true });
-            };
+
             unsubscribeProfileAlerts = [
-                fb.onSnapshot(qIncoming, onChange, err => showFirestoreError(err, 'Realtime richieste interrotto. Riprovo al prossimo accesso.')),
-                fb.onSnapshot(qOutgoing, onChange, err => showFirestoreError(err, 'Realtime amicizie interrotto. Riprovo al prossimo accesso.'))
+                fb.onSnapshot(qIncoming, (snapshot) => {
+                    cachedIncomingReqs = [];
+                    snapshot.forEach(d => cachedIncomingReqs.push({ id: d.id, ref: d.ref, data: d.data() }));
+                    scheduleProfileAlertRefresh({ notify: true });
+                }, err => showFirestoreError(err, 'Realtime richieste interrotto. Riprovo al prossimo accesso.')),
+                fb.onSnapshot(qOutgoing, (snapshot) => {
+                    cachedOutgoingReqs = [];
+                    snapshot.forEach(d => cachedOutgoingReqs.push({ id: d.id, ref: d.ref, data: d.data() }));
+                    scheduleProfileAlertRefresh({ notify: true });
+                }, err => showFirestoreError(err, 'Realtime amicizie interrotto. Riprovo al prossimo accesso.'))
             ];
             profileAlertsListenerUid = currentUser.uid;
         }
@@ -11569,9 +11615,8 @@
 
             try {
                 const items = [];
-                for (const uid of friendUids.slice(0, 10)) {
-                    const snap = await fb.getDoc(fb.doc(fb.db, 'more_users', uid));
-                    if (!snap.exists()) continue;
+                const friendDocs = await fetchUserProfiles(friendUids.slice(0, 10));
+                for (const snap of friendDocs) {
                     const d = snap.data();
                     const name = d.displayName || (d.username || 'amico').replace(/^@/, '');
                     const color = d.avatarColor || '#555';
@@ -11622,22 +11667,23 @@
             if (friendsList) friendsList.innerHTML = '<div class="spinner"></div>';
 
             try {
-                const reqsRef = fb.collection(fb.db, "comparison_requests");
-                const q1 = fb.query(reqsRef, fb.where("to", "==", currentUser.uid));
-                const q2 = fb.query(reqsRef, fb.where("from", "==", currentUser.uid));
+                const allReqs = await getCurrentUserComparisonDocs();
+                const processedReqs = allReqs.map(r => ({ id: r.id, ...r.data }));
 
-                const [snap1, snap2] = await Promise.all([fb.getDocs(q1), fb.getDocs(q2)]);
-
-                const allReqs = [];
-                snap1.forEach(d => allReqs.push({ id: d.id, ...d.data() }));
-                snap2.forEach(d => allReqs.push({ id: d.id, ...d.data() }));
-
-                const incomingPending = allReqs.filter(r => r.to === currentUser.uid && r.status === 'pending');
-                const accepted = allReqs.filter(r => r.status === 'accepted');
+                const incomingPending = processedReqs.filter(r => r.to === currentUser.uid && r.status === 'pending');
+                const accepted = processedReqs.filter(r => r.status === 'accepted');
                 window._pendingFriendRequestCount = incomingPending.length;
                 window._pendingFriendRequestKeys = incomingPending.map(r => `friend:${r.id}`);
                 window._moreFriendUids = accepted.map(r => r.from === currentUser.uid ? r.to : r.from).filter(Boolean);
                 updatePendingFriendsBadge();
+
+                // Fetch all profiles in parallel upfront (both pending and accepted friends)
+                const uidsToFetch = [
+                    ...incomingPending.map(r => r.from),
+                    ...window._moreFriendUids
+                ].filter(Boolean);
+                const friendDocs = await fetchUserProfiles(uidsToFetch);
+                const friendDocsMap = new Map(friendDocs.map(d => [d.id, d.data()]));
 
                 if (incomingPending.length > 0 && badge && pendingSec && pendingList) {
                     updatePendingFriendsBadge();
@@ -11645,8 +11691,7 @@
 
                     let pHTML = '';
                     for (let req of incomingPending) {
-                        const friendDoc = await fb.getDoc(fb.doc(fb.db, "more_users", req.from));
-                        const friendData = friendDoc.exists() ? friendDoc.data() : { username: req.fromUsername, displayName: 'Sconosciuto', avatarColor: '#333' };
+                        const friendData = friendDocsMap.get(req.from) || { username: req.fromUsername, displayName: 'Sconosciuto', avatarColor: '#333' };
                         const init = getAvatarInitial(friendData, '?');
                         const color = getAvatarColor(friendData, req.fromUsername);
                         const username = ensureAtUsername(friendData.username || req.fromUsername);
@@ -11679,9 +11724,8 @@
                     let aHTML = '';
                     for (let req of accepted) {
                         const friendUid = req.from === currentUser.uid ? req.to : req.from;
-                        const friendDoc = await fb.getDoc(fb.doc(fb.db, "more_users", friendUid));
-                        if (!friendDoc.exists()) continue;
-                        const friendData = friendDoc.data();
+                        const friendData = friendDocsMap.get(friendUid);
+                        if (!friendData) continue;
                         const init = getAvatarInitial(friendData, '?');
                         const color = getAvatarColor(friendData, friendUid);
                         const username = ensureAtUsername(friendData.username || 'amico');
@@ -12016,6 +12060,12 @@
             const now = Date.now();
             const code = error?.code || '';
             const message = String(error?.message || '').replace('Firebase: ', '');
+
+            // Silently ignore network-related offline errors to prevent noisy UI toasts
+            if (code === 'unavailable' || !navigator.onLine) {
+                return;
+            }
+
             const isPermission = code === 'permission-denied' || /permission/i.test(message);
             const visibleMessage = isPermission
                 ? 'Permessi insufficienti o sessione non ancora pronta. Riapri il profilo e riprova.'
