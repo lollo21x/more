@@ -674,6 +674,445 @@
             margin-bottom: 16px;
         }
 
+        /* ── SUMMER VACATION BANNER ───────────────────── */
+        .summer-banner {
+            position: relative;
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 183, 0, 0.28);
+            background: linear-gradient(135deg,
+                rgba(255, 160, 0, 0.10) 0%,
+                rgba(255, 90, 0, 0.07) 50%,
+                rgba(255, 200, 0, 0.06) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .summer-banner.summer-active {
+            border-color: rgba(255, 200, 0, 0.35);
+            background: linear-gradient(135deg,
+                rgba(255, 200, 0, 0.12) 0%,
+                rgba(255, 120, 0, 0.08) 60%,
+                rgba(200, 241, 53, 0.06) 100%);
+        }
+
+        .summer-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius);
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(255, 200, 0, 0.4) 0%, rgba(255, 90, 0, 0.15) 60%, transparent 100%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .summer-banner-glow {
+            position: absolute;
+            top: -30px;
+            right: -20px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 200, 0, 0.18) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .summer-banner-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .summer-banner-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 183, 0, 0.15);
+            border: 1px solid rgba(255, 183, 0, 0.25);
+            font-size: 20px;
+            flex-shrink: 0;
+            animation: summer-float 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes summer-float {
+            0% { transform: translateY(0) rotate(-3deg); }
+            100% { transform: translateY(-3px) rotate(3deg); }
+        }
+
+        .summer-banner-copy {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .summer-banner-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 14px;
+            color: #ffc300;
+            letter-spacing: -0.2px;
+            line-height: 1.2;
+            margin-bottom: 2px;
+        }
+
+        .summer-banner-sub {
+            font-size: 11.5px;
+            color: rgba(255, 195, 0, 0.65);
+            font-weight: 500;
+        }
+
+        .summer-countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+
+        .summer-cd-block {
+            background: rgba(255, 183, 0, 0.08);
+            border: 1px solid rgba(255, 183, 0, 0.18);
+            border-radius: 10px;
+            padding: 8px 4px 6px;
+            text-align: center;
+        }
+
+        .summer-cd-num {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 22px;
+            color: #ffc300;
+            line-height: 1;
+            letter-spacing: -1px;
+            text-shadow: 0 0 12px rgba(255, 195, 0, 0.4);
+        }
+
+        .summer-cd-label {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: rgba(255, 195, 0, 0.5);
+            margin-top: 3px;
+        }
+
+        .summer-active-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 200, 0, 0.09);
+            border: 1px solid rgba(255, 200, 0, 0.2);
+            border-radius: 10px;
+            padding: 8px 12px;
+        }
+
+        .summer-active-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ffc300;
+            box-shadow: 0 0 0 4px rgba(255, 195, 0, 0.2);
+            animation: pulse-dot 1.8s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { box-shadow: 0 0 0 3px rgba(255, 195, 0, 0.18); }
+            50% { box-shadow: 0 0 0 7px rgba(255, 195, 0, 0.08); }
+        }
+
+        .summer-active-text {
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255, 195, 0, 0.8);
+            line-height: 1.3;
+        }
+
+        /* ── SEARCH OVERLAY ───────────────────────────── */
+        #search-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 900;
+            background: rgba(0, 0, 0, 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: max(24px, var(--safe-top)) max(24px, var(--safe-right)) max(24px, var(--safe-bottom)) max(24px, var(--safe-left));
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s var(--ease), background 0.25s var(--ease);
+        }
+
+        #search-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        #search-overlay.closing {
+            opacity: 0;
+            pointer-events: none;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .search-sheet {
+            background: rgba(20, 20, 30, 0.97);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            padding: 28px 24px 20px;
+            max-width: 420px;
+            width: 100%;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(18px) scale(0.98);
+            opacity: 0;
+            transition: transform 0.32s var(--spring), opacity 0.25s var(--ease);
+        }
+
+        #search-overlay.open .search-sheet {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        #search-overlay.closing .search-sheet {
+            transform: translateY(10px) scale(0.975);
+            opacity: 0;
+        }
+
+        .search-overlay-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 20px;
+            color: var(--text);
+            margin-bottom: 16px;
+            flex-shrink: 0;
+        }
+
+        .search-overlay-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 4px;
+            flex-shrink: 0;
+        }
+
+        .search-input-wrap {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-input-wrap i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+
+        .search-input-wrap:focus-within i {
+            color: var(--accent);
+        }
+
+        #search-input {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            padding: 11px 14px 11px 40px;
+            font-size: 15px;
+            color: var(--text);
+            font-family: var(--font-body);
+            transition: border-color 0.2s;
+        }
+
+        #search-input:focus {
+            outline: none;
+            border-color: var(--border-light);
+        }
+
+        #search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        #search-input::-webkit-search-cancel-button {
+            -webkit-appearance: none;
+            appearance: none;
+            display: none;
+        }
+
+
+        .search-cancel-btn {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dim);
+            padding: 8px 4px;
+            white-space: nowrap;
+            transition: color 0.15s;
+        }
+
+        .search-cancel-btn:active {
+            color: var(--accent);
+        }
+
+        .search-results-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 0 4px;
+        }
+
+        .search-results-header {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .search-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            gap: 12px;
+            text-align: center;
+        }
+
+        .search-empty-icon {
+            font-size: 36px;
+            opacity: 0.3;
+        }
+
+        .search-empty-text {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .search-result-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: transform 0.15s var(--spring), border-color 0.15s, background 0.15s;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .search-result-card:active {
+            transform: scale(0.98);
+        }
+
+        @media (hover: hover) {
+            .search-result-card:hover {
+                background: var(--surface-hover);
+                border-color: var(--border-light);
+            }
+        }
+
+        .search-result-diff {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .search-result-diff.easy {
+            background: var(--diff-easy-bg);
+            color: var(--diff-easy);
+            border: 1px solid var(--diff-easy-border);
+        }
+
+        .search-result-diff.medium {
+            background: var(--diff-medium-bg);
+            color: var(--diff-medium);
+            border: 1px solid var(--diff-medium-border);
+        }
+
+        .search-result-diff.hard {
+            background: var(--diff-hard-bg);
+            color: var(--diff-hard);
+            border: 1px solid var(--diff-hard-border);
+        }
+
+        .search-result-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .search-result-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 13.5px;
+            color: var(--text);
+            line-height: 1.3;
+            margin-bottom: 3px;
+        }
+
+        .search-result-desc {
+            font-size: 12px;
+            color: var(--text-dim);
+            line-height: 1.4;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .search-result-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .search-result-xp {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .search-result-cat {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.05);
+            padding: 2px 7px;
+            border-radius: 6px;
+        }
+
+        mark.search-hl {
+            background: rgba(200, 241, 53, 0.22);
+            color: var(--accent);
+            border-radius: 3px;
+            padding: 0 2px;
+        }
+
         .home-cta-btn {
             position: relative;
             min-height: 68px;
@@ -5973,6 +6412,28 @@
                 <span class="section-title">Quest attiva</span>
             </div>
 
+            <!-- SUMMER VACATION BANNER -->
+            <div id="summer-banner" class="summer-banner" style="display:none;">
+                <div class="summer-banner-glow"></div>
+                <div class="summer-banner-top">
+                    <div class="summer-banner-icon" id="summer-banner-icon"><i class="fa-solid fa-sun" style="color:#ffc300;"></i></div>
+                    <div class="summer-banner-copy">
+                        <div class="summer-banner-title" id="summer-banner-title">Vacanze estive in arrivo!</div>
+                        <div class="summer-banner-sub" id="summer-banner-sub">7 giugno · il mondo ti aspetta</div>
+                    </div>
+                </div>
+                <div id="summer-countdown-grid" class="summer-countdown-grid">
+                    <div class="summer-cd-block"><div class="summer-cd-num" id="summer-cd-days">--</div><div class="summer-cd-label">Giorni</div></div>
+                    <div class="summer-cd-block"><div class="summer-cd-num" id="summer-cd-hours">--</div><div class="summer-cd-label">Ore</div></div>
+                    <div class="summer-cd-block"><div class="summer-cd-num" id="summer-cd-mins">--</div><div class="summer-cd-label">Minuti</div></div>
+                    <div class="summer-cd-block"><div class="summer-cd-num" id="summer-cd-secs">--</div><div class="summer-cd-label">Secondi</div></div>
+                </div>
+                <div id="summer-active-bar" class="summer-active-bar" style="display:none;">
+                    <div class="summer-active-dot"></div>
+                    <div class="summer-active-text">Le vacanze sono iniziate! Fai quante più sidequest possibili prima di settembre.</div>
+                </div>
+            </div>
+
             <div class="home-cta-row">
                 <button class="btn-ghost home-cta-btn" id="btn-create-quest">
                     <span class="home-cta-icon"><i class="fa-solid fa-plus"></i></span>
@@ -5989,6 +6450,13 @@
                     </span>
                 </button>
             </div>
+            <button class="btn-ghost home-cta-btn" id="btn-search-quest" style="width:100%;margin-top:-8px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+                <span class="home-cta-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <span class="home-cta-copy">
+                    <span class="home-cta-title">Cerca</span>
+                    <span class="home-cta-sub">Sfoglia la quest pool</span>
+                </span>
+            </button>
 
             <!-- DIFFICULTY FILTER -->
             <div class="filter-bar"
@@ -12713,7 +13181,7 @@
                       background:${done ? chain.color : isNext ? chain.colorBg : 'rgba(255,255,255,0.04)'};
                       border:1.5px solid ${done ? chain.color : isNext ? chain.colorBorder : 'rgba(255,255,255,0.1)'};">
                       ${done
-                        ? `<i class="fa-solid fa-check"></i>`
+                        ? `<i class="fa-solid fa-check" style="color:${isLightColor(chain.color)?'#111':'#0a0a0f'};"></i>`
                         : `<span style="font-size:11px;font-weight:800;color:${isNext ? chain.color : 'var(--text-muted)'};">${i + 1}</span>`}
                     </div>
                     <div style="flex:1;min-width:0;">
@@ -12790,7 +13258,7 @@
                   <div class="chain-detail-step card-pop-in" style="--enter-delay:${0.05 + i * 0.04}s;">
                     <div class="chain-detail-step-index" style="background:${done ? chain.color : 'rgba(10,10,15,0.18)'};border-color:${done ? chain.color : chain.colorBorder};color:${done ? '#0a0a0f' : chain.color};">
                       ${done
-                        ? `<i class="fa-solid fa-check"></i>`
+                        ? `<i class="fa-solid fa-check" style="color:${isLightColor(chain.color)?'#111':'#0a0a0f'};"></i>`
                         : `<span style="font-size:12px;font-weight:800;color:${chain.color};">${i + 1}</span>`}
                     </div>
                     <div style="min-width:0;">
@@ -12892,6 +13360,19 @@
             closeChainDetailOverlay();
             setChainQuestActive(chainId, 0);
         };
+
+        function isLightColor(hex) {
+            // Returns true if color is light (luminance > 0.6), so dark text/icon should be used
+            try {
+                const c = hex.replace('#', '');
+                if (c.length !== 6) return false;
+                const r = parseInt(c.slice(0,2),16)/255;
+                const g = parseInt(c.slice(2,4),16)/255;
+                const b = parseInt(c.slice(4,6),16)/255;
+                const lum = 0.2126*r + 0.7152*g + 0.0722*b;
+                return lum > 0.5;
+            } catch(e) { return false; }
+        }
 
         function renderChainsSection() {
             let zone = $('chains-zone');
@@ -13391,6 +13872,261 @@
                 showToast('Controllo aggiornamenti non disponibile.');
             }
         }
+
+        /* ── SUMMER VACATION COUNTDOWN ─────────────────── */
+        (function initSummerBanner() {
+            // Summer starts: June 7 2026 00:00:00 Rome (UTC+2 in summer, so UTC 21:00 Jun 6)
+            const SUMMER_START = new Date('2026-06-07T00:00:00+02:00').getTime();
+            // Summer ends: September 1 2026 00:00:00 Rome
+            const SUMMER_END = new Date('2026-09-01T00:00:00+02:00').getTime();
+
+            const banner = document.getElementById('summer-banner');
+            const cdGrid = document.getElementById('summer-countdown-grid');
+            const activeBar = document.getElementById('summer-active-bar');
+            const titleEl = document.getElementById('summer-banner-title');
+            const subEl = document.getElementById('summer-banner-sub');
+            const iconEl = document.getElementById('summer-banner-icon');
+            const cdDays = document.getElementById('summer-cd-days');
+            const cdHours = document.getElementById('summer-cd-hours');
+            const cdMins = document.getElementById('summer-cd-mins');
+            const cdSecs = document.getElementById('summer-cd-secs');
+
+            if (!banner) return;
+
+            function pad(n) { return String(n).padStart(2, '0'); }
+
+            function tick() {
+                const now = Date.now();
+
+                if (now >= SUMMER_END) {
+                    // Summer over — hide banner
+                    banner.style.display = 'none';
+                    return;
+                }
+
+                banner.style.display = 'block';
+
+                if (now >= SUMMER_START) {
+                    // SUMMER IS ACTIVE
+                    banner.classList.add('summer-active');
+                    titleEl.textContent = '\u2600\uFE0F Le vacanze sono iniziate!';
+                    subEl.textContent = 'Fino a settembre \u00b7 fai quante pi\u00f9 sidequest possibili';
+                    iconEl.innerHTML = '<i class="fa-solid fa-umbrella-beach" style="color:#ffc300;"></i>';
+                    cdGrid.style.display = 'none';
+                    activeBar.style.display = 'flex';
+                    // Compute days remaining to September
+                    const daysLeft = Math.ceil((SUMMER_END - now) / 86400000);
+                    activeBar.querySelector('.summer-active-text').textContent =
+                        `Le vacanze sono iniziate! Mancano ${daysLeft} giorni alla fine \u2014 fai quante pi\u00f9 sidequest possibili!`;
+                } else {
+                    // COUNTDOWN TO SUMMER START
+                    banner.classList.remove('summer-active');
+                    titleEl.textContent = 'Vacanze estive in arrivo!';
+                    subEl.textContent = '7 giugno \u00b7 il mondo ti aspetta';
+                    iconEl.innerHTML = '<i class="fa-solid fa-sun" style="color:#ffc300;"></i>';
+                    cdGrid.style.display = 'grid';
+                    activeBar.style.display = 'none';
+
+                    const diff = SUMMER_START - now;
+                    const days = Math.floor(diff / 86400000);
+                    const hours = Math.floor((diff % 86400000) / 3600000);
+                    const mins = Math.floor((diff % 3600000) / 60000);
+                    const secs = Math.floor((diff % 60000) / 1000);
+                    cdDays.textContent = days;
+                    cdHours.textContent = pad(hours);
+                    cdMins.textContent = pad(mins);
+                    cdSecs.textContent = pad(secs);
+                }
+            }
+
+            tick();
+            setInterval(tick, 1000);
+        })();
+
+        /* ── QUEST POOL SEARCH OVERLAY ──────────────────── */
+        (function initSearchOverlay() {
+            const btnOpen = document.getElementById('btn-search-quest');
+            if (!btnOpen) return;
+
+            // Build overlay dynamically so it's available immediately
+            let overlay = document.getElementById('search-overlay');
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'search-overlay';
+                overlay.setAttribute('role', 'dialog');
+                overlay.setAttribute('aria-modal', 'true');
+                overlay.setAttribute('aria-label', 'Cerca nel pool di quest');
+                overlay.innerHTML = `
+                    <div class="search-sheet" id="search-sheet">
+                        <div class="search-overlay-title">Cerca una quest</div>
+                        <div class="search-overlay-header">
+                            <div class="search-input-wrap">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="search" id="search-input" placeholder="Cerca per nome o descrizione…" autocomplete="off" autocorrect="off" spellcheck="false">
+                            </div>
+                            <button class="search-cancel-btn" id="search-cancel-btn">Annulla</button>
+                        </div>
+                        <div class="search-results-area" id="search-results-area"></div>
+                    </div>`;
+                document.body.appendChild(overlay);
+            }
+            const input = document.getElementById('search-input');
+            const resultsArea = document.getElementById('search-results-area');
+            const btnCancel = document.getElementById('search-cancel-btn');
+            if (!overlay || !input) return;
+
+            const DIFF_ICON = {
+                easy: '<i class="fa-solid fa-circle-half-stroke"></i>',
+                medium: '<i class="fa-solid fa-fire-flame-simple"></i>',
+                hard: '<i class="fa-solid fa-skull"></i>',
+                boss: '<i class="fa-solid fa-dragon"></i>'
+            };
+
+            function openSearch() {
+                overlay.classList.remove('closing');
+                overlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+                renderResults('');
+                setTimeout(() => input.focus(), 80);
+            }
+
+            function closeSearch() {
+                overlay.classList.add('closing');
+                overlay.classList.remove('open');
+                setTimeout(() => {
+                    overlay.classList.remove('closing');
+                    input.value = '';
+                }, 240);
+                document.body.style.overflow = '';
+            }
+
+            btnOpen.addEventListener('click', openSearch);
+            if (btnCancel) btnCancel.addEventListener('click', closeSearch);
+
+            // Close on backdrop tap (the overlay itself, not its children)
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) closeSearch(); });
+
+            // Close on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && overlay.classList.contains('open')) closeSearch();
+            });
+
+            function highlight(text, query) {
+                if (!query) return escapeHtml(text);
+                const escaped = escapeHtml(text);
+                const re = new RegExp('(' + escapeHtml(query).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+                return escaped.replace(re, '<mark class="search-hl">$1</mark>');
+            }
+
+            function renderResults(query) {
+                const pool = typeof getFullPool === 'function' ? getFullPool() : (window.QUESTS_POOL || []);
+                const q = query.trim().toLowerCase();
+
+                let results;
+                if (q) {
+                    results = pool.filter(quest => {
+                        const inTitle = (quest.title || '').toLowerCase().includes(q);
+                        const inDesc = (quest.description || '').toLowerCase().includes(q);
+                        return inTitle || inDesc;
+                    });
+                    // Sort: exact title match first
+                    results.sort((a, b) => {
+                        const aTitle = (a.title || '').toLowerCase().startsWith(q) ? 0 : 1;
+                        const bTitle = (b.title || '').toLowerCase().startsWith(q) ? 0 : 1;
+                        return aTitle - bTitle;
+                    });
+                    results = results.slice(0, 80);
+                } else {
+                    // Show 6 random quests spanning different difficulties
+                    const byDiff = { easy: [], medium: [], hard: [], boss: [] };
+                    pool.forEach(quest => {
+                        const d = quest.difficulty || 'easy';
+                        if (byDiff[d]) byDiff[d].push(quest);
+                    });
+                    const shuffle = arr => arr.slice().sort(() => Math.random() - 0.5);
+                    const pick = (arr, n) => shuffle(arr).slice(0, n);
+                    // 2 easy, 2 medium, 1 hard, 1 boss (fallback to other diffs if not enough)
+                    const picks = [
+                        ...pick(byDiff.easy, 2),
+                        ...pick(byDiff.medium, 2),
+                        ...pick(byDiff.hard, 1),
+                        ...pick(byDiff.boss, 1)
+                    ];
+                    // Fill up to 6 if some difficulties are empty
+                    const remaining = pool.filter(q => !picks.includes(q));
+                    results = picks.length < 6
+                        ? [...picks, ...shuffle(remaining).slice(0, 6 - picks.length)]
+                        : picks;
+                    // Final shuffle for variety
+                    results = shuffle(results);
+                }
+
+                const completedSet = new Set((state.completed || []).map(c => c.title));
+
+                if (results.length === 0) {
+                    resultsArea.innerHTML = `
+                        <div class="search-empty">
+                            <div class="search-empty-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+                            <div class="search-empty-text">Nessuna quest trovata per "${escapeHtml(query)}"</div>
+                        </div>`;
+                    return;
+                }
+
+                const countLabel = q
+                    ? `${results.length} risultat${results.length === 1 ? 'o' : 'i'} per "${escapeHtml(query)}"`
+                    : null;
+
+                let html = countLabel ? `<div class="search-results-header">${countLabel}</div>` : '';
+
+                results.forEach(quest => {
+                    const diff = quest.difficulty || 'easy';
+                    const done = completedSet.has(quest.title);
+                    const xpVal = quest.xp || (diff === 'easy' ? 150 : diff === 'medium' ? 300 : diff === 'hard' ? 600 : 1000);
+                    const cat = quest.category || quest.tags?.[0] || '';
+                    const icon = DIFF_ICON[diff] || DIFF_ICON.easy;
+                    html += `
+                        <div class="search-result-card" onclick="searchSelectQuest('${escapeHtml(quest.title).replace(/'/g, "&#39;")}')"
+                             style="${done ? 'opacity:0.5;' : ''}">
+                            <div class="search-result-diff ${diff}">${icon}</div>
+                            <div class="search-result-body">
+                                <div class="search-result-title">${highlight(quest.title || '', query)}${done ? ' <i class="fa-solid fa-check" style="font-size:10px;color:var(--accent);margin-left:4px;"></i>' : ''}</div>
+                                ${quest.description ? `<div class="search-result-desc">${highlight(quest.description, query)}</div>` : ''}
+                                <div class="search-result-meta">
+                                    <span class="search-result-xp">+${xpVal.toLocaleString('it-IT')} XP</span>
+                                    ${cat ? `<span class="search-result-cat">${escapeHtml(cat)}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>`;
+                });
+
+                resultsArea.innerHTML = html;
+            }
+
+            let searchDebounce = null;
+            input.addEventListener('input', () => {
+                clearTimeout(searchDebounce);
+                searchDebounce = setTimeout(() => renderResults(input.value), 120);
+            });
+
+            window.searchSelectQuest = function(title) {
+                // Assign this quest as the active quest
+                const pool = typeof getFullPool === 'function' ? getFullPool() : (window.QUESTS_POOL || []);
+                const found = pool.find(q => q.title === title);
+                if (!found) { showToast('Quest non trovata'); return; }
+                if (typeof assignCurrentQuest === 'function') {
+                    assignCurrentQuest({ ...found });
+                    if (typeof saveLocal === 'function') saveLocal();
+                    if (typeof renderActiveQuest === 'function') renderActiveQuest();
+                    showToast('Quest assegnata!');
+                    closeSearch();
+                    // Scroll to active quest
+                    setTimeout(() => {
+                        document.getElementById('quest-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 300);
+                }
+            };
+        })();
+
     </script>
 
 
