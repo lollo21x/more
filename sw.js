@@ -1,4 +1,4 @@
-const CACHE_NAME = 'more-v7.8';
+const CACHE_NAME = 'more-v7.9';
 
 const CORE_ASSETS = [
     './',
@@ -27,7 +27,9 @@ const API_HOSTS = new Set([
     'firebaseinstallations.googleapis.com',
     'identitytoolkit.googleapis.com',
     'securetoken.googleapis.com',
-    'www.googleapis.com'
+    'www.googleapis.com',
+    'accounts.google.com',
+    'apis.google.com'
 ]);
 
 function isApiRequest(url) {
@@ -121,6 +123,12 @@ self.addEventListener('fetch', (event) => {
     if (!url.protocol.startsWith('http')) return;
 
     if (isApiRequest(url)) {
+        event.respondWith(fetch(event.request));
+        return;
+    }
+
+    // Firebase Auth redirect handler — must never be cached
+    if (url.pathname.startsWith('/__/auth/')) {
         event.respondWith(fetch(event.request));
         return;
     }
