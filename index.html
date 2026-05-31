@@ -29,6 +29,7 @@
         if ('requestIdleCallback' in window) requestIdleCallback(loadAnalytics, { timeout: 3500 });
         else window.addEventListener('load', () => setTimeout(loadAnalytics, 1200), { once: true });
     </script>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" crossorigin="anonymous">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
     <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png">
@@ -7523,7 +7524,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, getDoc, serverTimestamp, collection, query, where, limit, getDocs, updateDoc, deleteDoc, onSnapshot, documentId, runTransaction, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, initializeFirestore, persistentLocalCache, persistentSingleTabManager, doc, setDoc, getDoc, serverTimestamp, collection, query, where, limit, getDocs, updateDoc, deleteDoc, onSnapshot, documentId, runTransaction, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA27qqn90L4cs21nnlk9v3Erf6Svo82lQY",
@@ -7542,7 +7543,7 @@
         try {
             db = initializeFirestore(app, {
                 localCache: persistentLocalCache({
-                    tabManager: persistentMultipleTabManager()
+                    tabManager: persistentSingleTabManager()
                 })
             });
             persistenceReady = Promise.resolve({ enabled: true });
@@ -8800,6 +8801,21 @@
             // Only first name in welcome message
             const firstName = display.split(' ')[0];
             if (headerWelcomeMsg) headerWelcomeMsg.textContent = `Bentornato/a, ${firstName}`;
+            
+            // Aggiorna hero settings
+            const heroName = $('settings-hero-name');
+            const heroSub = $('settings-hero-sub');
+            const avatarLetter = $('settings-avatar-letter');
+            if (heroName) heroName.textContent = display;
+            if (heroSub) {
+                const cleanUname = (state.username || '').replace(/^@+/, '');
+                heroSub.textContent = cleanUname ? '@' + cleanUname : (user.email || 'Account attivo');
+            }
+            if (avatarLetter) {
+                const letter = display === 'Ospite' ? '?' : (display.replace(/^@/, '').charAt(0) || '?').toUpperCase();
+                avatarLetter.textContent = letter;
+            }
+            
             sheetUserRow.style.display = 'block';
             btnLogout.style.display = 'block';
             btnLoginPrompt.style.display = 'none';
@@ -14472,6 +14488,29 @@
         /* ── INIT ─────────────────────────────────────────── */
         loadState();
         updateXPUI();
+
+        // Inizializza immediatamente la UI del profilo basandoti sullo stato locale caricato
+        const initialDisplayName = state.displayName || state.username || 'Ospite';
+        const initialFirstName = initialDisplayName.replace(/^@/, '').split(' ')[0];
+        if (headerWelcomeMsg) {
+            headerWelcomeMsg.textContent = initialDisplayName === 'Ospite' ? 'Bentornato/a, Ospite' : `Bentornato/a, ${initialFirstName}`;
+        }
+        const initialHeroName = $('settings-hero-name');
+        const initialHeroSub = $('settings-hero-sub');
+        const initialAvatarLetter = $('settings-avatar-letter');
+        if (initialHeroName) initialHeroName.textContent = initialDisplayName;
+        if (initialHeroSub) {
+            if (state.username) {
+                initialHeroSub.textContent = '@' + state.username.replace(/^@+/, '');
+            } else if (state.displayName) {
+                initialHeroSub.textContent = 'Account locale';
+            } else {
+                initialHeroSub.textContent = 'Nessun account';
+            }
+        }
+        if (initialAvatarLetter) {
+            initialAvatarLetter.textContent = initialDisplayName === 'Ospite' ? '?' : (initialFirstName.charAt(0) || '?').toUpperCase();
+        }
 
         // Generate initial quest if needed (after pool is confirmed available)
         if (!state.currentQuest && window.QUESTS_POOL && window.QUESTS_POOL.length > 0) {
