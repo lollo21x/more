@@ -2442,6 +2442,41 @@
             pointer-events: none;
         }
 
+        .auth-btn.loading {
+            pointer-events: none;
+            opacity: 0.85;
+        }
+
+        .auth-btn .auth-btn-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid rgba(10, 10, 15, 0.18);
+            border-top-color: #0a0a0f;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            flex-shrink: 0;
+        }
+
+        .auth-btn.loading .auth-btn-spinner {
+            display: block;
+        }
+
+        .auth-btn.loading svg {
+            display: none;
+        }
+
+        .auth-btn.loading .auth-btn-label {
+            visibility: hidden;
+            width: 0;
+            overflow: hidden;
+        }
+
+        .auth-btn.loading::after {
+            content: 'Connessione…';
+            font-weight: 700;
+        }
+
         .auth-btn-primary {
             background: var(--accent);
             color: #0a0a0f;
@@ -4718,6 +4753,162 @@
             }
         }
 
+        /* ── PARTY FRIEND PICKER ─────────────────────────── */
+        .party-friend-picker {
+            max-height: 280px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .party-friend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: border-color 0.2s var(--ease), background 0.2s var(--ease), transform 0.1s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .party-friend-item:active {
+            transform: scale(0.98);
+        }
+
+        .party-friend-item.selected {
+            border-color: rgba(168, 85, 247, 0.5);
+            background: rgba(168, 85, 247, 0.08);
+        }
+
+        .party-friend-item .pfi-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 14px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .party-friend-item .pfi-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .party-friend-item .pfi-name {
+            font-weight: 700;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .party-friend-item .pfi-username {
+            font-size: 12px;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+
+        .party-friend-item .pfi-check {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            border: 2px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s, border-color 0.15s;
+            flex-shrink: 0;
+        }
+
+        .party-friend-item.selected .pfi-check {
+            background: #a855f7;
+            border-color: #a855f7;
+        }
+
+        .party-friend-item.selected .pfi-check::after {
+            content: '✓';
+            color: #fff;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .party-invite-counter {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-dim);
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+
+        .party-invite-counter .pic-count {
+            color: #a855f7;
+            font-weight: 800;
+        }
+
+        /* Party status chips on active quest card */
+        .party-group-status {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .party-member-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xs);
+            font-size: 13px;
+        }
+
+        .party-member-chip .pmc-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 11px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .party-member-chip .pmc-name {
+            flex: 1;
+            min-width: 0;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .party-member-chip .pmc-status {
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .party-member-chip .pmc-status.pending { color: var(--diff-medium); }
+        .party-member-chip .pmc-status.accepted { color: #34d399; }
+        .party-member-chip .pmc-status.declined { color: var(--diff-hard); opacity: 0.7; }
+
         /* Friends search bar */
         .prof-search-wrap {
             position: relative;
@@ -6122,6 +6313,7 @@
             </div>
 
             <button class="auth-btn auth-btn-google" id="btn-auth-google">
+                <span class="auth-btn-spinner"></span>
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -6136,7 +6328,7 @@
                         d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                         fill="#EA4335" />
                 </svg>
-                Accedi con Google
+                <span class="auth-btn-label">Accedi con Google</span>
             </button>
 
             <button class="auth-btn auth-btn-ghost" id="btn-auth-guest" style="margin-top: 12px;">Continua come
@@ -6728,6 +6920,60 @@
                 </div>
             </div>
 
+            <!-- SECTION: Update Banner (shown when update was snoozed) -->
+            <div id="settings-update-banner" style="display:none; margin: 0 0 12px 0;">
+                <div style="
+                    background: linear-gradient(135deg, rgba(200,241,53,0.07) 0%, rgba(200,241,53,0.03) 100%);
+                    border: 1px solid rgba(200,241,53,0.22);
+                    border-radius: var(--radius);
+                    padding: 18px 18px 16px;
+                    position: relative;
+                    overflow: hidden;
+                ">
+                    <!-- subtle glow top-left -->
+                    <div style="
+                        position:absolute;top:-30px;left:-20px;
+                        width:120px;height:120px;
+                        background:radial-gradient(circle, rgba(200,241,53,0.12) 0%, transparent 70%);
+                        pointer-events:none;
+                    "></div>
+
+                    <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;position:relative;">
+                        <div style="
+                            width:42px;height:42px;flex-shrink:0;
+                            border-radius:12px;
+                            background:var(--accent-dim);
+                            border:1px solid rgba(200,241,53,0.30);
+                            display:flex;align-items:center;justify-content:center;
+                        ">
+                            <i class="fa-solid fa-cloud-arrow-down" style="color:var(--accent);font-size:18px;"></i>
+                        </div>
+                        <div style="flex:1;min-width:0;">
+                            <div style="
+                                font-family:var(--font-display);font-weight:800;font-size:15px;
+                                color:var(--text);line-height:1.2;margin-bottom:3px;
+                            ">Aggiornamento disponibile</div>
+                            <div style="font-size:12px;color:var(--text-dim);line-height:1.4;">
+                                Hai rimandato questo aggiornamento. Puoi installarlo ora.
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="btn-settings-update-confirm" style="
+                        width:100%;padding:12px 16px;
+                        background:var(--accent);color:#0a0a0f;
+                        font-family:var(--font-display);font-weight:800;font-size:13px;
+                        border-radius:var(--radius-sm);border:none;cursor:pointer;
+                        display:flex;align-items:center;justify-content:center;gap:8px;
+                        transition:transform 0.15s var(--spring), opacity 0.15s;
+                        position:relative;
+                    " onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform=''" onmouseleave="this.style.transform=''">
+                        <i class="fa-solid fa-cloud-arrow-down" style="font-size:13px;"></i>
+                        Aggiorna ora
+                    </button>
+                </div>
+            </div>
+
             <!-- SECTION: Account Actions -->
             <div class="sett-actions">
                 <!-- Logged-in user: logout -->
@@ -6963,13 +7209,16 @@
         style="z-index:500; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);">
         <div class="sheet" id="party-invite-sheet" style="z-index:501;">
             <div class="sheet-handle"></div>
-            <div class="sheet-title">Invita un amico</div>
-            <div class="sett-input-group" style="margin-bottom:16px;">
-                <input type="text" id="party-invite-username" placeholder="@username" class="sett-input">
+            <div class="sheet-title">Invita amici</div>
+            <div id="party-invite-friends-list" class="party-friend-picker">
+                <div class="spinner"></div>
+            </div>
+            <div id="party-invite-counter" class="party-invite-counter">
+                <span class="pic-count">0</span>/4 amici selezionati
             </div>
             <div style="display:flex; flex-direction:column; gap:10px;">
-                <button id="btn-party-invite-submit" class="sett-btn primary">
-                    <i class="fa-solid fa-paper-plane"></i> Invia invito
+                <button id="btn-party-invite-submit" class="sett-btn primary disabled">
+                    <i class="fa-solid fa-paper-plane"></i> Invia inviti
                 </button>
                 <button id="btn-party-invite-cancel" class="sett-btn ghost"
                     style="justify-content:center;">Annulla</button>
@@ -7130,7 +7379,7 @@
     <!-- ────────── FIREBASE & LOGIC ────────── -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, getDoc, serverTimestamp, collection, query, where, limit, getDocs, updateDoc, deleteDoc, onSnapshot, documentId, runTransaction, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -7164,7 +7413,7 @@
         }
         const googleProvider = new GoogleAuthProvider();
 
-        window.firebaseApp = { auth, db, googleProvider, persistenceReady, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, doc, setDoc, getDoc, serverTimestamp, collection, query, where, limit, getDocs, updateDoc, deleteDoc, onSnapshot, documentId, runTransaction, addDoc };
+        window.firebaseApp = { auth, db, googleProvider, persistenceReady, signInWithPopup, signInWithRedirect, getRedirectResult, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, doc, setDoc, getDoc, serverTimestamp, collection, query, where, limit, getDocs, updateDoc, deleteDoc, onSnapshot, documentId, runTransaction, addDoc };
     </script>
     <script src="questpool.js?v=2"></script>
 
@@ -8017,6 +8266,11 @@
 
             // Safety: never push empty state to cloud before loading cloud data
             if (!cloudLoadedOnce && state.xp === 0 && (!state.completed || state.completed.length === 0)) return false;
+            // Skip if offline — the 'online' event will trigger sync on reconnect
+            if (!navigator.onLine) {
+                cloudSyncQueued = true;
+                return false;
+            }
             if (cloudSyncInFlight) {
                 cloudSyncQueued = true;
                 return false;
@@ -8433,6 +8687,18 @@
 
         let unsubSnapshot = null;
         function setupAuthVars() {
+            // Handle return from signInWithRedirect (resolves null if no redirect happened)
+            fb.getRedirectResult(fb.auth).then(result => {
+                if (result?.user && btnAuthGoogle) {
+                    btnAuthGoogle.classList.remove('loading');
+                }
+            }).catch(err => {
+                if (btnAuthGoogle) btnAuthGoogle.classList.remove('loading');
+                if (err?.code !== 'auth/redirect-cancelled-by-user') {
+                    showAppError(err, 'Accesso Google non completato. Riprova.');
+                }
+            });
+
             fb.onAuthStateChanged(fb.auth, async (user) => {
                 if (user) {
                     try {
@@ -8635,13 +8901,40 @@
         });
 
         btnAuthGoogle.addEventListener('click', safeAsyncAction(async () => {
-            if (btnAuthGoogle.classList.contains('disabled')) return;
-            btnAuthGoogle.classList.add('disabled');
+            if (btnAuthGoogle.classList.contains('disabled') || btnAuthGoogle.classList.contains('loading')) return;
+            if (!navigator.onLine) {
+                showToast('Sei offline. Connettiti a internet per accedere.');
+                return;
+            }
+            btnAuthGoogle.classList.add('loading');
             try {
-                await fb.signInWithPopup(fb.auth, fb.googleProvider);
-                // onAuthStateChanged takes over completely!
+                // Try popup first; fall back to redirect on mobile/blocked scenarios
+                try {
+                    const popupResult = await Promise.race([
+                        fb.signInWithPopup(fb.auth, fb.googleProvider),
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('__popup_timeout__')), 8000))
+                    ]);
+                    // onAuthStateChanged takes over completely!
+                    if (popupResult?.user) return;
+                } catch (popupErr) {
+                    const code = popupErr?.code || '';
+                    const msg = popupErr?.message || '';
+                    const shouldRedirect = code === 'auth/popup-blocked'
+                        || code === 'auth/popup-closed-by-user'
+                        || code === 'auth/cancelled-popup-request'
+                        || code === 'auth/operation-not-supported-in-this-environment'
+                        || msg === '__popup_timeout__';
+                    if (!shouldRedirect) throw popupErr;
+                }
+                // Popup failed or timed out → use redirect (standard for mobile)
+                await fb.signInWithRedirect(fb.auth, fb.googleProvider);
+                // Page will navigate away; loading state stays on intentionally
+                return;
             } finally {
-                btnAuthGoogle.classList.remove('disabled');
+                // Don't remove loading if we're about to navigate away for redirect
+                if (!btnAuthGoogle._redirecting) {
+                    btnAuthGoogle.classList.remove('loading');
+                }
             }
         }, 'Accesso Google non completato. Riprova.'));
 
@@ -8825,6 +9118,33 @@
         }
 
         function getPartyInviteActionHtml(q) {
+            // Multi-friend party group
+            if (q.partyInvites && Array.isArray(q.partyInvites) && q.partyInvites.length > 0) {
+                let chips = '';
+                for (const inv of q.partyInvites) {
+                    const name = inv.displayName || inv.username || 'Amico';
+                    const initial = getAvatarInitial(name);
+                    const color = inv.avatarColor || '#555';
+                    const statusLabel = inv.status === 'accepted' ? '✓ Accettato'
+                        : inv.status === 'declined' ? '✗ Rifiutato'
+                        : '⏳ In attesa';
+                    const statusClass = inv.status || 'pending';
+                    chips += `
+                        <div class="party-member-chip">
+                            <div class="pmc-avatar" style="background:${color}">${escapeHtml(initial)}</div>
+                            <div class="pmc-name">${escapeHtml(name)}</div>
+                            <div class="pmc-status ${statusClass}">${statusLabel}</div>
+                        </div>`;
+                }
+                return `
+                    <div class="party-group-status">
+                        <div style="font-size:12px; font-weight:700; color:var(--text-dim); margin-bottom:2px;">
+                            <i class="fa-solid fa-user-group" style="margin-right:4px;"></i>Party quest
+                        </div>
+                        ${chips}
+                    </div>`;
+            }
+            // Legacy single-friend invite
             if (q.partyInviteId) {
                 const friendName = q.partyWithDisplayName || q.partyWithUsername || 'un amico';
                 const friendUsername = q.partyWithUsername ? ensureAtUsername(q.partyWithUsername) : '';
@@ -8842,7 +9162,7 @@
             if (!isPartyEligibleQuest(q) || isGuest || !currentUser || !fb) return '';
             return `
                 <button id="btn-party-invite" class="btn-ghost" style="width:100%; margin-top:8px; border-color: rgba(168,85,247,0.4); color: #a855f7;">
-                    <i class="fa-solid fa-user-group"></i> Fai questa quest con un amico
+                    <i class="fa-solid fa-user-group"></i> Fai questa quest con gli amici
                 </button>`;
         }
 
@@ -9039,15 +9359,27 @@
                     if (q.note) noteHtml += `<div style="font-size: 13px; color: var(--text-dim); font-style: italic;">"${escapeHtml(q.note)}"</div>`;
                     noteHtml += `</div>`;
                 }
-                const partyMetaHtml = q.completedWith ? (() => {
-                    const partyName = q.completedWithDisplayName || q.completedWith;
-                    const partyInitial = getAvatarInitial(partyName);
-                    const partyColor = getAvatarColor(q.completedWithAvatarColor, partyName);
-                    return `<span class="completed-party-meta">
-                        ${renderAvatar(partyInitial, partyColor, 'completed-party-avatar')}
-                        con ${escapeHtml(q.completedWith)}
-                    </span>`;
-                })() : '';
+                const partyMetaHtml = (() => {
+                    if (q.completedWithFriends && Array.isArray(q.completedWithFriends) && q.completedWithFriends.length > 0) {
+                        return q.completedWithFriends.map(f => {
+                            const initial = getAvatarInitial(f.displayName || f.username || 'Amico');
+                            const color = getAvatarColor(f.avatarColor, f.displayName || f.username);
+                            return `<span class="completed-party-meta">
+                                ${renderAvatar(initial, color, 'completed-party-avatar')}
+                                con ${escapeHtml(f.username)}
+                            </span>`;
+                        }).join('');
+                    } else if (q.completedWith) {
+                        const partyName = q.completedWithDisplayName || q.completedWith;
+                        const partyInitial = getAvatarInitial(partyName);
+                        const partyColor = getAvatarColor(q.completedWithAvatarColor, partyName);
+                        return `<span class="completed-party-meta">
+                            ${renderAvatar(partyInitial, partyColor, 'completed-party-avatar')}
+                            con ${escapeHtml(q.completedWith)}
+                        </span>`;
+                    }
+                    return '';
+                })();
 
                 return `<li class="completed-item card-pop-in" style="--enter-delay:${idx * 0.05}s;">
                   <div style="display:flex; width: 100%; align-items: flex-start; justify-content: space-between; gap: 12px;">
@@ -9154,12 +9486,27 @@
                 ...raw,
                 id: raw.id || relationDocId,
                 relationDocId: raw.relationDocId || relationDocId,
-                relationRef
+                relationRef,
+                partyGroupId: raw.partyGroupId || null // null for legacy single-friend invites
             };
         }
 
         const userPreviewCache = new Map();
         const friendProfilesCache = new Map();
+
+        const PROFILE_CACHE_TTL = 60000; // 60 seconds
+
+        function _populateCacheFromSnap(uid, snap) {
+            if (snap.exists()) {
+                friendProfilesCache.set(uid, { doc: snap, timestamp: Date.now() });
+                const data = snap.data();
+                userPreviewCache.set(uid, {
+                    displayName: data.displayName || cleanUsername(data.username) || 'Utente',
+                    username: data.username || 'utente',
+                    avatarColor: data.avatarColor || '#333'
+                });
+            }
+        }
 
         async function fetchUserProfiles(uids) {
             if (!uids || uids.length === 0 || !fb) return [];
@@ -9167,21 +9514,24 @@
             const promises = uniqueUids.map(async (uid) => {
                 try {
                     const cached = friendProfilesCache.get(uid);
-                    // If cached and fresh (e.g. less than 15 seconds old), return cached document
-                    if (cached && Date.now() - cached.timestamp < 15000) {
+                    const age = cached ? Date.now() - cached.timestamp : Infinity;
+
+                    // Fresh cache — return immediately
+                    if (cached && age < PROFILE_CACHE_TTL) {
                         return cached.doc;
                     }
-                    const snap = await fb.getDoc(fb.doc(fb.db, 'more_users', uid));
-                    if (snap.exists()) {
-                        friendProfilesCache.set(uid, { doc: snap, timestamp: Date.now() });
-                        // Also populate userPreviewCache
-                        const data = snap.data();
-                        userPreviewCache.set(uid, {
-                            displayName: data.displayName || cleanUsername(data.username) || 'Utente',
-                            username: data.username || 'utente',
-                            avatarColor: data.avatarColor || '#333'
-                        });
+
+                    // Stale cache — return stale data now, refresh in background
+                    if (cached && age >= PROFILE_CACHE_TTL) {
+                        fb.getDoc(fb.doc(fb.db, 'more_users', uid))
+                            .then(snap => _populateCacheFromSnap(uid, snap))
+                            .catch(() => { /* silent background refresh failure */ });
+                        return cached.doc;
                     }
+
+                    // No cache — must fetch
+                    const snap = await fb.getDoc(fb.doc(fb.db, 'more_users', uid));
+                    _populateCacheFromSnap(uid, snap);
                     return snap;
                 } catch (e) {
                     console.warn(`Failed to fetch profile for ${uid}:`, e);
@@ -9534,26 +9884,125 @@
             }
         }
 
-        function openPartyInviteSheet() {
+        const MAX_PARTY_FRIENDS = 4;
+        let _partySelectedFriends = new Map(); // uid -> { uid, username, displayName, avatarColor, friendshipDocId }
+        let _sendingPartyInvite = false;
+
+        function _updatePartyInviteCounter() {
+            const counter = $('party-invite-counter');
+            const submit = $('btn-party-invite-submit');
+            if (counter) {
+                const cnt = counter.querySelector('.pic-count');
+                if (cnt) cnt.textContent = _partySelectedFriends.size;
+            }
+            if (submit) {
+                if (_partySelectedFriends.size > 0 && !_sendingPartyInvite) {
+                    submit.classList.remove('disabled');
+                } else {
+                    submit.classList.add('disabled');
+                }
+            }
+        }
+
+        async function openPartyInviteSheet() {
             if (isGuest || !currentUser || !fb) return;
             if (!isPartyEligibleQuest(state.currentQuest)) {
                 showToast('Questa quest non puo essere fatta in party.');
                 return;
             }
-            getAcceptedFriendUidsForCurrentUser({ force: true }).then(friendUids => {
+            _partySelectedFriends.clear();
+
+            const overlay = $('party-invite-overlay');
+            const sheet = $('party-invite-sheet');
+            const listEl = $('party-invite-friends-list');
+            if (!overlay || !sheet || !listEl) return;
+
+            listEl.innerHTML = '<div class="spinner"></div>';
+            _updatePartyInviteCounter();
+            overlay.classList.add('show');
+            requestAnimationFrame(() => sheet.classList.add('show'));
+
+            try {
+                const friendUids = await getAcceptedFriendUidsForCurrentUser({ force: true });
                 if (friendUids.length === 0) {
-                    showToast('Aggiungi un amico prima di creare un party.');
+                    listEl.innerHTML = '<div style="color:var(--text-dim); font-size:13px; text-align:center; padding:16px 0;">Aggiungi un amico prima di creare un party.</div>';
                     return;
                 }
-                const overlay = $('party-invite-overlay');
-                const sheet = $('party-invite-sheet');
-                const input = $('party-invite-username');
-                if (!overlay || !sheet || !input) return;
-                input.value = '';
-                overlay.classList.add('show');
-                requestAnimationFrame(() => sheet.classList.add('show'));
-                setTimeout(() => input.focus(), 260);
-            }).catch(() => showToast('Impossibile caricare gli amici.'));
+
+                // Fetch profiles for all friends
+                const profiles = await fetchUserProfiles(friendUids);
+                const friendsData = [];
+                for (const snap of profiles) {
+                    if (!snap || !snap.exists()) continue;
+                    const data = snap.data();
+                    const uid = snap.id;
+                    if (uid === currentUser.uid) continue;
+                    friendsData.push({
+                        uid,
+                        displayName: data.displayName || cleanUsername(data.username) || 'Utente',
+                        username: ensureAtUsername(data.username || 'utente'),
+                        avatarColor: data.avatarColor || '#555'
+                    });
+                }
+
+                if (friendsData.length === 0) {
+                    listEl.innerHTML = '<div style="color:var(--text-dim); font-size:13px; text-align:center; padding:16px 0;">Nessun amico disponibile.</div>';
+                    return;
+                }
+
+                // Check which friends already have active party invites for this quest
+                const comparisonDocs = await getCurrentUserComparisonDocs();
+                const activeInviteUids = new Set();
+                for (const doc of comparisonDocs) {
+                    const invite = normalizePartyInviteFromFriendDoc(doc.data, doc.id, doc.ref);
+                    if (invite && ['pending', 'accepted'].includes(invite.status) && invite.fromUid === currentUser.uid) {
+                        activeInviteUids.add(invite.toUid);
+                    }
+                }
+
+                let html = '';
+                for (const friend of friendsData) {
+                    const hasActive = activeInviteUids.has(friend.uid);
+                    const initial = getAvatarInitial(friend, '?');
+                    html += `
+                        <div class="party-friend-item${hasActive ? ' disabled' : ''}" data-uid="${friend.uid}" data-username="${escapeHtml(friend.username)}" data-displayname="${escapeHtml(friend.displayName)}" data-color="${friend.avatarColor}">
+                            <div class="pfi-avatar" style="background:${friend.avatarColor}">${escapeHtml(initial)}</div>
+                            <div class="pfi-info">
+                                <div class="pfi-name">${escapeHtml(friend.displayName)}</div>
+                                <div class="pfi-username">${escapeHtml(friend.username)}${hasActive ? ' · invito attivo' : ''}</div>
+                            </div>
+                            ${hasActive ? '' : '<div class="pfi-check"></div>'}
+                        </div>`;
+                }
+                listEl.innerHTML = html;
+
+                // Wire up click handlers
+                listEl.querySelectorAll('.party-friend-item:not(.disabled)').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const uid = item.dataset.uid;
+                        if (item.classList.contains('selected')) {
+                            item.classList.remove('selected');
+                            _partySelectedFriends.delete(uid);
+                        } else {
+                            if (_partySelectedFriends.size >= MAX_PARTY_FRIENDS) {
+                                showToast(`Massimo ${MAX_PARTY_FRIENDS} amici per party.`);
+                                return;
+                            }
+                            item.classList.add('selected');
+                            _partySelectedFriends.set(uid, {
+                                uid,
+                                username: item.dataset.username,
+                                displayName: item.dataset.displayname,
+                                avatarColor: item.dataset.color
+                            });
+                        }
+                        _updatePartyInviteCounter();
+                    });
+                });
+            } catch (err) {
+                listEl.innerHTML = '<div style="color:var(--text-muted); font-size:13px; text-align:center; padding:16px 0;">Errore caricamento amici.</div>';
+                showFirestoreError(err, 'Impossibile caricare gli amici.');
+            }
         }
 
         function closePartyInviteSheet() {
@@ -9561,28 +10010,14 @@
             const sheet = $('party-invite-sheet');
             if (sheet) sheet.classList.remove('show');
             if (overlay) setTimeout(() => overlay.classList.remove('show'), 180);
-        }
-
-        async function findUserByUsername(usernameInput) {
-            if (!fb) return null;
-            const clean = String(usernameInput || '').trim().toLowerCase().replace(/^@+/, '');
-            if (!clean) return null;
-            const usersRef = fb.collection(fb.db, "more_users");
-            for (const uname of [clean, '@' + clean]) {
-                const q = fb.query(usersRef, fb.where("username", "==", uname), fb.limit(1));
-                const snap = await fb.getDocs(q);
-                if (!snap.empty) return snap.docs[0];
-            }
-            return null;
+            _partySelectedFriends.clear();
         }
 
         async function sendPartyInvite() {
             if (isGuest || !currentUser || !fb) return;
-            const input = $('party-invite-username');
-            const submit = $('btn-party-invite-submit');
-            const usernameInput = input ? input.value.trim() : '';
-            if (!usernameInput) {
-                showToast('Inserisci uno username.');
+            if (_sendingPartyInvite) return; // double-submission guard
+            if (_partySelectedFriends.size === 0) {
+                showToast('Seleziona almeno un amico.');
                 return;
             }
             if (!isPartyEligibleQuest(state.currentQuest)) {
@@ -9591,96 +10026,141 @@
                 return;
             }
 
+            const submit = $('btn-party-invite-submit');
+            _sendingPartyInvite = true;
             if (submit) submit.classList.add('disabled');
+
             try {
-                const userDoc = await findUserByUsername(usernameInput);
-                if (!userDoc) throw new Error('Utente non trovato.');
-                if (userDoc.id === currentUser.uid) throw new Error('Non puoi invitare te stesso.');
-
-                const friendUids = await getAcceptedFriendUidsForCurrentUser({ force: true });
-                if (!friendUids.includes(userDoc.id)) throw new Error('Puoi invitare solo utenti gia amici.');
-
-                const friendshipDoc = await getAcceptedFriendRequestDoc(userDoc.id);
-                if (!friendshipDoc) throw new Error('Amicizia non trovata. Ricarica la pagina e riprova.');
-
-                const targetData = userDoc.data();
                 const q = state.currentQuest;
+                const partyGroupId = currentUser.uid + '_pg_' + Date.now();
                 const fromUsername = ensureAtUsername(state.username || currentUser.displayName || 'utente');
-                const toUsername = ensureAtUsername(targetData.username || usernameInput);
                 const fromDisplayName = state.displayName || currentUser.displayName || cleanUsername(fromUsername) || 'Utente';
-                const toDisplayName = targetData.displayName || cleanUsername(toUsername) || 'Amico';
                 const fromAvatarColor = getAvatarColor(state, fromUsername);
-                const toAvatarColor = getAvatarColor(targetData, toUsername);
-                const inviteId = currentUser.uid + "_" + userDoc.id + "_" + Date.now();
+                const selectedFriends = [..._partySelectedFriends.values()];
 
-                const partyInvitePayload = {
-                    id: inviteId,
-                    relationDocId: friendshipDoc.id,
-                    fromUid: currentUser.uid,
-                    fromUsername,
-                    fromDisplayName,
-                    fromAvatarColor,
-                    toUid: userDoc.id,
-                    toUsername,
-                    toDisplayName,
-                    toAvatarColor,
-                    questTitle: q.title || '',
-                    questDescription: q.description || '',
-                    questDifficulty: q.difficulty || 'easy',
-                    questXP: Number(q.xp) || 0,
-                    questCategory: q.category || 'sfida',
-                    questRef: q.ref || q.title || '',
-                    status: 'pending',
-                    createdAt: fb.serverTimestamp(),
-                    acceptedAt: null,
-                    completedAt: null,
-                    completedByUid: null,
-                    completionNote: null,
-                    completionPhoto: null,
-                    completionFeeling: null,
-                    recipientSyncedAt: null,
-                    recipientDeleteSyncedAt: null
-                };
+                // Send one invite per friend via independent transactions
+                const results = await Promise.allSettled(selectedFriends.map(async (friend) => {
+                    const friendshipDoc = await getAcceptedFriendRequestDoc(friend.uid);
+                    if (!friendshipDoc) throw new Error(`Amicizia con ${friend.username} non trovata.`);
 
-                await fb.runTransaction(fb.db, async (transaction) => {
-                    const friendshipSnap = await transaction.get(friendshipDoc.ref);
-                    if (!friendshipSnap.exists()) throw new Error('Amicizia non trovata.');
-                    const friendship = friendshipSnap.data();
-                    if (friendship.status !== 'accepted') throw new Error('Amicizia non attiva.');
-                    if (![friendship.from, friendship.to].includes(currentUser.uid) || ![friendship.from, friendship.to].includes(userDoc.id)) {
-                        throw new Error('Amicizia non valida per questo invito.');
-                    }
+                    const inviteId = currentUser.uid + '_' + friend.uid + '_' + Date.now();
+                    const toUsername = friend.username;
+                    const toDisplayName = friend.displayName;
+                    const toAvatarColor = friend.avatarColor;
 
-                    const activeInvite = normalizePartyInviteFromFriendDoc(friendship, friendshipDoc.id, friendshipDoc.ref);
-                    if (activeInvite && ['pending', 'accepted'].includes(activeInvite.status)) {
-                        throw new Error('Hai gia un invito party attivo con questo amico.');
-                    }
-                    if (activeInvite && activeInvite.status === 'completed' && !activeInvite.recipientSyncedAt) {
-                        throw new Error('La quest party precedente si sta ancora sincronizzando con questo amico.');
-                    }
-                    if (activeInvite && activeInvite.status === 'deleted' && !activeInvite.recipientDeleteSyncedAt) {
-                        throw new Error('La rimozione party precedente si sta ancora sincronizzando con questo amico.');
-                    }
+                    const partyInvitePayload = {
+                        id: inviteId,
+                        partyGroupId,
+                        relationDocId: friendshipDoc.id,
+                        fromUid: currentUser.uid,
+                        fromUsername,
+                        fromDisplayName,
+                        fromAvatarColor,
+                        toUid: friend.uid,
+                        toUsername,
+                        toDisplayName,
+                        toAvatarColor,
+                        questTitle: q.title || '',
+                        questDescription: q.description || '',
+                        questDifficulty: q.difficulty || 'easy',
+                        questXP: Number(q.xp) || 0,
+                        questCategory: q.category || 'sfida',
+                        questRef: q.ref || q.title || '',
+                        status: 'pending',
+                        createdAt: fb.serverTimestamp(),
+                        acceptedAt: null,
+                        completedAt: null,
+                        completedByUid: null,
+                        completionNote: null,
+                        completionPhoto: null,
+                        completionFeeling: null,
+                        recipientSyncedAt: null,
+                        recipientDeleteSyncedAt: null
+                    };
 
-                    transaction.update(friendshipDoc.ref, {
-                        partyInvite: partyInvitePayload,
-                        updatedAt: fb.serverTimestamp()
+                    await fb.runTransaction(fb.db, async (transaction) => {
+                        const friendshipSnap = await transaction.get(friendshipDoc.ref);
+                        if (!friendshipSnap.exists()) throw new Error('Amicizia non trovata.');
+                        const friendship = friendshipSnap.data();
+                        if (friendship.status !== 'accepted') throw new Error('Amicizia non attiva.');
+
+                        // Idempotency: check if invite with same partyGroupId already exists
+                        const activeInvite = normalizePartyInviteFromFriendDoc(friendship, friendshipDoc.id, friendshipDoc.ref);
+                        if (activeInvite && activeInvite.partyGroupId === partyGroupId) {
+                            return; // Already written (retry safety)
+                        }
+                        if (activeInvite && ['pending', 'accepted'].includes(activeInvite.status)) {
+                            throw new Error(`Invito party attivo con ${friend.username}.`);
+                        }
+                        if (activeInvite && activeInvite.status === 'completed' && !activeInvite.recipientSyncedAt) {
+                            throw new Error(`Sync in corso con ${friend.username}.`);
+                        }
+
+                        transaction.update(friendshipDoc.ref, {
+                            partyInvite: partyInvitePayload,
+                            updatedAt: fb.serverTimestamp()
+                        });
                     });
+
+                    return { uid: friend.uid, inviteId, docId: friendshipDoc.id, username: toUsername, displayName: toDisplayName, avatarColor: toAvatarColor };
+                }));
+
+                // Process results
+                const succeeded = [];
+                const failed = [];
+                results.forEach((result, i) => {
+                    if (result.status === 'fulfilled' && result.value) {
+                        succeeded.push(result.value);
+                    } else {
+                        failed.push({ friend: selectedFriends[i], reason: result.reason?.message || 'Errore sconosciuto' });
+                    }
                 });
 
-                state.currentQuest.partyInviteId = inviteId;
-                state.currentQuest.partyInviteDocId = friendshipDoc.id;
-                state.currentQuest.partyWithUid = userDoc.id;
-                state.currentQuest.partyWithUsername = toUsername;
-                state.currentQuest.partyWithDisplayName = toDisplayName;
-                state.currentQuest.partyWithAvatarColor = toAvatarColor;
-                saveState();
-                renderActiveQuest();
-                closePartyInviteSheet();
-                showToast(`Invito inviato a ${toUsername}!`);
+                if (succeeded.length > 0) {
+                    // Update local quest state with party group info
+                    state.currentQuest.partyGroupId = partyGroupId;
+                    state.currentQuest.partyInvites = succeeded.map(s => ({
+                        uid: s.uid,
+                        inviteId: s.inviteId,
+                        docId: s.docId,
+                        username: s.username,
+                        displayName: s.displayName,
+                        avatarColor: s.avatarColor,
+                        status: 'pending'
+                    }));
+                    // Backward compat: also set single-friend fields if only 1 friend
+                    if (succeeded.length === 1) {
+                        state.currentQuest.partyInviteId = succeeded[0].inviteId;
+                        state.currentQuest.partyInviteDocId = succeeded[0].docId;
+                        state.currentQuest.partyWithUid = succeeded[0].uid;
+                        state.currentQuest.partyWithUsername = succeeded[0].username;
+                        state.currentQuest.partyWithDisplayName = succeeded[0].displayName;
+                        state.currentQuest.partyWithAvatarColor = succeeded[0].avatarColor;
+                    } else {
+                        // For multi-friend, set partyInviteId to the groupId for compat
+                        state.currentQuest.partyInviteId = partyGroupId;
+                    }
+                    saveState();
+                    renderActiveQuest();
+                    closePartyInviteSheet();
+
+                    if (failed.length === 0) {
+                        showToast(succeeded.length === 1
+                            ? `Invito inviato a ${succeeded[0].username}!`
+                            : `${succeeded.length} inviti inviati!`);
+                    } else {
+                        showToast(`${succeeded.length} inviti ok, ${failed.length} falliti.`);
+                    }
+                } else {
+                    showToast('Nessun invito inviato. Riprova.');
+                    if (failed.length > 0) {
+                        showFirestoreError(failed[0].reason, failed[0].reason);
+                    }
+                }
             } catch (err) {
-                showFirestoreError(err, (err.message || 'Errore invio invito').replace('Firebase: ', ''));
+                showFirestoreError(err, (err.message || 'Errore invio inviti').replace('Firebase: ', ''));
             } finally {
+                _sendingPartyInvite = false;
                 if (submit) submit.classList.remove('disabled');
             }
         }
@@ -9714,8 +10194,7 @@
                 }
 
                 section.style.display = 'block';
-                const cards = [];
-                for (const invite of invites) {
+                const cardPromises = invites.map(async (invite) => {
                     const fromPreview = await getUserPreview(invite.fromUid, {
                         displayName: invite.fromDisplayName,
                         username: invite.fromUsername,
@@ -9728,7 +10207,7 @@
                     const initial = getAvatarInitial(fromPreview, '?');
                     const color = getAvatarColor(fromPreview, fromUsername);
 
-                    cards.push(`
+                    return `
                         <div class="social-card party">
                           ${renderAvatar(initial, color)}
                           <div class="social-main">
@@ -9749,8 +10228,9 @@
                               </button>
                             </div>
                           </div>
-                        </div>`);
-                }
+                        </div>`;
+                });
+                const cards = await Promise.all(cardPromises);
                 list.innerHTML = cards.join('');
             } catch (err) {
                 showFirestoreError(err, 'Errore caricamento inviti.');
@@ -9809,6 +10289,55 @@
         async function ensurePartyQuestCanComplete(q) {
             if (!q?.partyInviteId) return null;
             if (isGuest || !currentUser || !fb) return null;
+
+            // Multi-friend path: check all invites in the group
+            if (q.partyInvites && Array.isArray(q.partyInvites) && q.partyInvites.length > 0) {
+                const freshInvites = [];
+                for (const inv of q.partyInvites) {
+                    if (!inv.docId) continue;
+                    try {
+                        const snap = await fb.getDoc(fb.doc(fb.db, 'comparison_requests', inv.docId));
+                        if (snap.exists()) {
+                            const normalized = normalizePartyInviteFromFriendDoc(snap.data(), snap.id, snap.ref);
+                            if (normalized) freshInvites.push({ ...inv, freshStatus: normalized.status, freshInvite: normalized });
+                            else freshInvites.push({ ...inv, freshStatus: 'missing' });
+                        } else {
+                            freshInvites.push({ ...inv, freshStatus: 'missing' });
+                        }
+                    } catch {
+                        freshInvites.push({ ...inv, freshStatus: inv.status || 'unknown' });
+                    }
+                }
+
+                // Update local statuses for UI
+                for (const fi of freshInvites) {
+                    const localInv = q.partyInvites.find(i => i.uid === fi.uid);
+                    if (localInv && fi.freshStatus !== 'missing') localInv.status = fi.freshStatus;
+                }
+                saveState();
+                renderActiveQuest();
+
+                const accepted = freshInvites.filter(i => i.freshStatus === 'accepted');
+                const pending = freshInvites.filter(i => i.freshStatus === 'pending');
+                const declined = freshInvites.filter(i => i.freshStatus === 'declined');
+
+                if (accepted.length === 0) {
+                    if (declined.length === freshInvites.length) {
+                        showToast('Tutti gli amici hanno rifiutato l\'invito.');
+                    } else if (pending.length > 0) {
+                        showToast(`${pending.length} amici non hanno ancora risposto.`);
+                    } else {
+                        showToast('Nessun amico ha accettato l\'invito.');
+                    }
+                    return null;
+                }
+
+                // Return first accepted invite for backward compat with completeAcceptedPartyInvite
+                const firstAccepted = accepted[0];
+                return firstAccepted.freshInvite || firstAccepted;
+            }
+
+            // Legacy single-friend path
             const invite = await getPartyInviteForQuest(q);
             if (!invite) {
                 showToast('Invito party non trovato.');
@@ -9827,6 +10356,63 @@
 
         async function completeAcceptedPartyInvite(q, completedAtIso, note, photo, feeling, awardedXp) {
             if (!q?.partyInviteId || isGuest || !currentUser || !fb) return null;
+
+            // Multi-friend path: complete all accepted invites
+            if (q.partyInvites && Array.isArray(q.partyInvites) && q.partyInvites.length > 0) {
+                const acceptedInvites = q.partyInvites.filter(i => i.status === 'accepted');
+                if (acceptedInvites.length === 0) return { completed: false, reason: 'no_accepted' };
+
+                const completionResults = await Promise.allSettled(acceptedInvites.map(async (inv) => {
+                    if (!inv.docId) throw new Error('Invito non sincronizzato.');
+                    const inviteRef = fb.doc(fb.db, 'comparison_requests', inv.docId);
+
+                    return fb.runTransaction(fb.db, async (transaction) => {
+                        const inviteSnap = await transaction.get(inviteRef);
+                        if (!inviteSnap.exists()) throw new Error('Invito non trovato.');
+                        const invite = normalizePartyInviteFromFriendDoc(inviteSnap.data(), inviteSnap.id, inviteRef);
+                        if (!invite || invite.status !== 'accepted') return { completed: false };
+
+                        transaction.update(inviteRef, {
+                            'partyInvite.status': 'completed',
+                            'partyInvite.completedAt': fb.serverTimestamp(),
+                            'partyInvite.completedAtIso': completedAtIso,
+                            'partyInvite.completedByUid': currentUser.uid,
+                            'partyInvite.completionNote': note || null,
+                            'partyInvite.completionPhoto': photo || null,
+                            'partyInvite.completionFeeling': feeling || null,
+                            'partyInvite.recipientSyncedAt': null,
+                            updatedAt: fb.serverTimestamp()
+                        });
+
+                        return {
+                            completed: true,
+                            friendUsername: ensureAtUsername(invite.toUsername || inv.username),
+                            friendDisplayName: invite.toDisplayName || inv.displayName,
+                            friendAvatarColor: invite.toAvatarColor || inv.avatarColor
+                        };
+                    });
+                }));
+
+                const succeeded = completionResults
+                    .filter(r => r.status === 'fulfilled' && r.value?.completed)
+                    .map(r => r.value);
+
+                if (succeeded.length === 0) return { completed: false, reason: 'transaction_failed' };
+
+                return {
+                    completed: true,
+                    friendUsername: succeeded[0].friendUsername,
+                    questTitle: q.title || 'Quest',
+                    xp: Number(q.xp) || awardedXp || 0,
+                    completedWithFriends: succeeded.map(s => ({
+                        username: s.friendUsername,
+                        displayName: s.friendDisplayName,
+                        avatarColor: s.friendAvatarColor
+                    }))
+                };
+            }
+
+            // Legacy single-friend path
             const relationDocId = q.partyInviteDocId || q.partyInviteRelationId || null;
             if (!relationDocId) throw new Error('Invito party non sincronizzato. Riprova creando un nuovo invito.');
             const inviteRef = fb.doc(fb.db, 'comparison_requests', relationDocId);
@@ -9861,6 +10447,32 @@
 
         async function markPartyInviteDeletedForQuest(q) {
             if (!q?.partyInviteId || isGuest || !currentUser || !fb) return false;
+
+            // Multi-friend path
+            if (q.partyInvites && Array.isArray(q.partyInvites) && q.partyInvites.length > 0) {
+                await Promise.allSettled(q.partyInvites.map(async (inv) => {
+                    if (!inv.docId) return;
+                    const inviteRef = fb.doc(fb.db, 'comparison_requests', inv.docId);
+                    await fb.runTransaction(fb.db, async (transaction) => {
+                        const snap = await transaction.get(inviteRef);
+                        if (!snap.exists()) return;
+                        const freshInvite = normalizePartyInviteFromFriendDoc(snap.data(), snap.id, inviteRef);
+                        if (!freshInvite || freshInvite.status === 'deleted') return;
+                        if (freshInvite.fromUid !== currentUser.uid && freshInvite.toUid !== currentUser.uid) return;
+
+                        transaction.update(inviteRef, {
+                            'partyInvite.status': 'deleted',
+                            'partyInvite.deletedAt': fb.serverTimestamp(),
+                            'partyInvite.deletedByUid': currentUser.uid,
+                            'partyInvite.recipientDeleteSyncedAt': freshInvite.toUid === currentUser.uid ? fb.serverTimestamp() : null,
+                            updatedAt: fb.serverTimestamp()
+                        });
+                    });
+                }));
+                return true;
+            }
+
+            // Legacy single-friend path
             const invite = await getPartyInviteForQuest(q);
             if (!invite?.relationDocId) return false;
             if (invite.fromUid !== currentUser.uid && invite.toUid !== currentUser.uid) return false;
@@ -11040,6 +11652,11 @@
                     completedRecord.partyInviteId = q.partyInviteId;
                     completedRecord.partyInviteDocId = q.partyInviteDocId || q.partyInviteRelationId || partyInvite.relationDocId || null;
                     completedRecord.completedByUid = currentUser.uid;
+                    // Multi-friend: store group info and all participating friends
+                    if (q.partyGroupId) completedRecord.partyGroupId = q.partyGroupId;
+                    if (partyResult.completedWithFriends && partyResult.completedWithFriends.length > 0) {
+                        completedRecord.completedWithFriends = partyResult.completedWithFriends;
+                    }
                 }
                 state.completed.push(completedRecord);
             }
@@ -12053,20 +12670,18 @@
                         `;
 
                         if (document.getElementById(`btn-send-req-${targetUid}`)) {
-                            document.getElementById(`btn-send-req-${targetUid}`).onclick = async () => {
-                                try {
-                                    const btn = document.getElementById(`btn-send-req-${targetUid}`);
-                                    if (btn) btn.classList.add('disabled');
+                            const btn = document.getElementById(`btn-send-req-${targetUid}`);
+                            btn.onclick = () => {
+                                withLoadingState(btn, async () => {
                                     const result = await sendFriendRequest(targetUid, userData);
                                     resultDiv.innerHTML = result.status === 'accepted'
                                         ? '<div style="color:var(--diff-easy); font-size:14px; text-align:center;">Siete gia amici!</div>'
                                         : '<div style="color:var(--diff-easy); font-size:14px; text-align:center;">Richiesta inviata!</div>';
                                     await loadFriends();
                                     await refreshProfileAlertCounts();
-                                } catch (err) {
-                                    showFirestoreError(err, 'Richiesta non inviata. Riprova.');
-                                    resultDiv.innerHTML = `<div style="color:var(--diff-hard); font-size:14px; text-align:center;">Errore: ${escapeHtml((err.message || 'riprova').replace('Firebase: ', ''))}</div>`;
-                                }
+                                }, 'Richiesta non inviata. Riprova.').catch(err => {
+                                    resultDiv.innerHTML = `<div style="color:var(--diff-hard); font-size:14px; text-align:center;">Errore: ${escapeHtml((err?.message || 'riprova').replace('Firebase: ', ''))}</div>`;
+                                });
                             };
                         }
 
@@ -12446,6 +13061,8 @@
             if (rowPublicProfile) {
                 rowPublicProfile.style.display = currentUser ? 'flex' : 'none';
             }
+
+            refreshSettingsUpdateBanner();
         }
 
         function closeSettings() {
@@ -12562,6 +13179,30 @@
                 showAppError._lastAt = now;
                 showAppError._lastMsg = visibleMessage;
                 showToast(visibleMessage);
+            }
+        }
+
+        /**
+         * Wraps an async action with automatic button loading state:
+         * - Adds 'disabled' class + inline spinner
+         * - Prevents double-submission
+         * - Cleans up in finally block
+         */
+        async function withLoadingState(btn, asyncFn, errorMsg = 'Operazione non riuscita.') {
+            if (!btn || btn.classList.contains('disabled') || btn._inFlight) return;
+            btn._inFlight = true;
+            btn.classList.add('disabled');
+            const origHtml = btn.innerHTML;
+            const spinnerHtml = '<span class="spinner" style="width:18px;height:18px;border-width:2px;margin:0 auto;"></span>';
+            btn.innerHTML = spinnerHtml;
+            try {
+                return await asyncFn();
+            } catch (err) {
+                showFirestoreError(err, (err?.message || errorMsg).replace('Firebase: ', ''));
+            } finally {
+                btn._inFlight = false;
+                btn.classList.remove('disabled');
+                btn.innerHTML = origHtml;
             }
         }
 
@@ -13810,7 +14451,16 @@
                             return;
                         }
 
-                        if (latestSha === currentSha) return; // Già aggiornato
+                        if (latestSha === currentSha) {
+                            // Nessun aggiornamento pendente: rimuovi banner impostazioni
+                            localStorage.removeItem('more_pending_sha');
+                            refreshSettingsUpdateBanner();
+                            return;
+                        }
+
+                        // Salva lo SHA pendente per il banner nelle impostazioni
+                        localStorage.setItem('more_pending_sha', latestSha);
+                        refreshSettingsUpdateBanner();
 
                         // Mostra il popup
                         const prompt = $('update-prompt');
@@ -13831,10 +14481,11 @@
                             setTimeout(() => { prompt.style.display = 'none'; }, 400);
                         }
 
-                        // Dismiss: ricorda tra 7 giorni
+                        // Dismiss: ricorda tra 7 giorni + aggiorna banner impostazioni
                         $('btn-update-dismiss').onclick = () => {
                             hidePrompt();
                             localStorage.setItem('more_update_ignored', Date.now() + 7 * 24 * 60 * 60 * 1000);
+                            refreshSettingsUpdateBanner();
                         };
 
                         // Click fuori per chiudere (= dismiss)
@@ -13842,6 +14493,7 @@
                             if (e.target === prompt) {
                                 hidePrompt();
                                 localStorage.setItem('more_update_ignored', Date.now() + 7 * 24 * 60 * 60 * 1000);
+                                refreshSettingsUpdateBanner();
                             }
                         };
 
@@ -13877,6 +14529,61 @@
                     .catch(() => { });
             } catch (e) {
                 showToast('Controllo aggiornamenti non disponibile.');
+            }
+        }
+
+        /* ── SETTINGS UPDATE BANNER ─────────────────────────── */
+        function refreshSettingsUpdateBanner() {
+            const banner = $('settings-update-banner');
+            if (!banner) return;
+
+            const pendingSha = localStorage.getItem('more_pending_sha');
+            const currentSha = localStorage.getItem('more_current_sha');
+            const ignoredUntil = localStorage.getItem('more_update_ignored');
+
+            // Mostra se c'è un aggiornamento pendente (SHA diverso) E l'utente ha rimandato
+            const hasPendingUpdate = pendingSha && pendingSha !== currentSha;
+            const hasSnoozed = !!ignoredUntil;
+
+            if (hasPendingUpdate && hasSnoozed) {
+                banner.style.display = 'block';
+
+                const btn = $('btn-settings-update-confirm');
+                if (btn) {
+                    // Evita di aggiungere listener multipli
+                    const newBtn = btn.cloneNode(true);
+                    btn.parentNode.replaceChild(newBtn, btn);
+
+                    newBtn.addEventListener('mousedown', () => { newBtn.style.transform = 'scale(0.97)'; });
+                    newBtn.addEventListener('mouseup', () => { newBtn.style.transform = ''; });
+                    newBtn.addEventListener('mouseleave', () => { newBtn.style.transform = ''; });
+
+                    newBtn.onclick = safeAsyncAction(async () => {
+                        newBtn.innerHTML = '<div class="spinner" style="width:18px;height:18px;margin:0;border-width:2px;"></div>';
+                        newBtn.style.pointerEvents = 'none';
+
+                        localStorage.setItem('more_current_sha', pendingSha);
+                        localStorage.removeItem('more_update_ignored');
+                        localStorage.removeItem('more_pending_sha');
+
+                        try {
+                            if ('caches' in window) {
+                                const keys = await caches.keys();
+                                await Promise.all(keys.map(k => caches.delete(k)));
+                            }
+                            if ('serviceWorker' in navigator) {
+                                const regs = await navigator.serviceWorker.getRegistrations();
+                                await Promise.all(regs.map(r => r.unregister()));
+                            }
+                        } catch (e) {
+                            showToast('Pulizia cache parziale. Ricarico comunque.');
+                        }
+
+                        window.location.reload();
+                    }, 'Aggiornamento non completato. Riprova tra poco.');
+                }
+            } else {
+                banner.style.display = 'none';
             }
         }
 
