@@ -4876,9 +4876,30 @@
             font-size: 13px;
         }
 
+        .party-member-chip {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            transition: border-color 0.2s;
+        }
+        .party-member-chip.status-accepted {
+            border-color: rgba(52,211,153,0.25);
+            background: rgba(52,211,153,0.04);
+        }
+        .party-member-chip.status-declined {
+            border-color: rgba(255,79,79,0.2);
+            background: rgba(255,79,79,0.03);
+            opacity: 0.75;
+        }
+
         .party-member-chip .pmc-avatar {
-            width: 26px;
-            height: 26px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -4897,17 +4918,89 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            font-size: 13px;
         }
 
-        .party-member-chip .pmc-status {
+        .pmc-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 9px;
+            border-radius: 20px;
             font-size: 11px;
             font-weight: 700;
             flex-shrink: 0;
+            letter-spacing: .2px;
+            white-space: nowrap;
+        }
+        .pmc-status-pill.pending {
+            background: rgba(255,179,71,0.13);
+            border: 1px solid rgba(255,179,71,0.28);
+            color: var(--diff-medium);
+        }
+        .pmc-status-pill.accepted {
+            background: rgba(52,211,153,0.13);
+            border: 1px solid rgba(52,211,153,0.28);
+            color: #34d399;
+        }
+        .pmc-status-pill.declined {
+            background: rgba(255,79,79,0.10);
+            border: 1px solid rgba(255,79,79,0.22);
+            color: var(--diff-hard);
+        }
+        .pmc-status-pill i { font-size: 9px; }
+
+        /* ── PARTY PIN LABEL ────────────────────────────── */
+        .party-pin-label {
+            display: none;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 14px;
+            margin-bottom: 10px;
+            background: rgba(200,241,53,0.06);
+            border: 1px solid rgba(200,241,53,0.18);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: .3px;
+            text-transform: uppercase;
+        }
+        .party-pin-label i { font-size: 11px; }
+        .party-pin-label .ppl-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 6px var(--accent-glow);
+            animation: party-pulse 2s ease-in-out infinite;
+            flex-shrink: 0;
         }
 
-        .party-member-chip .pmc-status.pending { color: var(--diff-medium); }
-        .party-member-chip .pmc-status.accepted { color: #34d399; }
-        .party-member-chip .pmc-status.declined { color: var(--diff-hard); opacity: 0.7; }
+        /* ── PARTY QUEST CHANGE WARNING POPUP ──────────── */
+        #party-change-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9998;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            align-items: flex-end;
+            justify-content: center;
+            padding: 0 0 calc(16px + var(--safe-bottom));
+            opacity: 0;
+            transition: opacity 0.3s var(--ease);
+        }
+        #party-change-sheet {
+            background: rgba(18,18,28,0.97);
+            border: 1px solid var(--border-light);
+            border-radius: 24px 24px 20px 20px;
+            padding: 28px 24px 24px;
+            max-width: 420px;
+            width: calc(100% - 32px);
+            transform: translateY(40px);
+            opacity: 0;
+            transition: transform 0.45s var(--spring), opacity 0.35s var(--ease);
+        }
 
         /* Friends search bar */
         .prof-search-wrap {
@@ -6668,6 +6761,11 @@
             </div>
 
             <div id="challenge-banner-container"></div>
+            <div id="party-pin-header" class="party-pin-label">
+                <span class="ppl-dot"></span>
+                <i class="fa-solid fa-thumbtack"></i>
+                <span id="party-pin-label-text">Quest party attiva — sei il leader</span>
+            </div>
             <div id="quest-container"></div>
 
             <!-- DAILY QUEST -->
@@ -7369,6 +7467,51 @@
                     border:none;cursor:pointer;border-radius:var(--radius-sm);
                     transition:color 0.15s;
                 ">Ricordamelo tra una settimana</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ────────── PARTY QUEST CHANGE WARNING ────────── -->
+    <div id="party-change-overlay">
+        <div id="party-change-sheet">
+            <div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,0.15);margin:0 auto 20px;"></div>
+
+            <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+                <div style="width:48px;height:48px;border-radius:14px;background:rgba(255,79,79,0.12);border:1px solid rgba(255,79,79,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid fa-user-group" style="color:var(--diff-hard);font-size:22px;"></i>
+                </div>
+                <div>
+                    <div style="font-family:var(--font-display);font-weight:800;font-size:18px;margin-bottom:3px;">Cambia quest attiva?</div>
+                    <div style="color:var(--text-dim);font-size:13px;line-height:1.4;">Hai una <strong style="color:var(--text);">quest party</strong> in corso.</div>
+                </div>
+            </div>
+
+            <div style="background:rgba(255,79,79,0.05);border:1px solid rgba(255,79,79,0.18);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:20px;display:flex;align-items:flex-start;gap:10px;">
+                <i class="fa-solid fa-triangle-exclamation" style="color:var(--diff-hard);font-size:13px;flex-shrink:0;margin-top:2px;"></i>
+                <div style="font-size:12px;color:var(--text-dim);line-height:1.5;">
+                    Cambiando quest <strong style="color:var(--text);">l'invito verrà annullato</strong> per tutti i partecipanti, sia chi ha già accettato che chi non ha ancora risposto.
+                </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <button id="btn-party-change-confirm" style="
+                    width:100%;padding:14px;
+                    background:var(--diff-hard);color:#fff;
+                    font-family:var(--font-display);font-weight:800;font-size:14px;
+                    border-radius:var(--radius-sm);border:none;cursor:pointer;
+                    display:flex;align-items:center;justify-content:center;gap:8px;
+                    transition:transform 0.15s var(--spring), opacity 0.15s;
+                ">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    Cambia e annulla party
+                </button>
+                <button id="btn-party-change-cancel" style="
+                    width:100%;padding:12px;
+                    background:transparent;color:var(--text-muted);
+                    font-size:13px;font-weight:600;
+                    border:none;cursor:pointer;border-radius:var(--radius-sm);
+                    transition:color 0.15s;
+                ">Tieni la quest party</button>
             </div>
         </div>
     </div>
@@ -9120,28 +9263,50 @@
         function getPartyInviteActionHtml(q) {
             // Multi-friend party group
             if (q.partyInvites && Array.isArray(q.partyInvites) && q.partyInvites.length > 0) {
+                const totalCount = q.partyInvites.length;
+                const acceptedCount = q.partyInvites.filter(i => i.status === 'accepted').length;
+                const pendingCount  = q.partyInvites.filter(i => !i.status || i.status === 'pending').length;
+
                 let chips = '';
                 for (const inv of q.partyInvites) {
                     const name = inv.displayName || inv.username || 'Amico';
                     const initial = getAvatarInitial(name);
                     const color = inv.avatarColor || '#555';
-                    const statusLabel = inv.status === 'accepted' ? '✓ Accettato'
-                        : inv.status === 'declined' ? '✗ Rifiutato'
-                        : '⏳ In attesa';
-                    const statusClass = inv.status || 'pending';
+                    const st = inv.status || 'pending';
+                    const pillIcon = st === 'accepted'
+                        ? '<i class="fa-solid fa-check"></i>'
+                        : st === 'declined'
+                            ? '<i class="fa-solid fa-xmark"></i>'
+                            : '<i class="fa-solid fa-clock"></i>';
+                    const pillLabel = st === 'accepted' ? 'Accettato'
+                        : st === 'declined' ? 'Rifiutato'
+                        : 'In attesa';
                     chips += `
-                        <div class="party-member-chip">
+                        <div class="party-member-chip status-${st}">
                             <div class="pmc-avatar" style="background:${color}">${escapeHtml(initial)}</div>
                             <div class="pmc-name">${escapeHtml(name)}</div>
-                            <div class="pmc-status ${statusClass}">${statusLabel}</div>
+                            <span class="pmc-status-pill ${st}">${pillIcon}${pillLabel}</span>
                         </div>`;
                 }
+
+                const summaryColor = acceptedCount === totalCount ? '#34d399'
+                    : pendingCount > 0 ? 'var(--diff-medium)'
+                    : 'var(--text-dim)';
+                const summaryText = acceptedCount === totalCount
+                    ? `${acceptedCount}/${totalCount} pronti`
+                    : pendingCount > 0
+                        ? `${acceptedCount} accettato · ${pendingCount} in attesa`
+                        : `${acceptedCount}/${totalCount} accettato`;
+
                 return `
-                    <div class="party-group-status">
-                        <div style="font-size:12px; font-weight:700; color:var(--text-dim); margin-bottom:2px;">
-                            <i class="fa-solid fa-user-group" style="margin-right:4px;"></i>Party quest
+                    <div class="party-group-status" id="party-group-status-block">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                            <div style="font-size:12px;font-weight:700;color:var(--text-dim);display:flex;align-items:center;gap:6px;">
+                                <i class="fa-solid fa-user-group"></i>Party quest
+                            </div>
+                            <div style="font-size:11px;font-weight:700;color:${summaryColor};">${summaryText}</div>
                         </div>
-                        ${chips}
+                        <div style="display:flex;flex-direction:column;gap:6px;">${chips}</div>
                     </div>`;
             }
             // Legacy single-friend invite
@@ -9167,6 +9332,10 @@
         }
 
         function renderActiveQuest() {
+            // Party pin label
+            const pinHeader = $('party-pin-header');
+            if (pinHeader) pinHeader.style.display = state.currentQuest?.partyInviteId ? 'flex' : 'none';
+
             if (!state.currentQuest) {
                 questContainer.innerHTML = `<div class="quest-empty">
       <i class="fa-solid fa-scroll" style="font-size:40px;display:block;margin:0 auto 10px;"></i>
@@ -9323,11 +9492,13 @@
         window.useSavedQuest = function (idx) {
             const q = (state.bookmarkedQuests || [])[idx];
             if (!q) return;
-            assignCurrentQuest(q);
-            saveLocal();
-            document.getElementById('btn-home')?.click();
-            renderActiveQuest();
-            showToast('Quest attivata!');
+            guardPartyQuestChange(() => {
+                assignCurrentQuest(q);
+                saveLocal();
+                document.getElementById('btn-home')?.click();
+                renderActiveQuest();
+                showToast('Quest attivata!');
+            });
         };
 
         window.removeSavedQuest = function (idx) {
@@ -9834,9 +10005,50 @@
                     cachedOutgoingReqs = [];
                     snapshot.forEach(d => cachedOutgoingReqs.push({ id: d.id, ref: d.ref, data: d.data() }));
                     scheduleProfileAlertRefresh({ notify: true });
+                    // Sync party invite statuses into the active quest card
+                    syncPartyInviteStatusesFromCache();
                 }, err => showFirestoreError(err, 'Realtime amicizie interrotto. Riprovo al prossimo accesso.'))
             ];
             profileAlertsListenerUid = currentUser.uid;
+        }
+
+        // Reads fresh party invite statuses from cachedOutgoingReqs and updates the
+        // active quest card in real time — no polling needed.
+        function syncPartyInviteStatusesFromCache() {
+            const q = state.currentQuest;
+            if (!q?.partyInvites || !Array.isArray(q.partyInvites) || q.partyInvites.length === 0) return;
+            if (!cachedOutgoingReqs || cachedOutgoingReqs.length === 0) return;
+
+            let changed = false;
+            for (const inv of q.partyInvites) {
+                // Find the matching Firestore doc by docId
+                const doc = cachedOutgoingReqs.find(d => d.id === inv.docId);
+                if (!doc) continue;
+                const fresh = normalizePartyInviteFromFriendDoc(doc.data, doc.id, doc.ref);
+                if (!fresh) continue;
+                const freshStatus = fresh.status || 'pending';
+                if (freshStatus !== (inv.status || 'pending')) {
+                    inv.status = freshStatus;
+                    changed = true;
+                }
+            }
+
+            if (changed) {
+                saveState();
+                // Re-render only the party status block if the quest card is visible,
+                // to avoid a full card rebuild that would reset scroll position.
+                const block = document.getElementById('party-group-status-block');
+                if (block) {
+                    // Surgical update: replace only the status block HTML
+                    const tmpDiv = document.createElement('div');
+                    tmpDiv.innerHTML = getPartyInviteActionHtml(q);
+                    const newBlock = tmpDiv.querySelector('#party-group-status-block');
+                    if (newBlock) block.replaceWith(newBlock);
+                } else {
+                    // Fallback: full card re-render
+                    renderActiveQuest();
+                }
+            }
         }
 
         async function refreshProfileAlertCounts() {
@@ -10500,6 +10712,63 @@
         // Party quest invites are stored in the accepted comparison_requests document
         // shared by the two friends, so the app does not need a separate
         // more_party_invites collection or cross-user writes to more_users.
+
+        /* ── PARTY QUEST CHANGE GUARD ────────────────────── */
+        function guardPartyQuestChange(callback) {
+            if (!state.currentQuest?.partyInviteId) { callback(); return; }
+            showPartyQuestChangeWarning(callback);
+        }
+
+        function showPartyQuestChangeWarning(onConfirm) {
+            const overlay = $('party-change-overlay');
+            if (!overlay) { onConfirm(); return; }
+
+            overlay.style.display = 'flex';
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                overlay.style.opacity = '1';
+                const sheet = $('party-change-sheet');
+                if (sheet) { sheet.style.transform = 'translateY(0)'; sheet.style.opacity = '1'; }
+            }));
+
+            function hideOverlay() {
+                overlay.style.opacity = '0';
+                const sheet = $('party-change-sheet');
+                if (sheet) { sheet.style.transform = 'translateY(40px)'; sheet.style.opacity = '0'; }
+                setTimeout(() => { overlay.style.display = 'none'; }, 400);
+            }
+
+            const confirmBtn = $('btn-party-change-confirm');
+            const cancelBtn  = $('btn-party-change-cancel');
+
+            // Clone to remove previous listeners
+            if (confirmBtn) {
+                const newConfirm = confirmBtn.cloneNode(true);
+                confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+                newConfirm.addEventListener('click', async () => {
+                    hideOverlay();
+                    const q = state.currentQuest;
+                    if (q?.partyInviteId) {
+                        try { await markPartyInviteDeletedForQuest(q); } catch (e) { /* best effort */ }
+                    }
+                    onConfirm();
+                });
+            }
+
+            if (cancelBtn) {
+                const newCancel = cancelBtn.cloneNode(true);
+                cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+                newCancel.addEventListener('click', hideOverlay);
+            }
+
+            // Backdrop tap = cancel
+            const backdropHandler = (e) => {
+                if (e.target === overlay) {
+                    hideOverlay();
+                    overlay.removeEventListener('click', backdropHandler);
+                }
+            };
+            overlay.addEventListener('click', backdropHandler);
+        }
 
         $('btn-party-invite-submit')?.addEventListener('click', sendPartyInvite);
         $('btn-party-invite-cancel')?.addEventListener('click', closePartyInviteSheet);
@@ -11517,7 +11786,7 @@
         }
 
         /* ── QUEST GENERATION (from pool + custom) ─────────── */
-        btnNewQuest.addEventListener('click', generateQuest);
+        btnNewQuest.addEventListener('click', () => guardPartyQuestChange(generateQuest));
 
         function getFullPool() {
             if (!window.QUESTS_POOL) return [];
@@ -13029,11 +13298,13 @@
                         const idx = parseInt(btn.dataset.idx);
                         const cq = state.customQuests[idx];
                         if (cq) {
-                            assignCurrentQuest(cq);
-                            saveLocal();
-                            renderActiveQuest();
-                            btnHome.click(); // navigate back to home
-                            showToast('Quest impostata come attiva');
+                            guardPartyQuestChange(() => {
+                                assignCurrentQuest(cq);
+                                saveLocal();
+                                renderActiveQuest();
+                                btnHome.click(); // navigate back to home
+                                showToast('Quest impostata come attiva');
+                            });
                         }
                     });
                 });
@@ -13303,8 +13574,10 @@
 
         /* ── CUSTOM QUESTS ────────────────────────────────── */
         btnCreateQuest.addEventListener('click', () => {
-            cqTitle.value = ''; cqDesc.value = ''; cqDiff.value = 'easy'; cqCat.value = 'sfida';
-            createQuestOverlay.classList.add('show');
+            guardPartyQuestChange(() => {
+                cqTitle.value = ''; cqDesc.value = ''; cqDiff.value = 'easy'; cqCat.value = 'sfida';
+                createQuestOverlay.classList.add('show');
+            });
         });
         btnCqCancel.addEventListener('click', () => closeOverlayAnimated(createQuestOverlay));
         createQuestOverlay.addEventListener('click', e => { if (e.target === createQuestOverlay) closeOverlayAnimated(createQuestOverlay); });
@@ -14139,12 +14412,14 @@
             const pool = getFullPool();
             const found = pool.find(q => q.title === step.ref);
             if (!found) { showToast('Quest non trovata nel pool'); return; }
-            assignCurrentQuest({ ...found, _chainId: chainId, _chainStep: stepIndex });
-            saveLocal();
-            renderActiveQuest();
-            renderChainsSection();
-            showToast('Quest chain avviata');
-            document.getElementById('quest-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            guardPartyQuestChange(() => {
+                assignCurrentQuest({ ...found, _chainId: chainId, _chainStep: stepIndex });
+                saveLocal();
+                renderActiveQuest();
+                renderChainsSection();
+                showToast('Quest chain avviata');
+                document.getElementById('quest-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
         };
 
         window.activateChainNextStep = function (chainId) {
@@ -14827,16 +15102,30 @@
                 const pool = typeof getFullPool === 'function' ? getFullPool() : (window.QUESTS_POOL || []);
                 const found = pool.find(q => q.title === title);
                 if (!found) { showToast('Quest non trovata'); return; }
-                if (typeof assignCurrentQuest === 'function') {
-                    assignCurrentQuest({ ...found });
-                    if (typeof saveLocal === 'function') saveLocal();
-                    if (typeof renderActiveQuest === 'function') renderActiveQuest();
-                    showToast('Quest assegnata!');
-                    closeSearch();
-                    // Scroll to active quest
-                    setTimeout(() => {
-                        document.getElementById('quest-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }, 300);
+                if (typeof guardPartyQuestChange === 'function') {
+                    guardPartyQuestChange(() => {
+                        if (typeof assignCurrentQuest === 'function') {
+                            assignCurrentQuest({ ...found });
+                            if (typeof saveLocal === 'function') saveLocal();
+                            if (typeof renderActiveQuest === 'function') renderActiveQuest();
+                            showToast('Quest assegnata!');
+                            closeSearch();
+                            setTimeout(() => {
+                                document.getElementById('quest-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }, 300);
+                        }
+                    });
+                } else {
+                    if (typeof assignCurrentQuest === 'function') {
+                        assignCurrentQuest({ ...found });
+                        if (typeof saveLocal === 'function') saveLocal();
+                        if (typeof renderActiveQuest === 'function') renderActiveQuest();
+                        showToast('Quest assegnata!');
+                        closeSearch();
+                        setTimeout(() => {
+                            document.getElementById('quest-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 300);
+                    }
                 }
             };
         })();
