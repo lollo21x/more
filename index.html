@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="more">
-    <meta name="theme-color" content="#0a0a0f">
+    <meta name="theme-color" content="#121212">
     <meta name="mobile-web-app-capable" content="yes">
     <title>more - Gamify Your Life</title>
     <meta name="description"
@@ -58,7 +58,7 @@
     <style>
         /* ── CSS VARIABLES ────────────────────────────────── */
         :root {
-            --bg: #0a0a0f;
+            --bg: #121212;
             --surface: rgba(255, 255, 255, 0.04);
             --surface-hover: rgba(255, 255, 255, 0.07);
             --border: rgba(255, 255, 255, 0.06);
@@ -197,7 +197,7 @@
             pointer-events: none;
             background:
                 radial-gradient(ellipse 60% 50% at 15% 10%, rgba(200, 241, 53, 0.08) 0%, transparent 70%),
-                radial-gradient(ellipse 50% 60% at 85% 90%, rgba(60, 100, 255, 0.07) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 60% at 85% 90%, rgba(60, 100, 255, 0.04) 0%, transparent 70%),
                 var(--bg);
         }
 
@@ -232,7 +232,7 @@
             justify-content: space-between;
             padding: 6px 8px 6px 6px;
             padding-right: max(8px, var(--safe-right));
-            background: rgba(18, 18, 26, 0.88);
+            background: rgba(18, 18, 18, 0.88);
             backdrop-filter: blur(32px) saturate(200%);
             -webkit-backdrop-filter: blur(32px) saturate(200%);
             border-radius: 999px;
@@ -456,7 +456,7 @@
             transform: translateX(-50%);
             width: clamp(280px, 72vw, 360px);
             height: 64px;
-            background: rgba(18, 18, 26, 0.88);
+            background: rgba(18, 18, 18, 0.88);
             backdrop-filter: blur(32px) saturate(200%);
             -webkit-backdrop-filter: blur(32px) saturate(200%);
             display: flex;
@@ -467,6 +467,12 @@
             border-radius: 999px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (display-mode: standalone) {
+            .tab-bar {
+                bottom: calc(28px + var(--safe-bottom));
+            }
         }
 
         .tab-btn {
@@ -549,7 +555,7 @@
             height: 8px;
             border-radius: 50%;
             background: #a855f7;
-            border: 2px solid rgba(18, 18, 26, 0.95);
+            border: 2px solid rgba(18, 18, 18, 0.95);
             box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.22);
             z-index: 2;
         }
@@ -1431,7 +1437,7 @@
         .btn-complete {
             padding: 10px 22px;
             background: var(--accent);
-            color: #0a0a0f;
+            color: #121212;
             font-family: var(--font-display);
             font-weight: 800;
             font-size: 13px;
@@ -1450,7 +1456,7 @@
         .btn-complete svg {
             width: 14px;
             height: 14px;
-            stroke: #0a0a0f;
+            stroke: #121212;
             fill: none;
             stroke-width: 2.5;
             stroke-linecap: round;
@@ -2020,7 +2026,7 @@
             width: 16px;
             height: 16px;
             border-radius: 50%;
-            border: 3px solid #0a0a0f;
+            border: 3px solid #121212;
             box-shadow: 0 0 8px currentColor;
         }
 
@@ -2380,7 +2386,7 @@
         .btn-victory {
             padding: 14px 28px;
             background: var(--accent);
-            color: #0a0a0f;
+            color: #121212;
             font-family: var(--font-display);
             font-weight: 800;
             font-size: 14px;
@@ -2506,7 +2512,7 @@
             width: 20px;
             height: 20px;
             border: 2.5px solid rgba(10, 10, 15, 0.18);
-            border-top-color: #0a0a0f;
+            border-top-color: #121212;
             border-radius: 50%;
             animation: spin 0.7s linear infinite;
             flex-shrink: 0;
@@ -2533,13 +2539,13 @@
 
         .auth-btn-primary {
             background: var(--accent);
-            color: #0a0a0f;
+            color: #121212;
             margin-top: 8px;
         }
 
         .auth-btn-google {
             background: white;
-            color: #0a0a0f;
+            color: #121212;
         }
 
         .auth-btn-google svg {
@@ -3771,7 +3777,7 @@
 
         .btn-create-save {
             background: var(--accent);
-            color: #0a0a0f;
+            color: #121212;
         }
 
         /* ── CUSTOM QUEST LIST IN SETTINGS ────────────────── */
@@ -4076,7 +4082,7 @@
         /* Variante PRIMARY — accent fill */
         .btn-complete {
             background: var(--accent);
-            color: #0a0a0f !important;
+            color: #121212 !important;
             border: none;
             font-weight: 800;
         }
@@ -4084,7 +4090,7 @@
         .btn-complete svg {
             width: 14px;
             height: 14px;
-            stroke: #0a0a0f;
+            stroke: #121212;
             fill: none;
             stroke-width: 2.5;
             stroke-linecap: round;
@@ -4581,7 +4587,7 @@
 
         .friend-btn.accept {
             background: var(--accent);
-            color: #0a0a0f;
+            color: #121212;
         }
 
         .friend-btn.reject {
@@ -5089,7 +5095,7 @@
             top: 50%;
             transform: translateY(-50%);
             background: var(--accent);
-            color: #0a0a0f;
+            color: #121212;
             font-weight: 800;
             font-size: 12px;
             padding: 7px 14px;
@@ -5561,7 +5567,7 @@
         .sett-btn.primary {
             background: var(--accent);
             border: none;
-            color: #0a0a0f;
+            color: #121212;
             font-weight: 800;
             font-family: var(--font-display);
             justify-content: center;
@@ -5773,7 +5779,7 @@
             width: 100%;
             padding: 14px;
             background: var(--accent);
-            color: #0a0a0f;
+            color: #121212;
             font-family: var(--font-display);
             font-weight: 800;
             font-size: 14px;
@@ -5794,7 +5800,7 @@
             width: 16px;
             height: 16px;
             fill: none;
-            stroke: #0a0a0f;
+            stroke: #121212;
             stroke-width: 2.5;
             stroke-linecap: round;
             stroke-linejoin: round;
@@ -6251,7 +6257,7 @@
         .chain-quest-check.checked svg {
             width: 10px;
             height: 10px;
-            stroke: #0a0a0f;
+            stroke: #121212;
             stroke-width: 3;
             fill: none;
         }
@@ -6363,7 +6369,7 @@
         }
 
         .btn-complete i {
-            color: #0a0a0f;
+            color: #121212;
             font-size: 13px;
         }
 
@@ -7114,7 +7120,7 @@
 
                     <button id="btn-settings-update-confirm" style="
                         width:100%;padding:12px 16px;
-                        background:var(--accent);color:#0a0a0f;
+                        background:var(--accent);color:#121212;
                         font-family:var(--font-display);font-weight:800;font-size:13px;
                         border-radius:var(--radius-sm);border:none;cursor:pointer;
                         display:flex;align-items:center;justify-content:center;gap:8px;
@@ -7512,7 +7518,7 @@
             <div style="display:flex;flex-direction:column;gap:10px;">
                 <button id="btn-update-confirm" style="
                     width:100%;padding:14px;
-                    background:var(--accent);color:#0a0a0f;
+                    background:var(--accent);color:#121212;
                     font-family:var(--font-display);font-weight:800;font-size:14px;
                     border-radius:var(--radius-sm);border:none;cursor:pointer;
                     display:flex;align-items:center;justify-content:center;gap:8px;
@@ -13788,7 +13794,7 @@
             const ctx = canvas.getContext('2d');
 
             // Background
-            ctx.fillStyle = '#0a0a0f';
+            ctx.fillStyle = '#121212';
             ctx.fillRect(0, 0, 800, 600);
 
             // Photo Background
@@ -14189,7 +14195,7 @@
                       background:${done ? chain.color : isNext ? chain.colorBg : 'rgba(255,255,255,0.04)'};
                       border:1.5px solid ${done ? chain.color : isNext ? chain.colorBorder : 'rgba(255,255,255,0.1)'};">
                       ${done
-                        ? `<i class="fa-solid fa-check" style="color:${isLightColor(chain.color)?'#111':'#0a0a0f'};"></i>`
+                        ? `<i class="fa-solid fa-check" style="color:${isLightColor(chain.color)?'#111':'#121212'};"></i>`
                         : `<span style="font-size:11px;font-weight:800;color:${isNext ? chain.color : 'var(--text-muted)'};">${i + 1}</span>`}
                     </div>
                     <div style="flex:1;min-width:0;">
@@ -14264,9 +14270,9 @@
                 const done = completedTitles.has(q.ref);
                 return `
                   <div class="chain-detail-step card-pop-in" style="--enter-delay:${0.05 + i * 0.04}s;">
-                    <div class="chain-detail-step-index" style="background:${done ? chain.color : 'rgba(10,10,15,0.18)'};border-color:${done ? chain.color : chain.colorBorder};color:${done ? '#0a0a0f' : chain.color};">
+                    <div class="chain-detail-step-index" style="background:${done ? chain.color : 'rgba(10,10,15,0.18)'};border-color:${done ? chain.color : chain.colorBorder};color:${done ? '#121212' : chain.color};">
                       ${done
-                        ? `<i class="fa-solid fa-check" style="color:${isLightColor(chain.color)?'#111':'#0a0a0f'};"></i>`
+                        ? `<i class="fa-solid fa-check" style="color:${isLightColor(chain.color)?'#111':'#121212'};"></i>`
                         : `<span style="font-size:12px;font-weight:800;color:${chain.color};">${i + 1}</span>`}
                     </div>
                     <div style="min-width:0;">
