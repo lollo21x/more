@@ -30,6 +30,8 @@
         else window.addEventListener('load', () => setTimeout(loadAnalytics, 1200), { once: true });
     </script>
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" crossorigin="anonymous">
+    <link rel="preload" href="questpool.js?v=2" as="script">
+    <link rel="preload" href="https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js" as="script" crossorigin>
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
     <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png">
@@ -6682,6 +6684,7 @@
                     style="font-size: 15px; font-weight: 700; color: var(--text);">Bentornato/a,
                     Ospite</span>
             </div>
+            <div id="offline-indicator" style="display:none;background:rgba(255,79,79,0.9);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;letter-spacing:0.5px;pointer-events:none;">OFFLINE</div>
         </header>
         <main class="content screen-stack" id="home-screen">
             <!-- XP CARD -->
@@ -8473,9 +8476,20 @@
             showToast('Connessione ripristinata. Sincronizzo...');
             scheduleCloudSync({ immediate: true, reason: 'online' });
             refreshProfileAlertCounts();
+            // Se initAuth era stata rimandata perché offline al boot, chiamala ora
+            if (window.__moreAuthDeferred) {
+                window.__moreAuthDeferred = false;
+                initAuth();
+            }
+            // Nascondi indicatore offline
+            const offBadge = document.getElementById('offline-indicator');
+            if (offBadge) offBadge.style.display = 'none';
         });
         window.addEventListener('offline', () => {
             showToast('Sei offline: salvo tutto sul dispositivo.');
+            // Mostra indicatore offline
+            const offBadge = document.getElementById('offline-indicator');
+            if (offBadge) offBadge.style.display = '';
         });
 
         /* ── DOM REFS ─────────────────────────────────────── */
@@ -14490,7 +14504,7 @@
         updateXPUI();
 
         // Inizializza immediatamente la UI del profilo basandoti sullo stato locale caricato
-        const initialDisplayName = state.displayName || state.username || 'Ospite';
+        const initialDisplayName = state.username || state.displayName || 'Ospite';
         const initialFirstName = initialDisplayName.replace(/^@/, '').split(' ')[0];
         if (headerWelcomeMsg) {
             headerWelcomeMsg.textContent = initialDisplayName === 'Ospite' ? 'Bentornato/a, Ospite' : `Bentornato/a, ${initialFirstName}`;
@@ -14521,11 +14535,26 @@
         renderCompleted();
         initSeasonalCarousel();
         renderChainsSection();
-        initAuth();
+        // initAuth() ritardata: la UI è già stata renderizzata da localStorage sopra.
+        // Su connessioni lente, Firebase SDK potrebbe non essere ancora disponibile.
+        // Rimandiamo a dopo il primo paint per non bloccare l'interattività.
+        setTimeout(() => {
+            if (navigator.onLine) {
+                initAuth();
+            } else {
+                window.__moreAuthDeferred = true;
+            }
+        }, 0);
         initFilterBar();
         handleDeepLinks();
         switchToScreen(homeScreen);
         maybeShowIntroOverlay();
+
+        // Mostra badge offline all'avvio se non c'è connessione
+        if (!navigator.onLine) {
+            const offBadge = document.getElementById('offline-indicator');
+            if (offBadge) offBadge.style.display = '';
+        }
 
         /* ── WEEKLY RECAP ────────────────────────────────── */
         function checkAndShowWeeklyRecap() {
