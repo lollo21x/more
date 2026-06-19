@@ -685,6 +685,7 @@ window.QUESTS_POOL = [
     { title: "Cucina al supermercato alla cieca con gli amici", description: "In gruppo, ognuno entra separatamente con 5 euro e sceglie un ingrediente a caso senza sapere cosa prendono gli altri. Poi si cucina tutto insieme con quello che viene fuori.", difficulty: "medium", xp: 2000, category: "sociale", tags: ["sidequest"] },
     { title: "Esplora una linea ferroviaria dismessa", description: "Cerca una tratta ferroviaria abbandonata nella tua zona e percorrila a piedi. Fotografia, silenzio e luoghi dimenticati.", difficulty: "hard", xp: 5000, category: "urbex", tags: ["sidequest"], warning: "Le stazioni e le linee dismesse sono spesso proprietà di RFI — verifica lo stato legale prima di entrare. Attenzione a binari instabili, buche e strutture pericolanti." },
     { title: "Gira un cortometraggio", description: "Scrivi, gira e monta un cortometraggio con quello che hai. Può durare 3 minuti, può essere assurdo — l'importante è che esista e abbia una storia.", difficulty: "hard", xp: 5000, category: "sociale", tags: ["sidequest"] },
+    { title: "Battaglia di ghiaccio", description: "Il caldo è il nemico. Il freezer è il tuo arsenale. Raduna i tuoi alleati, saccheggia i cubetti e dichiara guerra senza preavviso. Chi urla prima ha perso.", difficulty: "easy", xp: 1000, category: "sociale", tags: ["sidequest"] },
 ];
 
 /* ── QUEST CHAINS ─────────────────────────────────────────────────────────────
