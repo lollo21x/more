@@ -1,4 +1,4 @@
-const CACHE_NAME = 'more-v8.0.2';
+const CACHE_NAME = 'more-v9.0.1';
 
 const CORE_ASSETS = [
     './',
@@ -39,7 +39,9 @@ const PASSTHROUGH_HOSTS = new Set([
     'api.github.com',
     'www.googletagmanager.com',
     'www.google-analytics.com',
-    'analytics.google.com'
+    'analytics.google.com',
+    'openrouter.ai',
+    'api.openrouter.ai'
 ]);
 
 function isFirebaseApiRequest(url) {
