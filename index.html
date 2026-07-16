@@ -72,6 +72,11 @@
             --diff-easy: #4fa3ff;
             --diff-easy-bg: rgba(79, 163, 255, 0.15);
             --diff-easy-border: rgba(79, 163, 255, 0.25);
+            --will: #4fa3ff;
+            --will-soft: #7ec0ff;
+            --will-glow: rgba(79, 163, 255, 0.45);
+            --will-dim: rgba(79, 163, 255, 0.14);
+            --will-border: rgba(79, 163, 255, 0.28);
             --diff-medium: #ffb347;
             --diff-medium-bg: rgba(255, 179, 71, 0.15);
             --diff-medium-border: rgba(255, 179, 71, 0.25);
@@ -962,10 +967,17 @@
 
         .search-overlay-header {
             display: flex;
-            align-items: center;
-            gap: 12px;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
             margin-bottom: 4px;
             flex-shrink: 0;
+        }
+
+        .search-overlay-header .search-input-wrap {
+            flex: none;
+            width: 100%;
+            min-width: 0;
         }
 
         .search-input-wrap {
@@ -985,7 +997,7 @@
         }
 
         .search-input-wrap:focus-within i {
-            color: var(--accent);
+            color: var(--will);
         }
 
         #search-input {
@@ -997,12 +1009,13 @@
             font-size: 15px;
             color: var(--text);
             font-family: var(--font-body);
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         #search-input:focus {
             outline: none;
-            border-color: var(--border-light);
+            border-color: rgba(79, 163, 255, 0.35);
+            box-shadow: 0 0 0 3px rgba(79, 163, 255, 0.08);
         }
 
         #search-input::placeholder {
@@ -1015,18 +1028,30 @@
             display: none;
         }
 
-
         .search-cancel-btn {
-            font-size: 14px;
-            font-weight: 600;
+            flex: 1 1 0;
+            min-width: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 700;
+            font-family: var(--font-display);
             color: var(--text-dim);
-            padding: 8px 4px;
+            background: var(--surface);
+            border: 1px solid var(--border-light);
             white-space: nowrap;
-            transition: color 0.15s;
+            transition: transform 0.15s var(--spring), background 0.15s, color 0.15s, border-color 0.15s;
+            box-shadow: none;
         }
 
         .search-cancel-btn:active {
-            color: var(--accent);
+            transform: scale(0.97);
+            color: var(--text);
+            background: var(--surface-hover);
         }
 
         .search-results-area {
@@ -1173,7 +1198,491 @@
             padding: 0 2px;
         }
 
+        /* ── WILL AI (cerca o chiedi) ─────────────────────── */
+        .search-sheet.ai-mode {
+            max-height: min(88vh, 720px);
+            border-color: var(--will-border);
+            box-shadow:
+                0 0 0 1px rgba(79, 163, 255, 0.06),
+                0 24px 64px rgba(0, 0, 0, 0.45),
+                0 0 80px rgba(79, 163, 255, 0.10);
+        }
+
+        .search-overlay-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-shrink: 0;
+        }
+
+        .search-overlay-title-row .search-overlay-title {
+            margin-bottom: 0;
+        }
+
+        .search-will-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--will-soft);
+            background: linear-gradient(135deg, rgba(79, 163, 255, 0.18), rgba(79, 163, 255, 0.06));
+            border: 1px solid var(--will-border);
+            padding: 5px 10px;
+            border-radius: 999px;
+            box-shadow: 0 0 18px rgba(79, 163, 255, 0.16);
+            white-space: nowrap;
+            animation: will-badge-pulse 3.2s ease-in-out infinite;
+        }
+
+        .search-will-badge i {
+            font-size: 11px;
+            filter: drop-shadow(0 0 6px var(--will-glow));
+        }
+
+        @keyframes will-badge-pulse {
+            0%, 100% { box-shadow: 0 0 12px rgba(79, 163, 255, 0.12); }
+            50% { box-shadow: 0 0 24px rgba(79, 163, 255, 0.32), 0 0 40px rgba(79, 163, 255, 0.12); }
+        }
+
+        .search-actions-row {
+            display: flex;
+            align-items: stretch;
+            justify-content: stretch;
+            gap: 10px;
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        .search-ask-btn {
+            position: relative;
+            flex: 1 1 0;
+            min-width: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 700;
+            font-family: var(--font-display);
+            color: #061018;
+            background: linear-gradient(145deg, #8ec8ff 0%, #4fa3ff 55%, #3b8eef 100%);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow:
+                0 0 0 1px rgba(79, 163, 255, 0.2),
+                0 0 22px rgba(79, 163, 255, 0.38),
+                0 8px 20px rgba(79, 163, 255, 0.22),
+                inset 0 1px 0 rgba(255, 255, 255, 0.28);
+            white-space: nowrap;
+            overflow: hidden;
+            transition: transform 0.15s var(--spring), box-shadow 0.2s, opacity 0.2s, filter 0.2s;
+        }
+
+        .search-ask-btn:active {
+            transform: scale(0.97);
+        }
+
+        .search-ask-btn:disabled {
+            opacity: 0.38;
+            filter: grayscale(0.55) brightness(0.72);
+            box-shadow: none;
+            cursor: not-allowed;
+            background: linear-gradient(145deg, #3a4654 0%, #2a3340 100%);
+            color: rgba(255, 255, 255, 0.35);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .search-ask-btn i {
+            font-size: 12px;
+        }
+
+        .search-ask-btn.is-loading {
+            pointer-events: none;
+        }
+
+        .search-ask-btn.is-loading i {
+            animation: spin 0.85s linear infinite;
+        }
+
+        .ai-will-panel {
+            position: relative;
+            margin-bottom: 14px;
+            padding: 16px 16px 14px;
+            border-radius: 16px;
+            background:
+                radial-gradient(ellipse 90% 80% at 10% 0%, rgba(79, 163, 255, 0.18), transparent 55%),
+                radial-gradient(ellipse 70% 60% at 100% 100%, rgba(79, 163, 255, 0.08), transparent 50%),
+                linear-gradient(165deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+            border: 1px solid var(--will-border);
+            box-shadow:
+                0 0 40px rgba(79, 163, 255, 0.10),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+            animation: softRise 0.4s var(--ease) both;
+        }
+
+        .ai-will-panel::after {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -20%;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(79, 163, 255, 0.22), transparent 70%);
+            pointer-events: none;
+            animation: floatGlow 4s ease-in-out infinite;
+        }
+
+        .ai-will-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--will-soft);
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .ai-will-label i {
+            filter: drop-shadow(0 0 8px var(--will-glow));
+        }
+
+        .ai-will-message {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text);
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+
+        .ai-will-hint {
+            margin-top: 8px;
+            font-size: 11px;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 1;
+        }
+
+        .search-result-card.ai-pick {
+            position: relative;
+            border-color: rgba(79, 163, 255, 0.22);
+            background:
+                linear-gradient(135deg, rgba(79, 163, 255, 0.09), transparent 50%),
+                var(--surface);
+            animation: softRise 0.45s var(--ease) both;
+        }
+
+        .search-result-card.ai-pick:nth-child(2) { animation-delay: 0.06s; }
+        .search-result-card.ai-pick:nth-child(3) { animation-delay: 0.12s; }
+        .search-result-card.ai-pick:nth-child(4) { animation-delay: 0.18s; }
+
+        .search-result-card.ai-pick:active {
+            transform: scale(0.98);
+        }
+
+        @media (hover: hover) {
+            .search-result-card.ai-pick:hover {
+                border-color: rgba(79, 163, 255, 0.42);
+                box-shadow: 0 0 24px rgba(79, 163, 255, 0.14);
+            }
+        }
+
+        .search-result-reason {
+            margin-top: 6px;
+            font-size: 12px;
+            line-height: 1.4;
+            color: var(--will-soft);
+            font-weight: 500;
+            display: flex;
+            gap: 6px;
+            align-items: flex-start;
+        }
+
+        .search-result-reason i {
+            margin-top: 2px;
+            font-size: 10px;
+            opacity: 0.9;
+            flex-shrink: 0;
+        }
+
+        .search-result-cat.will-tag {
+            color: var(--will-soft);
+            border: 1px solid rgba(79, 163, 255, 0.28);
+            background: rgba(79, 163, 255, 0.1);
+        }
+
+        .ai-loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 20px 40px;
+            gap: 16px;
+            text-align: center;
+        }
+
+        .ai-loading-orb {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            position: relative;
+            background:
+                radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.55), transparent 40%),
+                radial-gradient(circle at 50% 50%, #8ec8ff, #4fa3ff 55%, #2d7fd6 100%);
+            box-shadow:
+                0 0 32px rgba(79, 163, 255, 0.5),
+                0 0 64px rgba(79, 163, 255, 0.28);
+            animation: will-orb 1.6s ease-in-out infinite;
+        }
+
+        .ai-loading-orb::before,
+        .ai-loading-orb::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            border: 1px solid rgba(79, 163, 255, 0.4);
+            animation: will-ring 1.6s ease-out infinite;
+        }
+
+        .ai-loading-orb::after {
+            inset: -16px;
+            border-color: rgba(79, 163, 255, 0.2);
+            animation-delay: 0.35s;
+        }
+
+        @keyframes will-orb {
+            0%, 100% { transform: scale(0.94); filter: brightness(1); }
+            50% { transform: scale(1.06); filter: brightness(1.15); }
+        }
+
+        @keyframes will-ring {
+            0% { transform: scale(0.7); opacity: 0.8; }
+            100% { transform: scale(1.25); opacity: 0; }
+        }
+
+        .ai-loading-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--text);
+        }
+
+        .ai-loading-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            max-width: 240px;
+            line-height: 1.4;
+        }
+
+        .ai-error-state {
+            padding: 28px 16px;
+            text-align: center;
+        }
+
+        .ai-error-state .search-empty-icon {
+            color: var(--text-muted);
+            opacity: 0.85;
+        }
+
+        .ai-error-retry {
+            margin-top: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--will-soft);
+            background: var(--will-dim);
+            border: 1px solid var(--will-border);
+        }
+
+        .ai-error-retry:active {
+            transform: scale(0.97);
+        }
+
+        .home-cta-btn.home-cta-will {
+            border-color: rgba(79, 163, 255, 0.18);
+        }
+
+        .home-cta-btn.home-cta-will::before {
+            background:
+                radial-gradient(circle at top right, rgba(79, 163, 255, 0.28), transparent 48%),
+                radial-gradient(circle at 20% 100%, rgba(79, 163, 255, 0.12), transparent 45%);
+        }
+
+        .home-cta-btn.home-cta-will .home-cta-icon {
+            background: linear-gradient(145deg, rgba(79, 163, 255, 0.2), rgba(79, 163, 255, 0.08));
+            border-color: rgba(79, 163, 255, 0.3);
+            box-shadow: 0 0 16px rgba(79, 163, 255, 0.16);
+            color: var(--will-soft);
+        }
+
+        /* ── Utilizzo / Will settings ─────────────────────── */
+        .will-usage-block {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .will-usage-top {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .will-usage-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .will-usage-count {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--will-soft);
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        .will-usage-track {
+            width: 100%;
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(79, 163, 255, 0.12);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .will-usage-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #4fa3ff, #7ec0ff);
+            box-shadow: 0 0 12px rgba(79, 163, 255, 0.45);
+            transition: width 0.45s var(--ease);
+        }
+
+        .will-usage-fill.is-full {
+            background: linear-gradient(90deg, #5b8fd4, #4fa3ff);
+            opacity: 0.75;
+        }
+
+        .will-usage-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .will-usage-unlocked {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            background: rgba(79, 163, 255, 0.08);
+            border: 1px solid rgba(79, 163, 255, 0.22);
+        }
+
+        .will-usage-unlocked-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--will-soft);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .will-usage-unlocked-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .will-key-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .will-key-actions .sett-btn {
+            flex: 1 1 auto;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .will-key-status {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.4;
+            min-height: 16px;
+        }
+
+        .will-key-status.ok {
+            color: var(--will-soft);
+        }
+
+        .will-login-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.45;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+        }
+
+        .ai-error-cta {
+            margin-top: 12px;
+            font-size: 12px;
+            line-height: 1.45;
+            color: var(--text-dim);
+            max-width: 280px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .ai-error-cta strong {
+            color: var(--will-soft);
+            font-weight: 700;
+        }
+
+        .ai-error-link {
+            margin-top: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--will-soft);
+            background: var(--will-dim);
+            border: 1px solid var(--will-border);
+            cursor: pointer;
+        }
+
+        .ai-error-link:active {
+            transform: scale(0.97);
+        }
+
         .home-cta-btn {
+
             position: relative;
             min-height: 68px;
             padding: 12px 14px;
@@ -6803,11 +7312,11 @@
                     </span>
                 </button>
             </div>
-            <button class="btn-ghost home-cta-btn" id="btn-search-quest" style="width:100%;margin-top:-8px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
-                <span class="home-cta-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <button class="btn-ghost home-cta-btn home-cta-will" id="btn-search-quest" style="width:100%;margin-top:-8px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+                <span class="home-cta-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
                 <span class="home-cta-copy">
-                    <span class="home-cta-title">Cerca</span>
-                    <span class="home-cta-sub">Sfoglia la quest pool</span>
+                    <span class="home-cta-title">Cerca o chiedi</span>
+                    <span class="home-cta-sub">Parola chiave o chiedi a Will</span>
                 </span>
             </button>
 
@@ -7052,6 +7561,64 @@
                 </div>
                 <div class="sett-card-body" style="padding-top:10px;">
                     <div id="custom-quest-list" class="custom-quest-list"></div>
+                </div>
+            </div>
+
+            <!-- SECTION: Utilizzo (Will AI) -->
+            <div class="sett-card" id="will-usage-section">
+                <div class="sett-card-header">
+                    <div class="sett-card-icon blue"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                    <span class="sett-card-title">Utilizzo</span>
+                </div>
+                <div class="sett-card-body">
+                    <div id="will-login-required" class="will-login-hint" style="display:none;">
+                        Accedi con un account per usare Will e vedere il tuo utilizzo giornaliero.
+                    </div>
+
+                    <div id="will-usage-meter-wrap" class="will-usage-block" style="display:none;">
+                        <div class="will-usage-top">
+                            <span class="will-usage-label">Richieste Will (gratuite)</span>
+                            <span class="will-usage-count" id="will-usage-count">0 / 5</span>
+                        </div>
+                        <div class="will-usage-track" aria-hidden="true">
+                            <div class="will-usage-fill" id="will-usage-fill"></div>
+                        </div>
+                        <div class="will-usage-meta" id="will-usage-meta">5 richieste ogni 24 ore con la chiave condivisa.</div>
+                    </div>
+
+                    <div id="will-usage-unlocked" class="will-usage-unlocked" style="display:none;">
+                        <div class="will-usage-unlocked-title">
+                            <i class="fa-solid fa-key"></i> Chiave personale attiva
+                        </div>
+                        <div class="will-usage-unlocked-desc">
+                            Il limite di 5 richieste/giorno è disattivato. Valgono i limiti del tuo account OpenRouter.
+                        </div>
+                    </div>
+
+                    <div id="will-key-block" style="display:none;">
+                        <div class="sett-input-group" style="margin-top:2px;">
+                            <label class="sett-input-label" for="input-will-api-key">API key OpenRouter (opzionale)</label>
+                            <input type="password" id="input-will-api-key" class="sett-input"
+                                placeholder="sk-or-v1-…" autocomplete="off" spellcheck="false">
+                            <div class="sett-row-desc" style="margin-top:4px;">
+                                Inserisci la tua key per sbloccare il limite giornaliero. Resta salvata solo su questo dispositivo.
+                            </div>
+                        </div>
+                        <div class="will-key-actions" style="margin-top:10px;">
+                            <button type="button" class="sett-btn primary" id="btn-save-will-key">
+                                <i class="fa-solid fa-floppy-disk"></i> Salva key
+                            </button>
+                            <a class="sett-btn neutral" id="btn-create-will-key"
+                                href="https://openrouter.ai/workspaces/default/keys" target="_blank" rel="noopener noreferrer"
+                                style="text-decoration:none;">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i> Crea key
+                            </a>
+                        </div>
+                        <button type="button" class="sett-btn ghost" id="btn-remove-will-key" style="display:none;margin-top:8px;justify-content:center;">
+                            <i class="fa-solid fa-trash"></i> Rimuovi key personale
+                        </button>
+                        <div class="will-key-status" id="will-key-status"></div>
+                    </div>
                 </div>
             </div>
 
@@ -8033,8 +8600,236 @@
             bookmarkedQuests: [],
             completedChains: [],
             chainProgress: {},
-            partyQuestsCompleted: []
+            partyQuestsCompleted: [],
+            willUsage: { count: 0, windowStart: 0 }
         };
+
+        const WILL_FREE_DAILY_LIMIT = 5;
+        const WILL_WINDOW_MS = 24 * 60 * 60 * 1000;
+        const WILL_API_KEY_STORAGE = 'more_will_api_key';
+        const WILL_SHARED_API_KEY = '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';
+        let willUsageTicker = null;
+
+        function getWillUserApiKey() {
+            try {
+                return (localStorage.getItem(WILL_API_KEY_STORAGE) || '').trim();
+            } catch (_) {
+                return '';
+            }
+        }
+
+        function setWillUserApiKey(key) {
+            const cleaned = (key || '').trim();
+            try {
+                if (cleaned) localStorage.setItem(WILL_API_KEY_STORAGE, cleaned);
+                else localStorage.removeItem(WILL_API_KEY_STORAGE);
+            } catch (error) {
+                showToast('Impossibile salvare la key su questo dispositivo');
+            }
+            return cleaned;
+        }
+
+        function hasWillUserApiKey() {
+            return !!getWillUserApiKey();
+        }
+
+        function getActiveWillApiKey() {
+            return getWillUserApiKey() || WILL_SHARED_API_KEY;
+        }
+
+        function isWillLoggedIn() {
+            return !!(currentUser && !isGuest);
+        }
+
+        function ensureWillUsageShape() {
+            if (!state.willUsage || typeof state.willUsage !== 'object') {
+                state.willUsage = { count: 0, windowStart: 0 };
+            }
+            if (typeof state.willUsage.count !== 'number' || state.willUsage.count < 0) {
+                state.willUsage.count = 0;
+            }
+            if (typeof state.willUsage.windowStart !== 'number' || state.willUsage.windowStart < 0) {
+                state.willUsage.windowStart = 0;
+            }
+        }
+
+        function resetWillWindowIfExpired({ persist = true } = {}) {
+            ensureWillUsageShape();
+            const start = state.willUsage.windowStart || 0;
+            if (start > 0 && (Date.now() - start) >= WILL_WINDOW_MS) {
+                state.willUsage = { count: 0, windowStart: 0 };
+                if (persist) {
+                    try { saveLocal(); } catch (_) { /* ignore before init */ }
+                }
+                return true;
+            }
+            return false;
+        }
+
+        function formatWillResetCountdown(ms) {
+            if (!ms || ms <= 0) return 'presto';
+            const totalMin = Math.ceil(ms / 60000);
+            if (totalMin < 60) return totalMin + ' min';
+            const h = Math.floor(totalMin / 60);
+            const m = totalMin % 60;
+            if (h >= 24) return 'meno di un giorno';
+            return m > 0 ? (h + 'h ' + m + 'm') : (h + 'h');
+        }
+
+        function getWillUsageStatus() {
+            ensureWillUsageShape();
+            resetWillWindowIfExpired({ persist: true });
+            const hasKey = hasWillUserApiKey();
+            if (hasKey) {
+                return {
+                    loggedIn: isWillLoggedIn(),
+                    hasKey: true,
+                    unlimited: true,
+                    used: 0,
+                    limit: null,
+                    remaining: null,
+                    msToReset: 0,
+                    pct: 0
+                };
+            }
+            const used = state.willUsage.count || 0;
+            const start = state.willUsage.windowStart || 0;
+            const msToReset = start > 0
+                ? Math.max(0, (start + WILL_WINDOW_MS) - Date.now())
+                : WILL_WINDOW_MS;
+            const remaining = Math.max(0, WILL_FREE_DAILY_LIMIT - used);
+            return {
+                loggedIn: isWillLoggedIn(),
+                hasKey: false,
+                unlimited: false,
+                used,
+                limit: WILL_FREE_DAILY_LIMIT,
+                remaining,
+                msToReset,
+                pct: Math.min(100, Math.round((used / WILL_FREE_DAILY_LIMIT) * 100))
+            };
+        }
+
+        function canUseWillFreeQuota() {
+            const st = getWillUsageStatus();
+            if (st.hasKey) return { ok: true, status: st };
+            if (st.used >= WILL_FREE_DAILY_LIMIT) {
+                return { ok: false, reason: 'limit', status: st };
+            }
+            return { ok: true, status: st };
+        }
+
+        function consumeWillFreeRequest() {
+            if (hasWillUserApiKey()) return getWillUsageStatus();
+            ensureWillUsageShape();
+            resetWillWindowIfExpired({ persist: false });
+            if (!state.willUsage.windowStart) state.willUsage.windowStart = Date.now();
+            state.willUsage.count = (state.willUsage.count || 0) + 1;
+            saveState();
+            updateWillUsageUI();
+            return getWillUsageStatus();
+        }
+
+        function updateWillUsageUI() {
+            const loginHint = $('will-login-required');
+            const meterWrap = $('will-usage-meter-wrap');
+            const unlocked = $('will-usage-unlocked');
+            const keyBlock = $('will-key-block');
+            const countEl = $('will-usage-count');
+            const fillEl = $('will-usage-fill');
+            const metaEl = $('will-usage-meta');
+            const removeBtn = $('btn-remove-will-key');
+            const keyInput = $('input-will-api-key');
+            const keyStatus = $('will-key-status');
+            if (!meterWrap && !keyBlock) return;
+
+            const st = getWillUsageStatus();
+            const loggedIn = isWillLoggedIn();
+
+            if (loginHint) loginHint.style.display = loggedIn ? 'none' : 'block';
+            if (keyBlock) keyBlock.style.display = loggedIn ? 'block' : 'none';
+
+            if (!loggedIn) {
+                if (meterWrap) meterWrap.style.display = 'none';
+                if (unlocked) unlocked.style.display = 'none';
+                return;
+            }
+
+            if (st.hasKey) {
+                if (meterWrap) meterWrap.style.display = 'none';
+                if (unlocked) unlocked.style.display = 'flex';
+            } else {
+                if (unlocked) unlocked.style.display = 'none';
+                if (meterWrap) meterWrap.style.display = 'flex';
+                if (countEl) countEl.textContent = st.used + ' / ' + st.limit;
+                if (fillEl) {
+                    fillEl.style.width = st.pct + '%';
+                    fillEl.classList.toggle('is-full', st.used >= st.limit);
+                }
+                if (metaEl) {
+                    if (st.used <= 0) {
+                        metaEl.textContent = 'Hai ' + st.limit + ' richieste gratuite ogni 24 ore.';
+                    } else if (st.remaining > 0) {
+                        metaEl.textContent = 'Ne restano ' + st.remaining + '. Si resetta tra ' + formatWillResetCountdown(st.msToReset) + '.';
+                    } else {
+                        metaEl.textContent = 'Limite raggiunto. Si resetta tra ' + formatWillResetCountdown(st.msToReset) + ', oppure aggiungi la tua API key.';
+                    }
+                }
+            }
+
+            if (keyInput && document.activeElement !== keyInput) {
+                const stored = getWillUserApiKey();
+                // Don't overwrite while typing; show masked placeholder state when empty
+                if (!keyInput.value || keyInput.dataset.synced === '1') {
+                    keyInput.value = stored;
+                    keyInput.dataset.synced = '1';
+                }
+            }
+            if (removeBtn) removeBtn.style.display = st.hasKey ? 'flex' : 'none';
+            if (keyStatus && keyStatus.dataset.flash !== '1') {
+                keyStatus.textContent = st.hasKey
+                    ? 'Key salvata su questo dispositivo · limite free disattivato'
+                    : '';
+                keyStatus.classList.toggle('ok', st.hasKey);
+            }
+        }
+
+        function startWillUsageTicker() {
+            if (willUsageTicker) clearInterval(willUsageTicker);
+            willUsageTicker = setInterval(() => {
+                if (settingsScreen && settingsScreen.style.display !== 'none') {
+                    updateWillUsageUI();
+                }
+            }, 30000);
+        }
+
+        function openSettingsFromWill() {
+            try {
+                if (typeof closeSearch === 'function') { /* noop - search has local close */ }
+            } catch (_) { /* ignore */ }
+            const overlay = document.getElementById('search-overlay');
+            if (overlay && overlay.classList.contains('open')) {
+                const cancel = document.getElementById('search-cancel-btn');
+                if (cancel) cancel.click();
+                else {
+                    overlay.classList.remove('open');
+                    document.body.style.overflow = '';
+                }
+            }
+            if (typeof btnSettings?.click === 'function') btnSettings.click();
+            else if (typeof openSettings === 'function') {
+                openSettings();
+                if (settingsScreen) settingsScreen.style.display = 'flex';
+            }
+            setTimeout(() => {
+                const section = $('will-usage-section');
+                if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                updateWillUsageUI();
+            }, 280);
+        }
+
+        window.openSettingsFromWill = openSettingsFromWill;
+        window.updateWillUsageUI = updateWillUsageUI;
 
         function stringHashCode(str) {
             let hash = 0;
@@ -8079,6 +8874,8 @@
 
         function ensureStateShape() {
             if (!Array.isArray(state.partyQuestsCompleted)) state.partyQuestsCompleted = [];
+            ensureWillUsageShape();
+            resetWillWindowIfExpired({ persist: false });
             ensureCurrentQuestAssignedAt();
         }
 
@@ -13426,8 +14223,76 @@
                 rowPublicProfile.style.display = currentUser ? 'flex' : 'none';
             }
 
+            // Will usage meter + API key panel
+            if (typeof updateWillUsageUI === 'function') updateWillUsageUI();
+            if (typeof startWillUsageTicker === 'function') startWillUsageTicker();
+
             refreshSettingsUpdateBanner();
         }
+
+        // Will API key controls (settings → Utilizzo)
+        (function initWillKeySettings() {
+            const saveBtn = $('btn-save-will-key');
+            const removeBtn = $('btn-remove-will-key');
+            const keyInput = $('input-will-api-key');
+            const keyStatus = $('will-key-status');
+
+            function flashKeyStatus(text, ok) {
+                if (!keyStatus) return;
+                keyStatus.dataset.flash = '1';
+                keyStatus.textContent = text;
+                keyStatus.classList.toggle('ok', !!ok);
+                setTimeout(() => {
+                    keyStatus.dataset.flash = '0';
+                    updateWillUsageUI();
+                }, 2200);
+            }
+
+            if (saveBtn) {
+                saveBtn.addEventListener('click', () => {
+                    if (!isWillLoggedIn()) {
+                        showToast('Accedi per salvare una API key');
+                        return;
+                    }
+                    const raw = (keyInput?.value || '').trim();
+                    if (!raw) {
+                        flashKeyStatus('Incolla una key valida (sk-or-…)', false);
+                        return;
+                    }
+                    if (!/^sk-or-/i.test(raw)) {
+                        flashKeyStatus('Formato non valido: le key OpenRouter iniziano con sk-or-', false);
+                        return;
+                    }
+                    setWillUserApiKey(raw);
+                    if (keyInput) {
+                        keyInput.value = raw;
+                        keyInput.dataset.synced = '1';
+                    }
+                    flashKeyStatus('Key salvata · limite free disattivato', true);
+                    updateWillUsageUI();
+                    showToast('API key Will salvata');
+                });
+            }
+
+            if (removeBtn) {
+                removeBtn.addEventListener('click', () => {
+                    setWillUserApiKey('');
+                    if (keyInput) {
+                        keyInput.value = '';
+                        keyInput.dataset.synced = '1';
+                    }
+                    flashKeyStatus('Key rimossa · di nuovo 5 richieste / 24h', false);
+                    updateWillUsageUI();
+                    showToast('Key personale rimossa');
+                });
+            }
+
+            if (keyInput) {
+                keyInput.addEventListener('input', () => {
+                    keyInput.dataset.synced = '0';
+                });
+            }
+        })();
 
         function closeSettings() {
             // Replaced by tab routing logic
@@ -15063,37 +15928,50 @@
             setInterval(tick, 1000);
         })();
 
-        /* ── QUEST POOL SEARCH OVERLAY ──────────────────── */
+        /* ── QUEST POOL SEARCH + WILL ────────────────────── */
         (function initSearchOverlay() {
             const btnOpen = document.getElementById('btn-search-quest');
             if (!btnOpen) return;
 
-            // Build overlay dynamically so it's available immediately
+            // Chiave condivisa free: WILL_SHARED_API_KEY (override utente da Impostazioni → Utilizzo)
+            const OPENROUTER_MODEL = 'openrouter/free';
+            const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+
             let overlay = document.getElementById('search-overlay');
             if (!overlay) {
                 overlay = document.createElement('div');
                 overlay.id = 'search-overlay';
                 overlay.setAttribute('role', 'dialog');
                 overlay.setAttribute('aria-modal', 'true');
-                overlay.setAttribute('aria-label', 'Cerca nel pool di quest');
+                overlay.setAttribute('aria-label', 'Cerca o chiedi nella quest pool');
                 overlay.innerHTML = `
                     <div class="search-sheet" id="search-sheet">
-                        <div class="search-overlay-title">Cerca una quest</div>
+                        <div class="search-overlay-title">Cerca o chiedi</div>
                         <div class="search-overlay-header">
                             <div class="search-input-wrap">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                                <input type="search" id="search-input" placeholder="Cerca per nome o descrizione…" autocomplete="off" autocorrect="off" spellcheck="false">
+                                <i class="fa-solid fa-magnifying-glass" id="search-input-icon"></i>
+                                <input type="search" id="search-input" placeholder="Parola chiave, o una domanda a Will…" autocomplete="off" autocorrect="off" spellcheck="false">
                             </div>
-                            <button class="search-cancel-btn" id="search-cancel-btn">Annulla</button>
+                            <div class="search-actions-row">
+                                <button type="button" class="search-ask-btn" id="search-ask-btn" title="Chiedi a Will">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                    <span>Chiedi</span>
+                                </button>
+                                <button type="button" class="search-cancel-btn" id="search-cancel-btn">Annulla</button>
+                            </div>
                         </div>
                         <div class="search-results-area" id="search-results-area"></div>
                     </div>`;
                 document.body.appendChild(overlay);
             }
+
+            const sheet = document.getElementById('search-sheet');
             const input = document.getElementById('search-input');
+            const inputIcon = document.getElementById('search-input-icon');
             const resultsArea = document.getElementById('search-results-area');
             const btnCancel = document.getElementById('search-cancel-btn');
-            if (!overlay || !input) return;
+            const btnAsk = document.getElementById('search-ask-btn');
+            if (!overlay || !input || !resultsArea) return;
 
             const DIFF_ICON = {
                 easy: '<i class="fa-solid fa-circle-half-stroke"></i>',
@@ -15102,31 +15980,102 @@
                 boss: '<i class="fa-solid fa-dragon"></i>'
             };
 
+            let searchDebounce = null;
+            let askAbort = null;
+            let lastAiPayload = null; // { message, picks: [{quest, reason}], question }
+            let isAsking = false;
+
+            function getPool() {
+                return typeof getFullPool === 'function' ? getFullPool() : (window.QUESTS_POOL || []);
+            }
+
+            function looksLikeQuestion(text) {
+                const t = (text || '').trim();
+                if (!t) return false;
+                if (t.includes('?')) return true;
+                if (t.split(/\s+/).length >= 5) return true;
+                return /\b(consigli|consiglio|quale|quali|vorrei|cerca(?:mi)?|trova(?:mi)?|suggerisc|per una|per un|serata|amici|tranquill|avventura|difficile|facile|idee?|aiuto|dimmi|voglio)\b/i.test(t);
+            }
+
+            function canClickAsk() {
+                const loggedIn = typeof isWillLoggedIn === 'function'
+                    ? isWillLoggedIn()
+                    : !!(currentUser && !isGuest);
+                if (!loggedIn) return false;
+                if (typeof hasWillUserApiKey === 'function' && hasWillUserApiKey()) return true;
+                if (typeof canUseWillFreeQuota === 'function') {
+                    const q = canUseWillFreeQuota();
+                    if (!q.ok) return false;
+                }
+                return true;
+            }
+
+            function syncAskUi() {
+                const hasText = input.value.trim().length > 0;
+                const allowed = canClickAsk();
+                if (btnAsk) {
+                    // Scuro/disabilitato: non loggato, limite free esaurito, testo vuoto, o in loading
+                    btnAsk.disabled = !hasText || isAsking || !allowed;
+                    btnAsk.style.opacity = '';
+                    btnAsk.style.filter = '';
+                    if (!allowed) {
+                        const loggedIn = typeof isWillLoggedIn === 'function'
+                            ? isWillLoggedIn()
+                            : !!(currentUser && !isGuest);
+                        btnAsk.title = !loggedIn
+                            ? 'Accedi per chiedere a Will'
+                            : 'Limite di 5 richieste gratuite raggiunto';
+                    } else {
+                        btnAsk.title = 'Chiedi a Will';
+                    }
+                }
+                if (inputIcon) {
+                    if (looksLikeQuestion(input.value) && hasText && allowed) {
+                        inputIcon.className = 'fa-solid fa-wand-magic-sparkles';
+                    } else {
+                        inputIcon.className = 'fa-solid fa-magnifying-glass';
+                    }
+                }
+                if (sheet) {
+                    sheet.classList.toggle('ai-mode', !!(lastAiPayload || isAsking));
+                }
+            }
+
             function openSearch() {
                 overlay.classList.remove('closing');
                 overlay.classList.add('open');
                 document.body.style.overflow = 'hidden';
+                lastAiPayload = null;
+                isAsking = false;
+                if (btnAsk) {
+                    btnAsk.classList.remove('is-loading');
+                    btnAsk.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i><span>Chiedi</span>';
+                }
                 renderResults('');
+                syncAskUi();
                 setTimeout(() => input.focus(), 80);
             }
 
             function closeSearch() {
+                if (askAbort) {
+                    try { askAbort.abort(); } catch (_) { /* ignore */ }
+                    askAbort = null;
+                }
+                isAsking = false;
                 overlay.classList.add('closing');
                 overlay.classList.remove('open');
                 setTimeout(() => {
                     overlay.classList.remove('closing');
                     input.value = '';
+                    lastAiPayload = null;
+                    if (sheet) sheet.classList.remove('ai-mode');
                 }, 240);
                 document.body.style.overflow = '';
             }
 
             btnOpen.addEventListener('click', openSearch);
             if (btnCancel) btnCancel.addEventListener('click', closeSearch);
-
-            // Close on backdrop tap (the overlay itself, not its children)
             overlay.addEventListener('click', (e) => { if (e.target === overlay) closeSearch(); });
-
-            // Close on Escape key
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && overlay.classList.contains('open')) closeSearch();
             });
@@ -15138,26 +16087,39 @@
                 return escaped.replace(re, '<mark class="search-hl">$1</mark>');
             }
 
-            function renderResults(query) {
-                const pool = typeof getFullPool === 'function' ? getFullPool() : (window.QUESTS_POOL || []);
-                const q = query.trim().toLowerCase();
+            function escapeAttr(title) {
+                return escapeHtml(title).replace(/'/g, '&#39;');
+            }
 
-                let results;
-                if (q) {
-                    results = pool.filter(quest => {
-                        const inTitle = (quest.title || '').toLowerCase().includes(q);
-                        const inDesc = (quest.description || '').toLowerCase().includes(q);
-                        return inTitle || inDesc;
-                    });
-                    // Sort: exact title match first
-                    results.sort((a, b) => {
-                        const aTitle = (a.title || '').toLowerCase().startsWith(q) ? 0 : 1;
-                        const bTitle = (b.title || '').toLowerCase().startsWith(q) ? 0 : 1;
-                        return aTitle - bTitle;
-                    });
-                    results = results.slice(0, 80);
-                } else {
-                    // Show 6 random quests spanning different difficulties
+            function questCardHtml(quest, { query = '', reason = null, ai = false, delayIndex = 0 } = {}) {
+                const diff = quest.difficulty || 'easy';
+                const completedSet = questCardHtml._completed || new Set();
+                const done = completedSet.has(quest.title);
+                const xpVal = quest.xp || (diff === 'easy' ? 150 : diff === 'medium' ? 300 : diff === 'hard' ? 600 : 1000);
+                const cat = quest.category || quest.tags?.[0] || '';
+                const icon = DIFF_ICON[diff] || DIFF_ICON.easy;
+                const delayStyle = ai && delayIndex ? `animation-delay:${delayIndex * 0.06}s;` : '';
+                return `
+                    <div class="search-result-card${ai ? ' ai-pick' : ''}" onclick="searchSelectQuest('${escapeAttr(quest.title)}')"
+                         style="${done ? 'opacity:0.55;' : ''}${delayStyle}">
+                        <div class="search-result-diff ${diff}">${icon}</div>
+                        <div class="search-result-body">
+                            <div class="search-result-title">${highlight(quest.title || '', query)}${done ? ' <i class="fa-solid fa-check" style="font-size:10px;color:var(--accent);margin-left:4px;"></i>' : ''}</div>
+                            ${quest.description ? `<div class="search-result-desc">${highlight(quest.description, query)}</div>` : ''}
+                            ${reason ? `<div class="search-result-reason"><i class="fa-solid fa-sparkles"></i><span>${escapeHtml(reason)}</span></div>` : ''}
+                            <div class="search-result-meta">
+                                <span class="search-result-xp">+${xpVal.toLocaleString('it-IT')} XP</span>
+                                ${cat ? `<span class="search-result-cat">${escapeHtml(cat)}</span>` : ''}
+                                ${ai ? '<span class="search-result-cat will-tag">Will</span>' : ''}
+                            </div>
+                        </div>
+                    </div>`;
+            }
+
+            function filterLocalResults(query) {
+                const pool = getPool();
+                const q = query.trim().toLowerCase();
+                if (!q) {
                     const byDiff = { easy: [], medium: [], hard: [], boss: [] };
                     pool.forEach(quest => {
                         const d = quest.difficulty || 'easy';
@@ -15165,88 +16127,531 @@
                     });
                     const shuffle = arr => arr.slice().sort(() => Math.random() - 0.5);
                     const pick = (arr, n) => shuffle(arr).slice(0, n);
-                    // 2 easy, 2 medium, 1 hard, 1 boss (fallback to other diffs if not enough)
                     const picks = [
                         ...pick(byDiff.easy, 2),
                         ...pick(byDiff.medium, 2),
                         ...pick(byDiff.hard, 1),
                         ...pick(byDiff.boss, 1)
                     ];
-                    // Fill up to 6 if some difficulties are empty
-                    const remaining = pool.filter(q => !picks.includes(q));
-                    results = picks.length < 6
+                    const remaining = pool.filter(x => !picks.includes(x));
+                    return picks.length < 6
                         ? [...picks, ...shuffle(remaining).slice(0, 6 - picks.length)]
-                        : picks;
-                    // Final shuffle for variety
-                    results = shuffle(results);
+                        : shuffle(picks);
+                }
+                let results = pool.filter(quest => {
+                    const inTitle = (quest.title || '').toLowerCase().includes(q);
+                    const inDesc = (quest.description || '').toLowerCase().includes(q);
+                    const inCat = (quest.category || '').toLowerCase().includes(q);
+                    return inTitle || inDesc || inCat;
+                });
+                results.sort((a, b) => {
+                    const aTitle = (a.title || '').toLowerCase().startsWith(q) ? 0 : 1;
+                    const bTitle = (b.title || '').toLowerCase().startsWith(q) ? 0 : 1;
+                    return aTitle - bTitle;
+                });
+                return results.slice(0, 80);
+            }
+
+            function renderResults(query, { keepAi = false } = {}) {
+                if (!keepAi) lastAiPayload = null;
+                questCardHtml._completed = new Set((state.completed || []).map(c => c.title));
+                const q = (query || '').trim();
+                const results = filterLocalResults(q);
+
+                let html = '';
+
+                if (lastAiPayload && keepAi) {
+                    html += renderAiBlock(lastAiPayload);
                 }
 
-                const completedSet = new Set((state.completed || []).map(c => c.title));
-
-                if (results.length === 0) {
+                if (results.length === 0 && !lastAiPayload) {
                     resultsArea.innerHTML = `
                         <div class="search-empty">
                             <div class="search-empty-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
                             <div class="search-empty-text">Nessuna quest trovata per "${escapeHtml(query)}"</div>
+                            <div class="search-empty-text" style="margin-top:8px;font-size:12px;opacity:0.8;">Prova a <strong style="color:var(--will-soft);">chiedere</strong> a Will con una frase.</div>
                         </div>`;
+                    syncAskUi();
                     return;
                 }
 
-                const countLabel = q
-                    ? `${results.length} risultat${results.length === 1 ? 'o' : 'i'} per "${escapeHtml(query)}"`
-                    : null;
+                if (results.length > 0) {
+                    const countLabel = q
+                        ? `${results.length} risultat${results.length === 1 ? 'o' : 'i'} per "${escapeHtml(query)}"`
+                        : (lastAiPayload ? 'Altre idee dalla pool' : 'Ispirazione dalla pool');
+                    html += `<div class="search-results-header">${countLabel}</div>`;
+                    results.forEach(quest => {
+                        html += questCardHtml(quest, { query: q });
+                    });
+                }
 
-                let html = countLabel ? `<div class="search-results-header">${countLabel}</div>` : '';
-
-                results.forEach(quest => {
-                    const diff = quest.difficulty || 'easy';
-                    const done = completedSet.has(quest.title);
-                    const xpVal = quest.xp || (diff === 'easy' ? 150 : diff === 'medium' ? 300 : diff === 'hard' ? 600 : 1000);
-                    const cat = quest.category || quest.tags?.[0] || '';
-                    const icon = DIFF_ICON[diff] || DIFF_ICON.easy;
-                    html += `
-                        <div class="search-result-card" onclick="searchSelectQuest('${escapeHtml(quest.title).replace(/'/g, "&#39;")}')"
-                             style="${done ? 'opacity:0.5;' : ''}">
-                            <div class="search-result-diff ${diff}">${icon}</div>
-                            <div class="search-result-body">
-                                <div class="search-result-title">${highlight(quest.title || '', query)}${done ? ' <i class="fa-solid fa-check" style="font-size:10px;color:var(--accent);margin-left:4px;"></i>' : ''}</div>
-                                ${quest.description ? `<div class="search-result-desc">${highlight(quest.description, query)}</div>` : ''}
-                                <div class="search-result-meta">
-                                    <span class="search-result-xp">+${xpVal.toLocaleString('it-IT')} XP</span>
-                                    ${cat ? `<span class="search-result-cat">${escapeHtml(cat)}</span>` : ''}
-                                </div>
-                            </div>
+                if (!html) {
+                    html = `
+                        <div class="search-empty">
+                            <div class="search-empty-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                            <div class="search-empty-text">Scrivi una domanda e tocca <strong style="color:var(--will-soft);">Chiedi</strong></div>
                         </div>`;
-                });
+                }
 
                 resultsArea.innerHTML = html;
+                syncAskUi();
             }
 
-            let searchDebounce = null;
-            input.addEventListener('input', () => {
-                clearTimeout(searchDebounce);
-                searchDebounce = setTimeout(() => renderResults(input.value), 120);
-            });
-
-            window.searchSelectQuest = function(title) {
-                // Assign this quest as the active quest
-                const pool = typeof getFullPool === 'function' ? getFullPool() : (window.QUESTS_POOL || []);
-                const found = pool.find(q => q.title === title);
-                if (!found) { showToast('Quest non trovata'); return; }
-                if (typeof guardPartyQuestChange === 'function') {
-                    guardPartyQuestChange(() => {
-                        if (typeof assignCurrentQuest === 'function') {
-                            assignCurrentQuest({ ...found });
-                            if (typeof saveLocal === 'function') saveLocal();
-                            if (typeof renderActiveQuest === 'function') renderActiveQuest();
-                            showToast('Quest assegnata!');
-                            closeSearch();
-                            setTimeout(() => {
-                                document.getElementById('quest-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }, 300);
-                        }
+            function renderAiBlock(payload) {
+                const picks = payload.picks || [];
+                let hint = 'Tocca una card per assegnarla · salvabile come le altre quest';
+                if (typeof getWillUsageStatus === 'function' && typeof hasWillUserApiKey === 'function' && !hasWillUserApiKey()) {
+                    const st = getWillUsageStatus();
+                    if (st.limit != null) {
+                        hint = 'Tocca una card per assegnarla · ' + st.used + '/' + st.limit + ' richieste free usate';
+                    }
+                }
+                let block = `
+                    <div class="ai-will-panel">
+                        <div class="ai-will-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Will</div>
+                        <div class="ai-will-message">${escapeHtml(payload.message || 'Ecco cosa ho trovato per te.')}</div>
+                        <div class="ai-will-hint">${escapeHtml(hint)}</div>
+                    </div>`;
+                if (picks.length) {
+                    block += `<div class="search-results-header">Consigliate per te</div>`;
+                    picks.forEach((p, i) => {
+                        block += questCardHtml(p.quest, { reason: p.reason, ai: true, delayIndex: i });
                     });
                 } else {
+                    block += `
+                        <div class="search-empty" style="padding:24px 12px;">
+                            <div class="search-empty-text">Will non ha trovato un match esatto. Prova a riformulare.</div>
+                        </div>`;
+                }
+                return block;
+            }
+
+            function renderAiLoading() {
+                resultsArea.innerHTML = `
+                    <div class="ai-loading-state">
+                        <div class="ai-loading-orb" aria-hidden="true"></div>
+                        <div class="ai-loading-title">Will sta pensando…</div>
+                        <div class="ai-loading-sub">Sta scorrendo tra le quest per trovare qualcosa di perfetto per te.</div>
+                    </div>`;
+            }
+
+            function renderAiError(message, { suggestKey = false, suggestLogin = false, limit = false } = {}) {
+                const usingShared = !hasWillUserApiKey();
+                let extra = '';
+                if (suggestLogin) {
+                    extra = `
+                        <div class="ai-error-cta">Will è disponibile solo se hai fatto <strong>accesso</strong>.</div>
+                        <button type="button" class="ai-error-link" id="ai-error-login">
+                            <i class="fa-solid fa-user"></i> Accedi
+                        </button>`;
+                } else if (limit) {
+                    extra = `
+                        <div class="ai-error-cta">Hai finito le <strong>5 richieste gratuite</strong> di queste 24 ore. Aggiungi la tua API key in Impostazioni → Utilizzo per continuare senza limite more.</div>
+                        <button type="button" class="ai-error-link" id="ai-error-settings">
+                            <i class="fa-solid fa-sliders"></i> Apri Utilizzo
+                        </button>`;
+                } else if (suggestKey && usingShared) {
+                    extra = `
+                        <div class="ai-error-cta">Per risultati più stabili, metti la tua <strong>API key OpenRouter</strong> in Impostazioni → Utilizzo.</div>
+                        <button type="button" class="ai-error-link" id="ai-error-settings">
+                            <i class="fa-solid fa-key"></i> Aggiungi API key
+                        </button>`;
+                }
+                resultsArea.innerHTML = `
+                    <div class="search-empty ai-error-state">
+                        <div class="search-empty-icon"><i class="fa-solid fa-xmark"></i></div>
+                        <div class="search-empty-text">${escapeHtml(message || 'Will non risponde al momento.')}</div>
+                        ${extra}
+                        ${!suggestLogin ? `<button type="button" class="ai-error-retry" id="ai-error-retry">
+                            <i class="fa-solid fa-rotate-right"></i> Riprova
+                        </button>` : ''}
+                    </div>`;
+                const retry = document.getElementById('ai-error-retry');
+                if (retry) retry.addEventListener('click', () => askOracle());
+                const goSettings = document.getElementById('ai-error-settings');
+                if (goSettings) goSettings.addEventListener('click', () => {
+                    if (typeof openSettingsFromWill === 'function') openSettingsFromWill();
+                });
+                const goLogin = document.getElementById('ai-error-login');
+                if (goLogin) goLogin.addEventListener('click', () => {
+                    closeSearch();
+                    const as = document.getElementById('auth-screen');
+                    if (as) as.classList.add('show');
+                });
+            }
+
+            // ── Retrieval: compact candidates for the LLM ──
+            const IT_STOP = new Set([
+                'una', 'uno', 'che', 'per', 'con', 'del', 'della', 'dei', 'delle', 'degli',
+                'nel', 'nella', 'nei', 'nelle', 'sul', 'sulla', 'dai', 'dalle', 'tra', 'fra',
+                'sono', 'mi', 'ti', 'ci', 'vi', 'gli', 'anche', 'come', 'piu', 'più', 'molto',
+                'quale', 'quali', 'questo', 'questa', 'questi', 'queste', 'vorrei', 'voglio',
+                'fare', 'faccio', 'posso', 'puoi', 'dimmi', 'dammi', 'trova', 'trovami',
+                'cerca', 'cercami', 'consigli', 'consiglio', 'suggerisci', 'idee', 'idea'
+            ]);
+
+            const THEME_BOOST = [
+                { re: /\b(amici|amico|social|gruppo|insieme|party)\b/i, words: ['amici', 'sconosciuto', 'conversazione', 'complimento', 'incontro', 'gruppo', 'insieme', 'social'] },
+                { re: /\b(citt[aà]|urbano|quartiere|bar|centro)\b/i, words: ['città', 'quartiere', 'bar', 'urbano', 'strada', 'mercato', 'mostra', 'cinema'] },
+                { re: /\b(tranquill|calma|rilass|soft|chill|legger)\b/i, words: ['silenzio', 'meditazione', 'tramonto', 'stelle', 'passeggiata', 'libro', 'ascolta', 'bar'] },
+                { re: /\b(avventur|adrenalina|estrem|hard|difficil|sfid)\b/i, words: ['abbandonato', 'notturna', 'montagna', 'campeggio', 'nuota', 'escursione', 'vetta'] },
+                { re: /\b(natur|bosco|mare|lago|montagna|outdoor)\b/i, words: ['natura', 'bosco', 'mare', 'lago', 'montagna', 'sentiero', 'stelle', 'campeggio'] },
+                { re: /\b(sera|notte|notturn)\b/i, words: ['notte', 'notturno', 'stelle', 'sera', 'tramonto', 'buio'] },
+                { re: /\b(sol[oa]|da solo|individuale)\b/i, words: ['da solo', 'solo', 'silenzio', 'meditazione', 'libro'] },
+                { re: /\b(creativ|arte|disegn|scriv|foto)\b/i, words: ['disegna', 'scrivi', 'fotografa', 'poesia', 'album', 'mappa'] },
+                { re: /\b(cibo|mangia|cucina|pasto)\b/i, words: ['mangia', 'cucina', 'pasto', 'colazione', 'cibo'] },
+                { re: /\b(facile|easy|legger)\b/i, words: [], forceDiff: 'easy' },
+                { re: /\b(media|medium)\b/i, words: [], forceDiff: 'medium' },
+                { re: /\b(difficile|hard)\b/i, words: [], forceDiff: 'hard' }
+            ];
+
+            function buildCandidates(question, limit = 72) {
+                const pool = getPool();
+                const q = (question || '').toLowerCase();
+                const tokens = q.split(/[^a-zàèéìòù0-9]+/i).filter(t => t.length > 2 && !IT_STOP.has(t));
+                const boostWords = [];
+                let forceDiff = null;
+                THEME_BOOST.forEach(t => {
+                    if (t.re.test(q)) {
+                        boostWords.push(...t.words);
+                        if (t.forceDiff) forceDiff = t.forceDiff;
+                    }
+                });
+
+                const scored = pool.map((quest, idx) => {
+                    const title = (quest.title || '').toLowerCase();
+                    const desc = (quest.description || '').toLowerCase();
+                    const cat = (quest.category || '').toLowerCase();
+                    const hay = title + ' ' + desc + ' ' + cat;
+                    let score = 0;
+                    tokens.forEach(t => {
+                        if (title.includes(t)) score += 5;
+                        else if (cat.includes(t)) score += 3;
+                        else if (desc.includes(t)) score += 2;
+                    });
+                    boostWords.forEach(w => {
+                        if (hay.includes(w)) score += 2;
+                    });
+                    if (forceDiff && (quest.difficulty || 'easy') === forceDiff) score += 3;
+                    // light novelty: prefer not completed
+                    if ((state.completed || []).some(c => c.title === quest.title)) score -= 1.5;
+                    return { quest, idx, score };
+                });
+
+                scored.sort((a, b) => b.score - a.score || a.idx - b.idx);
+                const positive = scored.filter(s => s.score > 0);
+                let chosen = (positive.length >= 12 ? positive : scored).slice(0, limit);
+
+                // Ensure difficulty mix if we have room
+                if (chosen.length < limit) {
+                    const have = new Set(chosen.map(c => c.quest.title));
+                    const shuffle = arr => arr.slice().sort(() => Math.random() - 0.5);
+                    for (const extra of shuffle(scored)) {
+                        if (have.has(extra.quest.title)) continue;
+                        chosen.push(extra);
+                        have.add(extra.quest.title);
+                        if (chosen.length >= limit) break;
+                    }
+                }
+
+                return chosen.map(({ quest, idx }) => ({
+                    i: idx,
+                    t: quest.title,
+                    d: (quest.description || '').slice(0, 110),
+                    diff: quest.difficulty || 'easy',
+                    cat: quest.category || '',
+                    xp: quest.xp || 0
+                }));
+            }
+
+            function extractFirstJsonObject(text) {
+                const start = text.indexOf('{');
+                if (start < 0) return null;
+                let depth = 0;
+                let inString = false;
+                let escape = false;
+                for (let i = start; i < text.length; i++) {
+                    const ch = text[i];
+                    if (inString) {
+                        if (escape) escape = false;
+                        else if (ch === '\\') escape = true;
+                        else if (ch === '"') inString = false;
+                        continue;
+                    }
+                    if (ch === '"') { inString = true; continue; }
+                    if (ch === '{') depth++;
+                    else if (ch === '}') {
+                        depth--;
+                        if (depth === 0) return text.slice(start, i + 1);
+                    }
+                }
+                return null;
+            }
+
+            function parseOracleJson(raw) {
+                if (!raw) throw new Error('Risposta vuota');
+                let text = String(raw).trim();
+                // Strip markdown fences if present
+                const fence = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+                if (fence) text = fence[1].trim();
+                // Model often appends prose after JSON — parse only the first balanced object
+                const candidates = [];
+                const balanced = extractFirstJsonObject(text);
+                if (balanced) candidates.push(balanced);
+                candidates.push(text);
+                const start = text.indexOf('{');
+                const end = text.lastIndexOf('}');
+                if (start >= 0 && end > start) candidates.push(text.slice(start, end + 1));
+
+                let lastErr = null;
+                for (const c of candidates) {
+                    try {
+                        return JSON.parse(c);
+                    } catch (e) {
+                        lastErr = e;
+                    }
+                }
+                // Last resort: repair trailing commas
+                if (balanced) {
+                    try {
+                        return JSON.parse(balanced.replace(/,\s*([}\]])/g, '$1'));
+                    } catch (e) {
+                        lastErr = e;
+                    }
+                }
+                throw lastErr || new Error('JSON non valido');
+            }
+
+            function resolveRecommendations(data, candidates) {
+                const pool = getPool();
+                const byTitle = new Map(pool.map(q => [q.title.toLowerCase(), q]));
+                const byIndex = new Map(candidates.map(c => [c.i, byTitle.get((c.t || '').toLowerCase())]));
+                const recs = Array.isArray(data.recommendations) ? data.recommendations
+                    : Array.isArray(data.quests) ? data.quests
+                    : [];
+                const picks = [];
+                const seen = new Set();
+
+                recs.forEach(r => {
+                    if (picks.length >= 3) return;
+                    let quest = null;
+                    if (typeof r === 'string') {
+                        quest = byTitle.get(r.toLowerCase());
+                    } else if (r && typeof r === 'object') {
+                        if (typeof r.i === 'number' && byIndex.has(r.i)) quest = byIndex.get(r.i);
+                        if (!quest && r.title) quest = byTitle.get(String(r.title).toLowerCase());
+                        if (!quest && r.t) quest = byTitle.get(String(r.t).toLowerCase());
+                    }
+                    // fuzzy: title includes
+                    if (!quest && r && r.title) {
+                        const needle = String(r.title).toLowerCase();
+                        for (const [k, v] of byTitle) {
+                            if (k.includes(needle) || needle.includes(k)) { quest = v; break; }
+                        }
+                    }
+                    if (!quest || seen.has(quest.title)) return;
+                    seen.add(quest.title);
+                    const reason = (r && typeof r === 'object' && (r.reason || r.why || r.motivo)) || '';
+                    picks.push({ quest, reason: String(reason).slice(0, 180) });
+                });
+
+                // Fallback: if model returned nothing valid, take top candidate scores as soft recs
+                if (!picks.length && candidates.length) {
+                    candidates.slice(0, 3).forEach(c => {
+                        const quest = byTitle.get((c.t || '').toLowerCase());
+                        if (quest && !seen.has(quest.title)) {
+                            seen.add(quest.title);
+                            picks.push({ quest, reason: 'Tra le più vicine alla tua richiesta nella pool.' });
+                        }
+                    });
+                }
+
+                const message = (data && (data.message || data.intro || data.reply)) || 'Ecco le quest che Will ha scelto per te.';
+                return { message: String(message).slice(0, 320), picks };
+            }
+
+            async function askOracle() {
+                const question = input.value.trim();
+                if (!question || isAsking) return;
+
+                // Login required
+                if (typeof isWillLoggedIn === 'function' ? !isWillLoggedIn() : (isGuest || !currentUser)) {
+                    if (sheet) sheet.classList.add('ai-mode');
+                    renderAiError('Per chiedere a Will devi aver fatto accesso.', { suggestLogin: true });
+                    return;
+                }
+
+                // Free daily quota (skipped with personal API key)
+                const quota = typeof canUseWillFreeQuota === 'function'
+                    ? canUseWillFreeQuota()
+                    : { ok: true };
+                if (!quota.ok && quota.reason === 'limit') {
+                    if (sheet) sheet.classList.add('ai-mode');
+                    const when = quota.status ? formatWillResetCountdown(quota.status.msToReset) : '24 ore';
+                    renderAiError('Hai esaurito le 5 richieste gratuite. Si resetta tra ' + when + '.', { limit: true });
+                    return;
+                }
+
+                if (askAbort) {
+                    try { askAbort.abort(); } catch (_) { /* ignore */ }
+                }
+                askAbort = new AbortController();
+                isAsking = true;
+                lastAiPayload = null;
+                if (btnAsk) {
+                    btnAsk.classList.add('is-loading');
+                    btnAsk.disabled = true;
+                    btnAsk.innerHTML = '<i class="fa-solid fa-circle-notch"></i><span>…</span>';
+                }
+                if (sheet) sheet.classList.add('ai-mode');
+                renderAiLoading();
+                syncAskUi();
+
+                const candidates = buildCandidates(question, 72);
+                const completedTitles = (state.completed || []).slice(-40).map(c => c.title);
+                const apiKey = typeof getActiveWillApiKey === 'function' ? getActiveWillApiKey() : WILL_SHARED_API_KEY;
+                const usingSharedKey = typeof hasWillUserApiKey === 'function' ? !hasWillUserApiKey() : true;
+
+                const system = `Sei Will, la guida AI dell'app more che gamifica la vita reale con side quest.
+Rispondi SEMPRE in italiano, tono caldo, curioso e un po' magico ma concreto.
+Hai SOLO le quest nel catalogo JSON fornito. Non inventare titoli nuovi.
+Scegli 1-3 quest che rispondono meglio alla domanda dell'utente.
+Preferisci quest non presenti in completed_titles se possibile.
+Output: SOLO un unico oggetto JSON valido. Niente markdown, niente testo prima o dopo.
+Schema esatto:
+{"message":"1-2 frasi di consiglio","recommendations":[{"i":0,"title":"titolo esatto dal catalogo","reason":"perché in max 12 parole"}]}
+Il campo i è l'indice del catalogo. title deve essere IDENTICO a "t" nel catalogo.`;
+
+                const userPayload = {
+                    question,
+                    completed_titles: completedTitles,
+                    catalog: candidates
+                };
+
+                try {
+                    const res = await fetch(OPENROUTER_URL, {
+                        method: 'POST',
+                        signal: askAbort.signal,
+                        headers: {
+                            'Authorization': 'Bearer ' + apiKey,
+                            'Content-Type': 'application/json',
+                            'HTTP-Referer': (typeof location !== 'undefined' && location.origin) ? location.origin : 'https://more.app',
+                            'X-Title': 'more PWA Will'
+                        },
+                        body: JSON.stringify({
+                            model: OPENROUTER_MODEL,
+                            temperature: 0.45,
+                            max_tokens: 700,
+                            messages: [
+                                { role: 'system', content: system },
+                                { role: 'user', content: JSON.stringify(userPayload) }
+                            ]
+                        })
+                    });
+
+                    if (!res.ok) {
+                        let detail = '';
+                        try {
+                            const errBody = await res.json();
+                            detail = errBody?.error?.message || errBody?.message || '';
+                        } catch (_) { /* ignore */ }
+                        throw new Error(detail || `OpenRouter HTTP ${res.status}`);
+                    }
+
+                    const body = await res.json();
+                    const content = body?.choices?.[0]?.message?.content;
+                    let data;
+                    try {
+                        data = parseOracleJson(content);
+                    } catch (parseErr) {
+                        console.warn('[will] parse fail raw:', content, parseErr);
+                        throw new Error('Will ha fatto confusione. Riprova.');
+                    }
+                    const resolved = resolveRecommendations(data, candidates);
+                    lastAiPayload = { ...resolved, question };
+                    questCardHtml._completed = new Set((state.completed || []).map(c => c.title));
+
+                    // Count only successful free-tier requests
+                    if (usingSharedKey && typeof consumeWillFreeRequest === 'function') {
+                        consumeWillFreeRequest();
+                    } else if (typeof updateWillUsageUI === 'function') {
+                        updateWillUsageUI();
+                    }
+
+                    let html = renderAiBlock(lastAiPayload);
+                    // keep light local matches under AI results when query has keywords
+                    if (!looksLikeQuestion(question) || question.length < 40) {
+                        const local = filterLocalResults(question).filter(q =>
+                            !(lastAiPayload.picks || []).some(p => p.quest.title === q.title)
+                        ).slice(0, 8);
+                        if (local.length) {
+                            html += `<div class="search-results-header">Anche dalla ricerca</div>`;
+                            local.forEach(quest => { html += questCardHtml(quest, { query: question }); });
+                        }
+                    }
+                    resultsArea.innerHTML = html;
+                } catch (err) {
+                    if (err && err.name === 'AbortError') return;
+                    console.warn('[will]', err);
+                    const msg = (err && err.message) ? String(err.message) : '';
+                    const suggestKey = usingSharedKey;
+                    if (/rate|429|limit/i.test(msg)) {
+                        renderAiError('Troppe richieste a Will. Riprova tra poco.', { suggestKey });
+                    } else if (/network|fetch|Failed/i.test(msg)) {
+                        renderAiError('Niente connessione con Will. Controlla la rete e riprova.', { suggestKey });
+                    } else if (/formato strano|JSON|parse|Unexpected/i.test(msg)) {
+                        renderAiError('Will ha fatto confusione. Riprova.', { suggestKey });
+                    } else if (/401|403|Unauthorized|invalid.*key|user not found/i.test(msg)) {
+                        renderAiError(usingSharedKey
+                            ? 'La chiave condivisa non è disponibile al momento.'
+                            : 'La tua API key non è valida. Controllala in Impostazioni → Utilizzo.', { suggestKey: usingSharedKey, limit: false });
+                    } else {
+                        renderAiError(msg || 'Will non risponde al momento. Riprova.', { suggestKey });
+                    }
+                } finally {
+                    isAsking = false;
+                    if (btnAsk) {
+                        btnAsk.classList.remove('is-loading');
+                        btnAsk.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i><span>Chiedi</span>';
+                    }
+                    syncAskUi();
+                }
+            }
+
+            input.addEventListener('input', () => {
+                clearTimeout(searchDebounce);
+                const val = input.value;
+                syncAskUi();
+                // While typing, local search; clear AI only when user edits after a result
+                searchDebounce = setTimeout(() => {
+                    if (isAsking) return;
+                    if (lastAiPayload && val.trim() === lastAiPayload.question) {
+                        renderResults(val, { keepAi: true });
+                    } else {
+                        lastAiPayload = null;
+                        renderResults(val);
+                    }
+                }, 120);
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (looksLikeQuestion(input.value) || e.metaKey || e.ctrlKey) {
+                        askOracle();
+                    } else {
+                        renderResults(input.value);
+                    }
+                }
+            });
+
+            if (btnAsk) btnAsk.addEventListener('click', () => askOracle());
+
+            window.searchSelectQuest = function (title) {
+                const pool = getPool();
+                const found = pool.find(q => q.title === title);
+                if (!found) { showToast('Quest non trovata'); return; }
+                const apply = () => {
                     if (typeof assignCurrentQuest === 'function') {
                         assignCurrentQuest({ ...found });
                         if (typeof saveLocal === 'function') saveLocal();
@@ -15257,6 +16662,11 @@
                             document.getElementById('quest-container')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                         }, 300);
                     }
+                };
+                if (typeof guardPartyQuestChange === 'function') {
+                    guardPartyQuestChange(apply);
+                } else {
+                    apply();
                 }
             };
         })();
