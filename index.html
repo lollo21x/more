@@ -99,6 +99,10 @@
             --safe-left: env(safe-area-inset-left, 0px);
             --safe-right: env(safe-area-inset-right, 0px);
             --app-height: 100vh;
+            --surface-2: rgba(255, 255, 255, 0.055);
+            --surface-elevated: rgba(22, 22, 32, 0.92);
+            --glow-soft: 0 0 40px rgba(200, 241, 53, 0.06);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04);
         }
 
         @supports (height: 100svh) {
@@ -579,8 +583,10 @@
 
         /* ── XP CARD ──────────────────────────────────────── */
         .xp-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
+            background:
+                radial-gradient(ellipse 90% 70% at 50% 0%, rgba(200, 241, 53, 0.08), transparent 55%),
+                var(--surface);
+            border: 1px solid var(--border-light);
             border-radius: var(--radius);
             padding: 28px 24px 24px;
             backdrop-filter: blur(16px);
@@ -589,6 +595,7 @@
             text-align: center;
             position: relative;
             overflow: hidden;
+            box-shadow: var(--shadow-card);
         }
 
         .xp-card::before {
@@ -1364,6 +1371,19 @@
             font-weight: 500;
             position: relative;
             z-index: 1;
+            min-height: 1.4em;
+        }
+
+        .will-stream-cursor {
+            display: inline-block;
+            width: 0.55em;
+            color: var(--will-soft);
+            animation: will-cursor-blink 0.85s steps(1) infinite;
+            margin-left: 1px;
+        }
+        @keyframes will-cursor-blink {
+            0%, 45% { opacity: 1; }
+            50%, 100% { opacity: 0; }
         }
 
         .ai-will-hint {
@@ -1777,22 +1797,83 @@
 
         /* ── QUEST CARD ───────────────────────────────────── */
         .quest-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
+            background:
+                radial-gradient(ellipse 80% 60% at 0% 0%, rgba(255, 255, 255, 0.05), transparent 55%),
+                var(--surface);
+            border: 1px solid var(--border-light);
             border-radius: var(--radius);
-            padding: 20px 16px;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            padding: 18px 16px 16px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             margin-bottom: 28px;
-            transition: transform .2s var(--spring), box-shadow .3s var(--ease);
+            transition: transform .2s var(--spring), box-shadow .3s var(--ease), border-color .2s;
             overflow: hidden;
             word-break: break-word;
             position: relative;
+            box-shadow: var(--shadow-card);
+        }
+
+        .quest-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .quest-card.diff-glow-easy::before {
+            background: linear-gradient(90deg, transparent, var(--diff-easy), transparent);
+            opacity: 0.85;
+            box-shadow: 0 0 18px rgba(79, 163, 255, 0.35);
+        }
+        .quest-card.diff-glow-medium::before {
+            background: linear-gradient(90deg, transparent, var(--diff-medium), transparent);
+            opacity: 0.85;
+        }
+        .quest-card.diff-glow-hard::before {
+            background: linear-gradient(90deg, transparent, var(--diff-hard), transparent);
+            opacity: 0.9;
+            box-shadow: 0 0 18px rgba(255, 79, 79, 0.3);
         }
 
         .quest-card:active {
             transform: scale(0.985);
             transition: transform 0.1s var(--ease);
+        }
+
+        .quest-meta-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .quest-meta-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-dim);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            padding: 4px 9px;
+            border-radius: 999px;
+        }
+
+        .quest-meta-chip i {
+            font-size: 10px;
+            opacity: 0.8;
+        }
+
+        .quest-meta-chip.cat {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.06);
         }
 
         .quest-top {
@@ -1910,12 +1991,36 @@
             color: var(--text-dim);
             font-size: 14px;
             line-height: 1.55;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
+        }
+
+        .quest-desc.is-expanded {
+            display: block;
+            -webkit-line-clamp: unset;
+            line-clamp: unset;
+        }
+
+        .quest-desc-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 700;
+            font-family: var(--font-body);
+            padding: 0 0 12px;
+            cursor: pointer;
+        }
+
+        .quest-desc-toggle.is-visible {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .quest-footer {
@@ -1924,6 +2029,10 @@
             justify-content: space-between;
             gap: 8px;
             flex-wrap: wrap;
+            padding-top: 4px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 2px;
+            padding-top: 14px;
         }
 
         .quest-xp {
@@ -1934,6 +2043,20 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            text-shadow: 0 0 20px rgba(200, 241, 53, 0.25);
+        }
+
+        .quest-footer-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .quest-age {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 600;
         }
 
         .quest-xp svg {
@@ -4856,45 +4979,116 @@
             margin: 0 auto;
         }
 
-        /* Stats row */
+        /* Stats grid (single 3×2 block, even gaps) */
         .prof-stats-row {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            margin: 0 20px 16px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin: 0 0 16px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .prof-stat-tile {
-            background: var(--surface);
-            border: 1px solid var(--border);
+            background: var(--surface-2);
+            border: 1px solid var(--border-light);
             border-radius: var(--radius-sm);
             padding: 14px 8px;
             text-align: center;
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-width: 0;
+            min-height: 64px;
+            box-sizing: border-box;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
         }
 
         .prof-stat-val {
             font-family: var(--font-display);
             font-weight: 800;
-            font-size: 22px;
-            line-height: 1;
+            font-size: 18px;
+            line-height: 1.1;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .prof-stat-label {
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: .8px;
-            font-weight: 600;
+            letter-spacing: .06em;
+            font-weight: 700;
+        }
+
+        /* Squad feed */
+        .squad-feed-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .squad-feed-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: var(--radius);
+            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-card);
+        }
+        .squad-feed-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 15px;
+            color: #fff;
+            flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .squad-feed-body { flex: 1; min-width: 0; }
+        .squad-feed-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .squad-feed-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+        .squad-feed-side {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .squad-feed-xp {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 13px;
+            color: var(--accent);
         }
 
         /* Profile action buttons */
         .prof-actions {
             display: flex;
             gap: 10px;
-            margin: 0 20px 24px;
+            margin: 0 0 20px;
+            width: 100%;
         }
 
         .prof-actions .sett-btn {
@@ -4904,7 +5098,8 @@
 
         /* Achievements scroll row */
         .prof-achievements {
-            margin: 0 20px 20px;
+            margin: 0 0 20px;
+            width: 100%;
         }
 
         .prof-section-label {
@@ -4966,14 +5161,16 @@
 
         /* Activity feed */
         .prof-activity {
-            margin: 0 20px 24px;
+            margin: 0 0 24px;
+            width: 100%;
         }
 
         .prof-activity-card {
             background: var(--surface);
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-light);
             border-radius: var(--radius);
             overflow: hidden;
+            box-shadow: var(--shadow-card);
         }
 
         .prof-activity-item {
@@ -5028,18 +5225,18 @@
             align-items: center;
             gap: 12px;
             background:
-                linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
-                var(--surface);
+                linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
             border: 1px solid var(--border-light);
-            border-radius: var(--radius-sm);
-            padding: 13px 14px;
-            margin-bottom: 8px;
+            border-radius: var(--radius);
+            padding: 14px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-card);
             transition: border-color 0.2s, transform 0.15s var(--spring);
         }
 
         .friend-card:active {
             border-color: rgba(200, 241, 53, 0.22);
-            transform: scale(0.985);
+            transform: scale(0.99);
         }
 
         .friend-avatar {
@@ -5689,6 +5886,554 @@
             display: flex;
             gap: 6px;
             padding: 0 14px 12px;
+        }
+
+        /* ── SYNC STATUS ─────────────────────────────────── */
+        .sync-status {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            padding: 5px 10px;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            pointer-events: none;
+            white-space: nowrap;
+            max-width: 46vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: opacity 0.25s, background 0.25s, border-color 0.25s, color 0.25s;
+        }
+        .sync-status.is-visible { display: inline-flex; }
+        .sync-status .sync-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .sync-status.offline {
+            background: rgba(255, 79, 79, 0.18);
+            border-color: rgba(255, 79, 79, 0.4);
+            color: #ff8a8a;
+        }
+        .sync-status.offline .sync-dot { background: #ff4f4f; box-shadow: 0 0 8px #ff4f4f; }
+        .sync-status.syncing {
+            background: rgba(79, 163, 255, 0.14);
+            border-color: rgba(79, 163, 255, 0.35);
+            color: var(--will-soft);
+        }
+        .sync-status.syncing .sync-dot {
+            background: var(--will);
+            animation: sync-pulse 1s ease-in-out infinite;
+        }
+        .sync-status.pending {
+            background: rgba(255, 179, 71, 0.12);
+            border-color: rgba(255, 179, 71, 0.35);
+            color: #ffc56e;
+        }
+        .sync-status.pending .sync-dot { background: #ffb347; }
+        .sync-status.synced {
+            background: rgba(200, 241, 53, 0.1);
+            border-color: rgba(200, 241, 53, 0.28);
+            color: var(--accent);
+        }
+        .sync-status.synced .sync-dot { background: var(--accent); }
+        @keyframes sync-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.45; transform: scale(0.75); }
+        }
+
+        /* ── WILL COACH ──────────────────────────────────── */
+        #will-coach-section {
+            display: none;
+            margin: 0 0 18px;
+        }
+        #will-coach-section.is-visible {
+            display: block;
+            animation: softRise 0.45s var(--ease) both;
+        }
+        .will-coach-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--radius);
+            padding: 16px 16px 14px;
+            border: 1px solid var(--will-border);
+            background:
+                radial-gradient(ellipse 90% 80% at 8% 0%, rgba(79, 163, 255, 0.22), transparent 55%),
+                radial-gradient(ellipse 70% 50% at 100% 100%, rgba(79, 163, 255, 0.1), transparent 50%),
+                linear-gradient(165deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+            box-shadow:
+                0 0 40px rgba(79, 163, 255, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+        .will-coach-card::after {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -15%;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(79, 163, 255, 0.2), transparent 70%);
+            pointer-events: none;
+        }
+        .will-coach-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        .will-coach-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--will-soft);
+            background: linear-gradient(135deg, rgba(79, 163, 255, 0.2), rgba(79, 163, 255, 0.06));
+            border: 1px solid var(--will-border);
+            padding: 5px 10px;
+            border-radius: 999px;
+        }
+        .will-coach-dismiss {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            padding: 6px;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+        .will-coach-dismiss:active { color: var(--text); }
+        .will-coach-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 16px;
+            color: var(--text);
+            margin-bottom: 6px;
+            position: relative;
+            z-index: 1;
+        }
+        .will-coach-body {
+            font-size: 13px;
+            line-height: 1.55;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+        .will-coach-picks {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
+        .will-coach-pick {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            background: rgba(0, 0, 0, 0.22);
+            border: 1px solid rgba(79, 163, 255, 0.18);
+            cursor: pointer;
+            transition: transform 0.15s var(--spring), border-color 0.15s;
+            text-align: left;
+            width: 100%;
+            color: inherit;
+            font: inherit;
+        }
+        .will-coach-pick:active { transform: scale(0.98); }
+        .will-coach-pick:hover { border-color: rgba(79, 163, 255, 0.4); }
+        .will-coach-pick-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--will-dim);
+            color: var(--will-soft);
+            flex-shrink: 0;
+            font-size: 12px;
+        }
+        .will-coach-pick-title {
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+        .will-coach-pick-reason {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* ── XP MODAL ENHANCED ───────────────────────────── */
+        #xp-modal .modal-content {
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(ellipse 90% 70% at 50% 0%, rgba(200, 241, 53, 0.16), transparent 55%),
+                rgba(18, 18, 28, 0.97);
+            border: 1px solid rgba(200, 241, 53, 0.22);
+            box-shadow: 0 0 60px rgba(200, 241, 53, 0.12), 0 24px 48px rgba(0, 0, 0, 0.5);
+        }
+        .xp-modal-particles {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .xp-modal-particles span {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+            opacity: 0;
+            animation: xp-particle 1.4s var(--ease) forwards;
+        }
+        @keyframes xp-particle {
+            0% { opacity: 0; transform: translateY(20px) scale(0.4); }
+            20% { opacity: 0.9; }
+            100% { opacity: 0; transform: translateY(-80px) scale(1); }
+        }
+        .xp-modal-level-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+            margin: 4px 0 12px;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+        }
+        .xp-modal-level-top {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-dim);
+        }
+        .xp-modal-level-top strong { color: var(--accent); }
+        .xp-modal-level-bar {
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+        }
+        .xp-modal-level-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #a8d920, var(--accent));
+            box-shadow: 0 0 12px rgba(200, 241, 53, 0.45);
+            transition: width 0.8s var(--ease);
+        }
+        .xp-modal-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+        .xp-modal-chip {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+        }
+        .xp-modal-chip.streak { color: #ffb347; border-color: rgba(255, 179, 71, 0.3); }
+        .xp-modal-chip.level-up {
+            color: var(--accent);
+            border-color: rgba(200, 241, 53, 0.35);
+            background: rgba(200, 241, 53, 0.1);
+        }
+
+        /* ── PROFILE / FRIENDS REDESIGN ──────────────────── */
+        .amici-hub {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .amici-hero {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            border-radius: var(--radius);
+            background:
+                radial-gradient(ellipse 80% 100% at 0% 50%, rgba(200, 241, 53, 0.1), transparent 60%),
+                var(--surface);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-card);
+        }
+        .amici-hero-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent-dim);
+            border: 1px solid rgba(200, 241, 53, 0.25);
+            color: var(--accent);
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .amici-hero-copy { min-width: 0; flex: 1; }
+        .amici-hero-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 17px;
+            margin-bottom: 2px;
+        }
+        .amici-hero-sub {
+            font-size: 12px;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+        .amici-stats-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .amici-stat {
+            text-align: center;
+            padding: 12px 8px;
+            border-radius: var(--radius-sm);
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+        }
+        .amici-stat-val {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 18px;
+            color: var(--text);
+            display: block;
+        }
+        .amici-stat-val.accent { color: var(--accent); }
+        .amici-stat-val.will { color: var(--will-soft); }
+        .amici-stat-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        .amici-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .amici-section-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .amici-section-title {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 13px;
+            letter-spacing: 0.02em;
+            color: var(--text);
+        }
+        .amici-section-title i {
+            color: var(--accent);
+            font-size: 12px;
+        }
+        .amici-section-title.party i { color: #c084fc; }
+        .amici-section-title.req i { color: var(--will-soft); }
+        .amici-count-pill {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+        }
+        .amici-search-wrap {
+            position: relative;
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+        }
+        .amici-search-wrap .prof-search-input {
+            flex: 1;
+            padding-right: 14px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border-light);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+        }
+        .amici-search-wrap .prof-search-btn {
+            position: static;
+            transform: none;
+            flex-shrink: 0;
+            height: auto;
+            align-self: stretch;
+            padding: 0 16px;
+            background: var(--accent);
+            color: #121212;
+            border: none;
+            font-weight: 800;
+            border-radius: var(--radius-sm);
+        }
+        .amici-search-wrap .prof-search-btn:active {
+            transform: scale(0.97);
+        }
+        .friend-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .friend-username {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+        .friend-xp-bar-wrap {
+            margin-top: 8px;
+            height: 4px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+        }
+        .friend-xp-bar {
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #a8d920, var(--accent));
+            min-width: 2px;
+        }
+        .friend-xp-label {
+            margin-top: 5px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .friend-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .friend-btn {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 7px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-light);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+            cursor: pointer;
+            white-space: nowrap;
+            font-family: var(--font-body);
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .friend-btn.primary {
+            background: var(--accent-dim);
+            border-color: rgba(200, 241, 53, 0.3);
+            color: var(--accent);
+        }
+        .friend-btn.remove {
+            color: var(--text-dim);
+        }
+        .friend-btn.danger {
+            color: var(--diff-hard);
+            border-color: rgba(255, 79, 79, 0.25);
+        }
+        .friend-btn:active { opacity: 0.85; }
+        .friend-lvl-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-dim);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            padding: 2px 7px;
+            border-radius: 999px;
+            margin-top: 4px;
+        }
+        .confronto-card {
+            padding: 14px;
+            border-radius: var(--radius);
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-card);
+        }
+        .confronto-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .confronto-name {
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .confronto-xp {
+            font-family: var(--font-display);
+            font-weight: 800;
+            color: var(--accent);
+            font-size: 14px;
+        }
+        .confronto-bar {
+            height: 6px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.06);
+            overflow: hidden;
+        }
+        .confronto-bar > span {
+            display: block;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, var(--will), var(--accent));
+        }
+
+        .prof-hero {
+            background:
+                radial-gradient(ellipse 90% 70% at 50% 0%, rgba(200, 241, 53, 0.1), transparent 55%),
+                var(--surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            padding: 28px 20px 22px;
+            box-shadow: var(--shadow-card);
+            margin-bottom: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .prof-activity-card {
+            background: var(--surface);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-card);
+        }
+        .social-card {
+            background:
+                linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-card);
         }
 
         /* Guest empty states */
@@ -7250,7 +7995,12 @@
                     style="font-size: 15px; font-weight: 700; color: var(--text);">Bentornato/a,
                     Ospite</span>
             </div>
-            <div id="offline-indicator" style="display:none;background:rgba(255,79,79,0.9);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:8px;letter-spacing:0.5px;pointer-events:none;">OFFLINE</div>
+            <div id="sync-status" class="sync-status" aria-live="polite" role="status">
+                <span class="sync-dot" aria-hidden="true"></span>
+                <span id="sync-status-label">Sincronizzato</span>
+            </div>
+            <!-- legacy id kept for any residual refs -->
+            <div id="offline-indicator" style="display:none;" aria-hidden="true"></div>
         </header>
         <main class="content screen-stack" id="home-screen">
             <!-- XP CARD -->
@@ -7268,6 +8018,9 @@
                     <i class="fa-solid fa-fire"></i> <span id="streak-count">0</span>&nbsp;giorni di fila
                 </div>
             </div>
+
+            <!-- WILL COACH (every N completed quests) -->
+            <div id="will-coach-section" aria-live="polite"></div>
 
             <!-- ACTIVE QUEST -->
             <div class="section-header" style="margin-bottom: 16px;">
@@ -7575,6 +8328,14 @@
                         Accedi con un account per usare Will e vedere il tuo utilizzo giornaliero.
                     </div>
 
+                    <div class="sett-row" id="row-will-coach" style="margin-bottom:14px;">
+                        <div class="sett-row-left">
+                            <span class="sett-row-label">Utilizzo Will</span>
+                            <span class="sett-row-desc">Recap automatico di Will sulla home ogni poche quest</span>
+                        </div>
+                        <div class="toggle-switch active" id="toggle-will-coach"></div>
+                    </div>
+
                     <div id="will-usage-meter-wrap" class="will-usage-block" style="display:none;">
                         <div class="will-usage-top">
                             <span class="will-usage-label">Richieste Will (gratuite)</span>
@@ -7755,7 +8516,7 @@
             </div>
 
             <!-- ── SUB-SECTION: PROFILO ── -->
-            <div id="sub-profilo" class="profile-sub-section">
+            <div id="sub-profilo" class="profile-sub-section" style="padding: 20px;">
 
                 <!-- Guest view -->
                 <div id="profile-guest-view" class="prof-empty-state" style="display:none;">
@@ -7788,52 +8549,92 @@
 
                 <!-- Logged in -->
                 <div id="amici-logged-view" style="display:none;">
-                    <!-- Search bar -->
-                    <div class="prof-search-wrap">
-                        <input type="text" id="friend-search-input" placeholder="Cerca @username"
-                            class="prof-search-input">
-                        <button id="btn-friend-search" class="prof-search-btn">Cerca</button>
-                    </div>
-                    <div id="friend-search-result" style="margin-bottom:24px;"></div>
+                    <div class="amici-hub">
+                        <div class="amici-hero">
+                            <div class="amici-hero-icon"><i class="fa-solid fa-user-group"></i></div>
+                            <div class="amici-hero-copy">
+                                <div class="amici-hero-title">La tua squadra</div>
+                                <div class="amici-hero-sub">Cerca amici, accetta inviti party e confronta gli XP della settimana.</div>
+                            </div>
+                        </div>
 
-                    <!-- Party quest invites -->
-                    <div id="party-invites-section" style="display:none; margin-bottom:24px;">
-                        <span class="prof-section-label">Inviti quest in arrivo</span>
-                        <div id="party-invites-list"></div>
-                    </div>
+                        <div class="amici-stats-strip" id="amici-stats-strip">
+                            <div class="amici-stat">
+                                <span class="amici-stat-val accent" id="amici-stat-friends">0</span>
+                                <span class="amici-stat-label">Amici</span>
+                            </div>
+                            <div class="amici-stat">
+                                <span class="amici-stat-val will" id="amici-stat-pending">0</span>
+                                <span class="amici-stat-label">Richieste</span>
+                            </div>
+                            <div class="amici-stat">
+                                <span class="amici-stat-val" id="amici-stat-party">0</span>
+                                <span class="amici-stat-label">Party</span>
+                            </div>
+                        </div>
 
-                    <!-- Pending requests -->
-                    <div id="pending-requests-section" style="display:none; margin-bottom:24px;">
-                        <span class="prof-section-label">Richieste in arrivo</span>
-                        <div id="pending-requests-list"></div>
-                    </div>
+                        <div class="amici-section">
+                            <div class="amici-section-head">
+                                <span class="amici-section-title"><i class="fa-solid fa-magnifying-glass"></i> Cerca</span>
+                            </div>
+                            <div class="amici-search-wrap">
+                                <input type="text" id="friend-search-input" placeholder="Cerca @username"
+                                    class="prof-search-input" autocomplete="off" autocorrect="off" spellcheck="false">
+                                <button id="btn-friend-search" class="prof-search-btn">Cerca</button>
+                            </div>
+                            <div id="friend-search-result"></div>
+                        </div>
 
-                    <!-- Friends list -->
-                    <span class="prof-section-label">I tuoi amici</span>
-                    <div id="friends-list"></div>
+                        <div id="party-invites-section" class="amici-section" style="display:none;">
+                            <div class="amici-section-head">
+                                <span class="amici-section-title party"><i class="fa-solid fa-user-group"></i> Inviti party</span>
+                                <span class="amici-count-pill" id="party-invites-count">0</span>
+                            </div>
+                            <div id="party-invites-list"></div>
+                        </div>
 
-                    <!-- Confronto settimanale -->
-                    <span class="prof-section-label" style="margin-top:24px; display:block;">Confronto
-                        settimanale</span>
-                    <div id="confronto-guest-view" style="display:none; text-align:center; padding:20px 0;">
-                        <i class="fa-solid fa-ranking-star"
-                            style="font-size:48px; color:var(--text-muted); display:block; margin:0 auto 16px;"></i>
-                        <div
-                            style="font-family:var(--font-display); font-weight:800; font-size:18px; margin-bottom:8px;">
-                            Confronto settimanale</div>
-                        <div style="color:var(--text-dim); font-size:14px;">Aggiungi amici per confrontare i vostri XP
-                            settimanali.</div>
-                    </div>
-                    <div id="confronto-logged-view" style="display:none;"></div>
+                        <div id="pending-requests-section" class="amici-section" style="display:none;">
+                            <div class="amici-section-head">
+                                <span class="amici-section-title req"><i class="fa-solid fa-envelope"></i> Richieste</span>
+                                <span class="amici-count-pill" id="pending-requests-count">0</span>
+                            </div>
+                            <div id="pending-requests-list"></div>
+                        </div>
 
-                    <!-- Feed amici -->
-                    <span class="prof-section-label" style="margin-top:24px; display:block;">Feed amici</span>
-                    <div id="squad-feed-list">
-                        <div class="prof-activity-card"
-                            style="padding:20px; text-align:center; color:var(--text-muted); font-size:14px;">
-                            <i class="fa-solid fa-ghost"
-                                style="font-size:28px; display:block; margin:0 auto 10px; color:var(--text-muted);"></i>
-                            Nessuna attività recente degli amici.
+                        <div class="amici-section">
+                            <div class="amici-section-head">
+                                <span class="amici-section-title"><i class="fa-solid fa-heart"></i> I tuoi amici</span>
+                                <span class="amici-count-pill" id="friends-list-count">0</span>
+                            </div>
+                            <div id="friends-list"></div>
+                        </div>
+
+                        <div class="amici-section">
+                            <div class="amici-section-head">
+                                <span class="amici-section-title"><i class="fa-solid fa-ranking-star"></i> Confronto settimanale</span>
+                            </div>
+                            <div id="confronto-guest-view" style="display:none; text-align:center; padding:16px 0;">
+                                <i class="fa-solid fa-ranking-star"
+                                    style="font-size:36px; color:var(--text-muted); display:block; margin:0 auto 12px;"></i>
+                                <div style="font-family:var(--font-display); font-weight:800; font-size:16px; margin-bottom:6px;">
+                                    Confronto settimanale</div>
+                                <div style="color:var(--text-dim); font-size:13px;">Aggiungi amici per confrontare i vostri XP settimanali.</div>
+                            </div>
+                            <div id="confronto-logged-view" style="display:none;"></div>
+                        </div>
+
+                        <div class="amici-section">
+                            <div class="amici-section-head">
+                                <span class="amici-section-title"><i class="fa-solid fa-rss"></i> Feed amici</span>
+                            </div>
+                            <div id="squad-feed-list">
+                                <div class="prof-activity-card"
+                                    style="padding:20px; text-align:center; color:var(--text-muted); font-size:14px;">
+                                    <i class="fa-solid fa-ghost"
+                                        style="font-size:28px; display:block; margin:0 auto 10px; color:var(--text-muted);"></i>
+                                    Nessuna attività recente degli amici.
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -7961,10 +8762,21 @@
     <!-- ────────── XP MODAL ────────── -->
     <div class="modal-overlay" id="xp-modal">
         <div class="modal-content">
+            <div class="xp-modal-particles" id="xp-modal-particles" aria-hidden="true"></div>
             <div class="modal-icon"><i class="fa-solid fa-gem"></i></div>
             <div class="modal-xp" id="modal-xp-text">+1000 XP</div>
             <div class="modal-quest-name" id="modal-quest-name">Quest name</div>
             <div class="modal-hype" id="modal-hype">Leggendario!</div>
+            <div class="xp-modal-meta" id="xp-modal-meta"></div>
+            <div class="xp-modal-level-row" id="xp-modal-level-row">
+                <div class="xp-modal-level-top">
+                    <span>Livello <strong id="xp-modal-level-label">1</strong></span>
+                    <span id="xp-modal-level-pct">0%</span>
+                </div>
+                <div class="xp-modal-level-bar">
+                    <div class="xp-modal-level-fill" id="xp-modal-level-fill"></div>
+                </div>
+            </div>
             <div class="modal-buttons">
                 <button class="btn-share" id="btn-share-card"><i class="fa-solid fa-share-nodes"></i>Condividi</button>
                 <button class="btn-modal-close" id="btn-close-modal">Continua</button>
@@ -8601,8 +9413,30 @@
             completedChains: [],
             chainProgress: {},
             partyQuestsCompleted: [],
-            willUsage: { count: 0, windowStart: 0 }
+            willUsage: { count: 0, windowStart: 0 },
+            willCoach: null,
+            willCoachDismissedAt: 0,
+            willCoachLastAtCount: 0,
+            willCoachEnabled: true,
+            willCoachLastDay: null
         };
+
+        const WILL_COACH_EVERY = 5;
+
+        /** Compact XP for tight profile boxes: 54000 → 54K, 1e6 → 1M */
+        function formatCompactXp(n) {
+            const v = Math.max(0, Math.round(Number(n) || 0));
+            if (v < 1000) return String(v);
+            const trim = (x) => {
+                const s = x.toFixed(1);
+                return s.endsWith('.0') ? s.slice(0, -2) : s;
+            };
+            if (v < 1_000_000) return trim(v / 1000) + 'K';
+            if (v < 1_000_000_000) return trim(v / 1_000_000) + 'M';
+            return trim(v / 1_000_000_000) + 'B';
+        }
+        const OFFLINE_QUEUE_KEY = 'more_offline_queue_v1';
+        const MAX_OFFLINE_QUEUE = 40;
 
         const WILL_FREE_DAILY_LIMIT = 5;
         const WILL_WINDOW_MS = 24 * 60 * 60 * 1000;
@@ -8831,6 +9665,300 @@
         window.openSettingsFromWill = openSettingsFromWill;
         window.updateWillUsageUI = updateWillUsageUI;
 
+        /* ── WILL COACH (post-quest insights) ─────────────── */
+        let _willCoachInFlight = false;
+
+        function coachMilestone(count) {
+            return Math.floor((Number(count) || 0) / WILL_COACH_EVERY) * WILL_COACH_EVERY;
+        }
+
+        function hideWillCoachSection() {
+            const el = document.getElementById('will-coach-section');
+            if (!el) return;
+            el.classList.remove('is-visible');
+            el.innerHTML = '';
+            el.style.display = 'none';
+        }
+
+        function persistWillCoach(coach, atCount) {
+            state.willCoach = coach;
+            state.willCoachLastAtCount = atCount;
+            state.willCoachDismissedAt = 0;
+            // Hidden anti-abuse: at most one auto-recap per calendar day
+            try {
+                state.willCoachLastDay = (typeof getRomeDateString === 'function')
+                    ? getRomeDateString()
+                    : new Date().toISOString().slice(0, 10);
+            } catch (_) {
+                state.willCoachLastDay = new Date().toISOString().slice(0, 10);
+            }
+            saveState();
+            scheduleCloudSync({ immediate: true, reason: 'will-coach' });
+            renderWillCoachSection();
+        }
+
+        function setWillCoachEnabled(on) {
+            state.willCoachEnabled = !!on;
+            if (!state.willCoachEnabled) {
+                // Turning off via toggle or X: hide and stop auto-recap
+                state.willCoachDismissedAt = Date.now();
+            } else {
+                // Re-enable only via toggle: allow showing last recap again
+                state.willCoachDismissedAt = 0;
+            }
+            saveState();
+            scheduleCloudSync({ immediate: true, reason: 'will-coach-pref' });
+            const t = $('toggle-will-coach');
+            if (t) t.classList.toggle('active', state.willCoachEnabled);
+            renderWillCoachSection();
+            if (state.willCoachEnabled) maybeScheduleWillCoach();
+        }
+
+        function pickCoachFallbackTitles(max = 3) {
+            const completedTitles = new Set((state.completed || []).map(c => c.title));
+            const pool = (typeof getFullPool === 'function' ? getFullPool() : (window.QUESTS_POOL || []))
+                .filter(q => q && q.title && !q.isBoss && q.difficulty !== 'boss' && !completedTitles.has(q.title));
+            // Prefer medium/easy mix
+            const shuffled = pool.slice().sort(() => Math.random() - 0.5);
+            return shuffled.slice(0, max).map(q => ({
+                title: q.title,
+                reason: 'Scelta per continuare il tuo ritmo',
+                difficulty: q.difficulty,
+                xp: q.xp
+            }));
+        }
+
+        function buildLocalCoach(atCount) {
+            const name = (state.displayName || state.username || 'avventuriero').toString().replace(/^@/, '').split(' ')[0];
+            const recent = (state.completed || []).slice(-3).map(c => c.title).filter(Boolean);
+            const recentBit = recent.length
+                ? `Hai appena fatto: ${recent.join(', ')}.`
+                : 'Stai costruendo il tuo percorso.';
+            return {
+                message: `${name}, complimenti per le ${atCount} quest. ${recentBit} Ecco cosa ti consiglio dopo.`,
+                picks: pickCoachFallbackTitles(3),
+                generatedAt: Date.now(),
+                atCount,
+                source: 'local'
+            };
+        }
+
+        function renderWillCoachSection() {
+            const el = document.getElementById('will-coach-section');
+            if (!el) return;
+
+            // Master switch: Utilizzo Will (default on). X or toggle-off both disable.
+            if (state.willCoachEnabled === false) {
+                hideWillCoachSection();
+                return;
+            }
+
+            const coach = state.willCoach;
+            if (!coach || !coach.message) {
+                hideWillCoachSection();
+                return;
+            }
+            if (state.willCoachDismissedAt && state.willCoachDismissedAt >= (coach.generatedAt || 0)) {
+                hideWillCoachSection();
+                return;
+            }
+
+            const name = (state.displayName || state.username || 'avventuriero').toString().replace(/^@/, '').split(' ')[0];
+            const picks = Array.isArray(coach.picks) ? coach.picks.slice(0, 3) : [];
+            const picksHtml = picks.map((p, i) => {
+                const title = escapeHtml(p.title || 'Quest');
+                const reason = escapeHtml(p.reason || 'Prossima avventura consigliata');
+                return `<button type="button" class="will-coach-pick" data-coach-title="${escapeHtml(p.title || '')}" data-idx="${i}">
+                    <span class="will-coach-pick-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
+                    <span style="min-width:0;flex:1;">
+                        <div class="will-coach-pick-title">${title}</div>
+                        <div class="will-coach-pick-reason">${reason}</div>
+                    </span>
+                </button>`;
+            }).join('');
+
+            el.style.display = 'block';
+            el.classList.add('is-visible');
+            el.innerHTML = `
+                <div class="will-coach-card">
+                    <div class="will-coach-head">
+                        <span class="will-coach-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> Will</span>
+                        <button type="button" class="will-coach-dismiss" id="will-coach-dismiss" aria-label="Nascondi">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="will-coach-title">Hey ${escapeHtml(name)}, ecco il punto</div>
+                    <div class="will-coach-body">${escapeHtml(coach.message)}</div>
+                    ${picksHtml ? `<div class="will-coach-picks">${picksHtml}</div>` : ''}
+                </div>`;
+
+            const dismissBtn = document.getElementById('will-coach-dismiss');
+            if (dismissBtn) {
+                dismissBtn.addEventListener('click', () => {
+                    // X = disattiva recap (solo riattivabile da Impostazioni → Utilizzo Will)
+                    setWillCoachEnabled(false);
+                    showToast('Recap Will disattivato');
+                });
+            }
+            el.querySelectorAll('.will-coach-pick').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const title = btn.getAttribute('data-coach-title');
+                    if (!title) return;
+                    if (typeof window.searchSelectQuest === 'function') {
+                        window.searchSelectQuest(title);
+                    } else {
+                        const pool = typeof getFullPool === 'function' ? getFullPool() : (window.QUESTS_POOL || []);
+                        const found = pool.find(q => q.title === title);
+                        if (!found) { showToast('Quest non trovata'); return; }
+                        guardPartyQuestChange(() => {
+                            assignCurrentQuest({ ...found });
+                            saveState();
+                            renderActiveQuest();
+                            showToast('Quest assegnata!');
+                        });
+                    }
+                });
+            });
+        }
+
+        function maybeScheduleWillCoach() {
+            // Always paint existing coach first (respects enabled flag)
+            renderWillCoachSection();
+
+            if (state.willCoachEnabled === false) return;
+            if (!isWillLoggedIn()) return;
+
+            const count = (state.completed || []).length;
+            const lastAt = Number(state.willCoachLastAtCount || 0);
+            // Every ~5 quests since last recap
+            if (count < WILL_COACH_EVERY) return;
+            if (count - lastAt < WILL_COACH_EVERY) return;
+
+            // Hidden anti-abuse: max 1 recap / day (not shown in UI)
+            let today = '';
+            try {
+                today = (typeof getRomeDateString === 'function')
+                    ? getRomeDateString()
+                    : new Date().toISOString().slice(0, 10);
+            } catch (_) {
+                today = new Date().toISOString().slice(0, 10);
+            }
+            if (state.willCoachLastDay && state.willCoachLastDay === today) return;
+
+            if (!navigator.onLine) {
+                persistWillCoach(buildLocalCoach(count), count);
+                return;
+            }
+            fetchWillCoachInsights(count).catch(() => {
+                persistWillCoach(buildLocalCoach(count), count);
+            });
+        }
+
+        async function fetchWillCoachInsights(atCount) {
+            if (_willCoachInFlight) return;
+            if (!isWillLoggedIn()) return;
+
+            const apiKey = getActiveWillApiKey();
+            // Never block coach on free quota — it's automatic and must appear.
+            // Only skip if no key at all (should not happen with shared key).
+            if (!apiKey) {
+                persistWillCoach(buildLocalCoach(atCount), atCount);
+                return;
+            }
+
+            _willCoachInFlight = true;
+            try {
+                const name = (state.displayName || state.username || 'avventuriero').toString().replace(/^@/, '').split(' ')[0];
+                const recent = (state.completed || []).slice(-5).map(c => c.title).filter(Boolean);
+                const completedTitles = new Set((state.completed || []).map(c => c.title));
+                const catalog = (typeof getFullPool === 'function' ? getFullPool() : (window.QUESTS_POOL || []))
+                    .filter(q => q && q.title && !q.isBoss && q.difficulty !== 'boss' && !completedTitles.has(q.title))
+                    .slice(0, 24)
+                    .map((q, i) => ({ i, t: q.title }));
+
+                const system = `Sei Will, coach di more. Italiano, caldo e concreto.
+OBBLIGATORIO: recommendations con ALMENO 1 item (max 3). Usa SOLO titoli del catalogo (campo t). Mai inventare.
+JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esatto","reason":"max 12 parole"}]}`;
+
+                const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + apiKey,
+                        'Content-Type': 'application/json',
+                        'HTTP-Referer': (typeof location !== 'undefined' && location.origin) ? location.origin : 'https://more.app',
+                        'X-Title': 'more Will Coach'
+                    },
+                    body: JSON.stringify({
+                        model: 'openrouter/free',
+                        temperature: 0.4,
+                        max_tokens: 350,
+                        messages: [
+                            { role: 'system', content: system },
+                            { role: 'user', content: JSON.stringify({ name, n: atCount, recent, catalog }) }
+                        ]
+                    })
+                });
+
+                if (!res.ok) throw new Error('coach http ' + res.status);
+
+                const body = await res.json();
+                const content = body?.choices?.[0]?.message?.content;
+                if (!content) throw new Error('empty coach');
+
+                let data;
+                const cleaned = String(content).replace(/```json|```/g, '').trim();
+                const start = cleaned.indexOf('{');
+                const end = cleaned.lastIndexOf('}');
+                data = JSON.parse(start >= 0 ? cleaned.slice(start, end + 1) : cleaned);
+
+                let message = String(data.message || data.intro || '').trim().slice(0, 360);
+                const fullPool = typeof getFullPool === 'function' ? getFullPool() : (window.QUESTS_POOL || []);
+                const picks = [];
+                const recs = Array.isArray(data.recommendations) ? data.recommendations : [];
+                for (const r of recs) {
+                    const title = (r && (r.title || r.t)) ? String(r.title || r.t).trim() : '';
+                    if (!title) continue;
+                    let found = fullPool.find(q => q.title === title);
+                    if (!found) {
+                        const low = title.toLowerCase();
+                        found = fullPool.find(q => (q.title || '').toLowerCase() === low
+                            || (q.title || '').toLowerCase().includes(low)
+                            || low.includes((q.title || '').toLowerCase()));
+                    }
+                    if (!found || completedTitles.has(found.title)) continue;
+                    if (picks.some(p => p.title === found.title)) continue;
+                    picks.push({
+                        title: found.title,
+                        reason: String(r.reason || 'Consigliata per te').slice(0, 80),
+                        difficulty: found.difficulty,
+                        xp: found.xp
+                    });
+                    if (picks.length >= 3) break;
+                }
+
+                // Guarantee ≥1 pick
+                if (!picks.length) {
+                    picks.push(...pickCoachFallbackTitles(2));
+                }
+                if (!message) {
+                    message = `${name}, bel traguardo: ${atCount} quest. Ecco le prossime che ti consiglio.`;
+                }
+
+                persistWillCoach({
+                    message,
+                    picks,
+                    generatedAt: Date.now(),
+                    atCount,
+                    source: 'ai'
+                }, atCount);
+            } catch (err) {
+                console.warn('[will-coach]', err);
+                persistWillCoach(buildLocalCoach(atCount), atCount);
+            } finally {
+                _willCoachInFlight = false;
+            }
+        }
+
         function stringHashCode(str) {
             let hash = 0;
             if (str.length === 0) return hash;
@@ -8874,6 +10002,11 @@
 
         function ensureStateShape() {
             if (!Array.isArray(state.partyQuestsCompleted)) state.partyQuestsCompleted = [];
+            if (state.willCoach !== null && typeof state.willCoach !== 'object') state.willCoach = null;
+            if (typeof state.willCoachDismissedAt !== 'number') state.willCoachDismissedAt = 0;
+            if (typeof state.willCoachLastAtCount !== 'number') state.willCoachLastAtCount = 0;
+            if (typeof state.willCoachEnabled !== 'boolean') state.willCoachEnabled = true;
+            if (state.willCoachLastDay != null && typeof state.willCoachLastDay !== 'string') state.willCoachLastDay = null;
             ensureWillUsageShape();
             resetWillWindowIfExpired({ persist: false });
             ensureCurrentQuestAssignedAt();
@@ -8889,7 +10022,10 @@
             if (!quest) {
                 state.currentQuest = null;
             } else {
+                // Always start clean: party metadata is attached only by sendPartyInvite.
+                // Stripping avoids reintroducing stale partyInviteId from bookmarks/cloud copies.
                 state.currentQuest = { ...quest, assignedAt: Date.now() };
+                clearPartyMetadataFromQuest(state.currentQuest);
                 if (generated) state.currentQuestGeneratedAt = Date.now();
             }
             scheduleStaleQuestReminder();
@@ -9214,6 +10350,7 @@
         function saveState() {
             saveLocal();
             scheduleCloudSync({ reason: 'state' });
+            updateSyncStatusUI();
         }
 
         let cloudSyncInFlight = false;
@@ -9222,6 +10359,461 @@
         let cloudSyncRetryTimer = null;
         let cloudSyncRetryDelay = 4000;
         let lastSyncedCloudFingerprint = null;
+        let lastSyncOkAt = 0;
+        let lastSyncError = null;
+        let syncStatusHideTimer = null;
+        let offlineQueueProcessing = false;
+
+        /* ── OFFLINE ACTION QUEUE ─────────────────────────── */
+        function loadOfflineQueue() {
+            try {
+                const raw = localStorage.getItem(OFFLINE_QUEUE_KEY);
+                const arr = raw ? JSON.parse(raw) : [];
+                return Array.isArray(arr) ? arr : [];
+            } catch (_) {
+                return [];
+            }
+        }
+
+        function persistOfflineQueue(queue) {
+            try {
+                localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue.slice(-MAX_OFFLINE_QUEUE)));
+            } catch (error) {
+                showFirestoreError(error, 'Coda offline piena. Libera spazio sul dispositivo.');
+            }
+            updateSyncStatusUI();
+        }
+
+        function enqueueOfflineAction(type, payload = {}) {
+            const queue = loadOfflineQueue();
+            // Deduplicate identical friend/party ops by type+key
+            const key = payload && payload._key ? String(payload._key) : null;
+            if (key) {
+                const idx = queue.findIndex(a => a.type === type && a.payload && a.payload._key === key);
+                if (idx >= 0) queue.splice(idx, 1);
+            }
+            queue.push({
+                id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+                type,
+                payload,
+                createdAt: Date.now(),
+                attempts: 0
+            });
+            persistOfflineQueue(queue);
+            if (navigator.onLine) {
+                processOfflineQueue({ reason: 'enqueue' });
+            }
+            return true;
+        }
+
+        async function processOfflineQueue({ reason = 'manual' } = {}) {
+            if (offlineQueueProcessing || !navigator.onLine || !fb || !currentUser) return false;
+            const queue = loadOfflineQueue();
+            if (!queue.length) {
+                updateSyncStatusUI();
+                return false;
+            }
+            offlineQueueProcessing = true;
+            updateSyncStatusUI({ force: 'syncing', label: 'Coda offline…' });
+            const remaining = [];
+            try {
+                for (const action of queue) {
+                    try {
+                        await executeOfflineAction(action);
+                    } catch (err) {
+                        action.attempts = (action.attempts || 0) + 1;
+                        action.lastError = String(err?.message || err || 'error');
+                        if (action.attempts < 5) remaining.push(action);
+                        else console.warn('[offline-queue] dropped', action.type, action.lastError);
+                    }
+                }
+                persistOfflineQueue(remaining);
+                if (remaining.length === 0 && reason !== 'silent') {
+                    // all drained
+                }
+                // Always push local state after mutations
+                await scheduleCloudSync({ immediate: true, reason: 'offline-queue' });
+                return true;
+            } finally {
+                offlineQueueProcessing = false;
+                updateSyncStatusUI();
+            }
+        }
+
+        async function executeOfflineAction(action) {
+            if (!fb || !currentUser) throw new Error('not ready');
+            const p = action.payload || {};
+            switch (action.type) {
+                case 'friend_reply': {
+                    const reqRef = fb.doc(fb.db, 'comparison_requests', p.reqId);
+                    await fb.runTransaction(fb.db, async (transaction) => {
+                        const snap = await transaction.get(reqRef);
+                        if (!snap.exists()) return;
+                        const data = snap.data();
+                        if (data.to !== currentUser.uid && data.from !== currentUser.uid) {
+                            throw new Error('Non autorizzato');
+                        }
+                        if (p.status === 'declined') {
+                            transaction.delete(reqRef);
+                        } else {
+                            if (data.status === 'accepted') return;
+                            if (data.status !== 'pending') return;
+                            transaction.update(reqRef, {
+                                status: 'accepted',
+                                acceptedAt: fb.serverTimestamp(),
+                                updatedAt: fb.serverTimestamp()
+                            });
+                        }
+                    });
+                    return;
+                }
+                case 'party_accept':
+                case 'party_decline': {
+                    const inviteRef = fb.doc(fb.db, 'comparison_requests', p.inviteId);
+                    await fb.runTransaction(fb.db, async (transaction) => {
+                        const snap = await transaction.get(inviteRef);
+                        if (!snap.exists()) return;
+                        const invite = normalizePartyInviteFromFriendDoc(snap.data(), snap.id, inviteRef);
+                        if (!invite || invite.toUid !== currentUser.uid) return;
+                        if (invite.status !== 'pending') return;
+                        if (action.type === 'party_accept') {
+                            transaction.update(inviteRef, {
+                                'partyInvite.status': 'accepted',
+                                'partyInvite.acceptedAt': fb.serverTimestamp(),
+                                updatedAt: fb.serverTimestamp()
+                            });
+                        } else {
+                            transaction.update(inviteRef, {
+                                'partyInvite.status': 'declined',
+                                'partyInvite.declinedAt': fb.serverTimestamp(),
+                                updatedAt: fb.serverTimestamp()
+                            });
+                        }
+                    });
+                    return;
+                }
+                case 'party_delete_quest': {
+                    // Re-run mark using stored snapshot fields
+                    if (p.quest) {
+                        const prev = state.currentQuest;
+                        // Temporary attach if needed for markPartyInviteDeletedForQuest
+                        if (!state.currentQuest?.partyInviteId && p.quest.partyInviteId) {
+                            // use payload quest directly via a thin local call
+                            await markPartyInviteDeletedForQuest(p.quest);
+                        } else {
+                            await markPartyInviteDeletedForQuest(p.quest);
+                        }
+                        void prev;
+                    }
+                    return;
+                }
+                case 'cloud_sync':
+                    return;
+                default:
+                    console.warn('[offline-queue] unknown type', action.type);
+            }
+        }
+
+        /* ── SYNC STATUS UI ───────────────────────────────── */
+        function updateSyncStatusUI(opts = {}) {
+            const el = document.getElementById('sync-status');
+            const labelEl = document.getElementById('sync-status-label');
+            if (!el || !labelEl) return;
+
+            if (syncStatusHideTimer) {
+                clearTimeout(syncStatusHideTimer);
+                syncStatusHideTimer = null;
+            }
+
+            el.classList.remove('offline', 'syncing', 'pending', 'synced', 'is-visible');
+
+            let mode = opts.force || null;
+            let label = opts.label || '';
+
+            if (!mode) {
+                if (!navigator.onLine) {
+                    mode = 'offline';
+                    label = 'Offline';
+                } else if (cloudSyncInFlight || offlineQueueProcessing) {
+                    mode = 'syncing';
+                    label = offlineQueueProcessing ? 'Coda offline…' : 'Sincronizzo…';
+                } else {
+                    const qLen = loadOfflineQueue().length;
+                    if (qLen > 0 || cloudSyncQueued) {
+                        mode = 'pending';
+                        label = qLen > 0 ? `In coda (${qLen})` : 'In attesa…';
+                    } else if (lastSyncError) {
+                        mode = 'pending';
+                        label = 'Sync in ritardo';
+                    } else if (lastSyncOkAt && (Date.now() - lastSyncOkAt) < 4000) {
+                        mode = 'synced';
+                        label = 'Sincronizzato';
+                    } else if (currentUser && !isGuest) {
+                        mode = 'synced';
+                        label = lastSyncOkAt
+                            ? `Salvato ${formatSyncRelative(lastSyncOkAt)}`
+                            : 'Pronto';
+                    } else {
+                        mode = null;
+                    }
+                }
+            }
+
+            if (!mode) {
+                el.classList.remove('is-visible');
+                return;
+            }
+
+            el.classList.add(mode, 'is-visible');
+            labelEl.textContent = label;
+
+            // Auto-hide "synced" after a few seconds when online and idle
+            if (mode === 'synced' && navigator.onLine && !opts.keep) {
+                syncStatusHideTimer = setTimeout(() => {
+                    if (navigator.onLine && !cloudSyncInFlight && loadOfflineQueue().length === 0) {
+                        el.classList.remove('is-visible');
+                    }
+                }, 3200);
+            }
+        }
+
+        function formatSyncRelative(ts) {
+            const sec = Math.max(0, Math.floor((Date.now() - ts) / 1000));
+            if (sec < 10) return 'ora';
+            if (sec < 60) return `${sec}s fa`;
+            const min = Math.floor(sec / 60);
+            if (min < 60) return `${min}m fa`;
+            const h = Math.floor(min / 60);
+            return `${h}h fa`;
+        }
+
+        /* ── CONFLICT RESOLUTION MERGE ────────────────────── */
+        function completedItemKey(item) {
+            if (!item) return '';
+            if (item.partyInviteId) return `party:${item.partyInviteId}`;
+            return `${item.title || ''}|${item.completedAt || ''}|${item.xp || 0}`;
+        }
+
+        function mergeUniqueByKey(localArr, cloudArr, keyFn) {
+            const map = new Map();
+            (cloudArr || []).forEach(item => {
+                const k = keyFn(item);
+                if (k) map.set(k, item);
+            });
+            (localArr || []).forEach(item => {
+                const k = keyFn(item);
+                if (!k) return;
+                const existing = map.get(k);
+                if (!existing) map.set(k, item);
+                else {
+                    // Prefer richer record (note/photo) or later timestamp
+                    const eT = new Date(existing.completedAt || 0).getTime();
+                    const iT = new Date(item.completedAt || 0).getTime();
+                    const eScore = (existing.note ? 1 : 0) + (existing.photo ? 1 : 0);
+                    const iScore = (item.note ? 1 : 0) + (item.photo ? 1 : 0);
+                    if (iScore > eScore || (iScore === eScore && iT >= eT)) map.set(k, item);
+                }
+            });
+            return [...map.values()];
+        }
+
+        function mergeCurrentQuest(localQ, cloudQ, localT, cloudT) {
+            if (!localQ && !cloudQ) return null;
+            if (!localQ) return cloudQ;
+            if (!cloudQ) return localQ;
+
+            const lAt = Number(localQ.assignedAt || 0);
+            const cAt = Number(cloudQ.assignedAt || 0);
+            const localHasParty = !!localQ.partyInviteId;
+            const cloudHasParty = !!cloudQ.partyInviteId;
+
+            // Prefer quest with active party if the other is same title without party (cancel race)
+            if (localHasParty && !cloudHasParty && localQ.title === cloudQ.title) {
+                // Cloud may have cleared party after cancel on another device
+                if (cloudT >= localT) return cloudQ;
+            }
+            if (cloudHasParty && !localHasParty && localQ.title === cloudQ.title) {
+                if (localT >= cloudT) return localQ;
+            }
+
+            // Prefer more recently assigned
+            if (lAt !== cAt) return lAt >= cAt ? localQ : cloudQ;
+            // Tie-break: newer device state
+            return localT >= cloudT ? localQ : cloudQ;
+        }
+
+        function mergeUserStates(localState, cloudState) {
+            if (!cloudState) return localState;
+            if (!localState) return cloudState;
+
+            const localT = Number(localState.updatedAt || 0);
+            const cloudT = Number(cloudState.updatedAt || 0);
+
+            const mergedCompleted = mergeUniqueByKey(
+                localState.completed || [],
+                cloudState.completed || [],
+                completedItemKey
+            ).sort((a, b) => new Date(a.completedAt || 0) - new Date(b.completedAt || 0));
+
+            const mergedBoss = mergeUniqueByKey(
+                localState.bossCompleted || [],
+                cloudState.bossCompleted || [],
+                completedItemKey
+            );
+
+            const mergedParty = mergeUniqueByKey(
+                localState.partyQuestsCompleted || [],
+                cloudState.partyQuestsCompleted || [],
+                (p) => p?.inviteId || `${p?.questTitle}|${p?.completedAt}`
+            );
+
+            const mergeIdArr = (a, b) => [...new Set([...(a || []), ...(b || [])])];
+
+            const pickScalar = (key, preferMax = false) => {
+                if (preferMax) {
+                    return Math.max(Number(localState[key] || 0), Number(cloudState[key] || 0));
+                }
+                if (localState[key] === undefined || localState[key] === null || localState[key] === '') {
+                    return cloudState[key];
+                }
+                if (cloudState[key] === undefined || cloudState[key] === null || cloudState[key] === '') {
+                    return localState[key];
+                }
+                return localT >= cloudT ? localState[key] : cloudState[key];
+            };
+
+            // Bookmarks: union by title, cap 3, prefer local order if newer
+            const bmMap = new Map();
+            const bmOrder = localT >= cloudT
+                ? [...(cloudState.bookmarkedQuests || []), ...(localState.bookmarkedQuests || [])]
+                : [...(localState.bookmarkedQuests || []), ...(cloudState.bookmarkedQuests || [])];
+            bmOrder.forEach(b => {
+                if (b?.title && !bmMap.has(b.title)) bmMap.set(b.title, b);
+            });
+            const bookmarkedQuests = [...bmMap.values()].slice(0, 3);
+
+            // Stats: rebuild later via recalculate; still merge raw as fallback
+            const mergeStats = () => {
+                const diffs = ['easy', 'medium', 'hard'];
+                const out = {};
+                diffs.forEach(d => {
+                    const l = (localState.stats && localState.stats[d]) || { count: 0, totalXp: 0 };
+                    const c = (cloudState.stats && cloudState.stats[d]) || { count: 0, totalXp: 0 };
+                    out[d] = {
+                        count: Math.max(l.count || 0, c.count || 0),
+                        totalXp: Math.max(l.totalXp || 0, c.totalXp || 0)
+                    };
+                });
+                return out;
+            };
+
+            // XP history by date: sum max
+            const xpHistMap = new Map();
+            [...(cloudState.xpHistory || []), ...(localState.xpHistory || [])].forEach(h => {
+                if (!h?.date) return;
+                const prev = xpHistMap.get(h.date);
+                if (!prev || (h.xp || 0) > (prev.xp || 0)) xpHistMap.set(h.date, { date: h.date, xp: h.xp || 0 });
+            });
+
+            const merged = {
+                ...cloudState,
+                ...localState,
+                completed: mergedCompleted,
+                bossCompleted: mergedBoss,
+                partyQuestsCompleted: mergedParty,
+                achievements: mergeIdArr(localState.achievements, cloudState.achievements),
+                completedChains: mergeIdArr(localState.completedChains, cloudState.completedChains),
+                dailyBonusAwards: mergeUniqueByKey(
+                    localState.dailyBonusAwards || [],
+                    cloudState.dailyBonusAwards || [],
+                    (x) => x?.date || x?.questTitle || JSON.stringify(x)
+                ),
+                chainBonusAwards: mergeUniqueByKey(
+                    localState.chainBonusAwards || [],
+                    cloudState.chainBonusAwards || [],
+                    (x) => x?.chainId || x?.id || JSON.stringify(x)
+                ),
+                bookmarkedQuests,
+                customQuests: mergeUniqueByKey(
+                    localState.customQuests || [],
+                    cloudState.customQuests || [],
+                    (q) => q?.title || ''
+                ),
+                currentQuest: mergeCurrentQuest(localState.currentQuest, cloudState.currentQuest, localT, cloudT),
+                streak: Math.max(Number(localState.streak || 0), Number(cloudState.streak || 0)),
+                questsSinceBoss: Math.max(Number(localState.questsSinceBoss || 0), Number(cloudState.questsSinceBoss || 0)),
+                stats: mergeStats(),
+                xpHistory: [...xpHistMap.values()].sort((a, b) => a.date.localeCompare(b.date)),
+                questTimestamps: [...new Set([
+                    ...(cloudState.questTimestamps || []),
+                    ...(localState.questTimestamps || [])
+                ])].sort((a, b) => a - b).slice(-200),
+                displayName: pickScalar('displayName'),
+                username: pickScalar('username'),
+                bio: pickScalar('bio'),
+                avatarColor: pickScalar('avatarColor'),
+                selectedTitle: pickScalar('selectedTitle'),
+                profilePublic: localT >= cloudT ? !!localState.profilePublic : !!cloudState.profilePublic,
+                notificationsEnabled: localT >= cloudT ? !!localState.notificationsEnabled : !!cloudState.notificationsEnabled,
+                dailyCompleted: (() => {
+                    const l = localState.dailyCompleted;
+                    const c = cloudState.dailyCompleted;
+                    if (!l) return c || null;
+                    if (!c) return l;
+                    return (l.date || '') >= (c.date || '') ? l : c;
+                })(),
+                willCoach: (() => {
+                    const l = localState.willCoach;
+                    const c = cloudState.willCoach;
+                    if (!l) return c || null;
+                    if (!c) return l;
+                    return (l.generatedAt || 0) >= (c.generatedAt || 0) ? l : c;
+                })(),
+                willCoachLastAtCount: Math.max(
+                    Number(localState.willCoachLastAtCount || 0),
+                    Number(cloudState.willCoachLastAtCount || 0)
+                ),
+                willCoachDismissedAt: Math.max(
+                    Number(localState.willCoachDismissedAt || 0),
+                    Number(cloudState.willCoachDismissedAt || 0)
+                ),
+                willCoachEnabled: (() => {
+                    // Prefer local preference (device UI), else cloud, default true
+                    if (typeof localState.willCoachEnabled === 'boolean') return localState.willCoachEnabled;
+                    if (typeof cloudState.willCoachEnabled === 'boolean') return cloudState.willCoachEnabled;
+                    return true;
+                })(),
+                willCoachLastDay: (() => {
+                    const l = localState.willCoachLastDay || null;
+                    const c = cloudState.willCoachLastDay || null;
+                    if (!l) return c;
+                    if (!c) return l;
+                    return l >= c ? l : c;
+                })(),
+                willUsage: (() => {
+                    const l = localState.willUsage || { count: 0, windowStart: 0 };
+                    const c = cloudState.willUsage || { count: 0, windowStart: 0 };
+                    // Prefer higher window if same window, max count
+                    if ((l.windowStart || 0) === (c.windowStart || 0)) {
+                        return { count: Math.max(l.count || 0, c.count || 0), windowStart: l.windowStart || c.windowStart || 0 };
+                    }
+                    return (l.windowStart || 0) >= (c.windowStart || 0) ? l : c;
+                })(),
+                chainProgress: {
+                    ...(cloudState.chainProgress || {}),
+                    ...(localState.chainProgress || {})
+                },
+                joinedAt: Math.min(
+                    Number(localState.joinedAt || cloudState.joinedAt || 0) || Number(cloudState.joinedAt || 0),
+                    Number(cloudState.joinedAt || localState.joinedAt || 0) || Number(localState.joinedAt || 0)
+                ) || (localState.joinedAt || cloudState.joinedAt || 0),
+                updatedAt: Math.max(localT, cloudT)
+            };
+
+            // XP: prefer sum from completed when possible — caller recalculates
+            merged.xp = Math.max(Number(localState.xp || 0), Number(cloudState.xp || 0));
+            return merged;
+        }
 
         function stableStringify(value) {
             if (value === null || typeof value !== 'object') return JSON.stringify(value);
@@ -9248,6 +10840,7 @@
         function scheduleCloudSync({ immediate = false, reason = 'state' } = {}) {
             if (!currentUser || !fb) return Promise.resolve(false);
             cloudSyncQueued = true;
+            updateSyncStatusUI();
             if (cloudSyncRetryTimer) {
                 clearTimeout(cloudSyncRetryTimer);
                 cloudSyncRetryTimer = null;
@@ -9276,10 +10869,13 @@
             // Skip if offline — the 'online' event will trigger sync on reconnect
             if (!navigator.onLine) {
                 cloudSyncQueued = true;
+                enqueueOfflineAction('cloud_sync', { _key: 'cloud_sync', reason });
+                updateSyncStatusUI();
                 return false;
             }
             if (cloudSyncInFlight) {
                 cloudSyncQueued = true;
+                updateSyncStatusUI();
                 return false;
             }
 
@@ -9287,30 +10883,70 @@
             const { pureState, fingerprint } = getCloudSyncPayload();
             if (fingerprint === lastSyncedCloudFingerprint) {
                 cloudSyncQueued = false;
+                lastSyncOkAt = Date.now();
+                lastSyncError = null;
+                updateSyncStatusUI();
                 return false;
             }
 
             cloudSyncInFlight = true;
             cloudSyncQueued = false;
+            updateSyncStatusUI({ force: 'syncing', label: 'Sincronizzo…' });
 
             try {
-                await fb.setDoc(fb.doc(fb.db, 'more_users', syncUid), pureState, { merge: true });
-                lastSyncedCloudFingerprint = fingerprint;
+                // Read-merge-write to reduce lost updates across devices
+                let toWrite = pureState;
+                try {
+                    const snap = await fb.getDoc(fb.doc(fb.db, 'more_users', syncUid));
+                    if (snap.exists()) {
+                        const remote = snap.data();
+                        if (remote && remote.updatedAt && pureState.updatedAt && remote.updatedAt !== pureState.updatedAt) {
+                            const merged = mergeUserStates(pureState, remote);
+                            // Keep live state consistent if merge improved it
+                            const mergedFpSrc = { ...sanitizeForFirestore(merged) };
+                            delete mergedFpSrc.updatedAt;
+                            const localFpSrc = { ...pureState };
+                            delete localFpSrc.updatedAt;
+                            if (stableStringify(mergedFpSrc) !== stableStringify(localFpSrc)) {
+                                state = { ...state, ...merged };
+                                ensureStateShape();
+                                if (typeof recalculateTotalXp === 'function') recalculateTotalXp();
+                                try { localStorage.setItem('more_state', JSON.stringify(state)); } catch (_) {}
+                                toWrite = sanitizeForFirestore(state);
+                                toWrite.updatedAt = Date.now();
+                                state.updatedAt = toWrite.updatedAt;
+                            }
+                        }
+                    }
+                } catch (readErr) {
+                    // If read fails, still attempt write with local pureState
+                    console.warn('[sync] pre-write merge skipped', readErr);
+                }
+
+                await fb.setDoc(fb.doc(fb.db, 'more_users', syncUid), toWrite, { merge: true });
+                const fpSrc = { ...toWrite };
+                delete fpSrc.updatedAt;
+                lastSyncedCloudFingerprint = stableStringify(fpSrc);
                 cloudSyncRetryDelay = 4000;
+                lastSyncOkAt = Date.now();
+                lastSyncError = null;
+                updateSyncStatusUI({ force: 'synced', label: 'Sincronizzato' });
                 return true;
             } catch (e) {
                 const code = e?.code || '';
                 const message = String(e?.message || '').toLowerCase();
                 const isPermission = code === 'permission-denied' || message.includes('permission');
+                lastSyncError = e;
 
                 if (isPermission) {
-                    // Do not retry on permission errors as they won't recover without re-authentication
                     cloudSyncQueued = false;
+                    updateSyncStatusUI({ force: 'pending', label: 'Auth richiesta', keep: true });
                     showFirestoreError(e, 'Sincronizzazione non autorizzata. Riapri il profilo o effettua nuovamente l\'accesso.');
                     return false;
                 }
 
                 cloudSyncQueued = true;
+                enqueueOfflineAction('cloud_sync', { _key: 'cloud_sync', reason: 'retry' });
                 const retryDelay = navigator.onLine ? cloudSyncRetryDelay : 15000;
                 cloudSyncRetryDelay = Math.min(cloudSyncRetryDelay * 2, 30000);
                 if (cloudSyncRetryTimer) clearTimeout(cloudSyncRetryTimer);
@@ -9318,12 +10954,15 @@
                     cloudSyncRetryTimer = null;
                     flushCloudSync('retry');
                 }, retryDelay);
+                updateSyncStatusUI({ force: 'pending', label: 'Riprovo sync…', keep: true });
                 showFirestoreError(e, 'Sync cloud non riuscita. Riprovo automaticamente.');
                 return false;
             } finally {
                 cloudSyncInFlight = false;
                 if (cloudSyncQueued && !cloudSyncRetryTimer && currentUser?.uid === syncUid) {
                     flushCloudSync('queued');
+                } else {
+                    updateSyncStatusUI();
                 }
             }
         }
@@ -9333,24 +10972,26 @@
         }
 
         window.addEventListener('online', () => {
-            showToast('Connessione ripristinata. Sincronizzo...');
-            scheduleCloudSync({ immediate: true, reason: 'online' });
+            showToast('Connessione ripristinata. Sincronizzo…');
+            updateSyncStatusUI({ force: 'syncing', label: 'Riconnesso…' });
+            processOfflineQueue({ reason: 'online' }).finally(() => {
+                scheduleCloudSync({ immediate: true, reason: 'online' });
+            });
             refreshProfileAlertCounts();
-            // Se initAuth era stata rimandata perché offline al boot, chiamala ora
             if (window.__moreAuthDeferred) {
                 window.__moreAuthDeferred = false;
                 initAuth();
             }
-            // Nascondi indicatore offline
-            const offBadge = document.getElementById('offline-indicator');
-            if (offBadge) offBadge.style.display = 'none';
         });
         window.addEventListener('offline', () => {
             showToast('Sei offline: salvo tutto sul dispositivo.');
-            // Mostra indicatore offline
-            const offBadge = document.getElementById('offline-indicator');
-            if (offBadge) offBadge.style.display = '';
+            updateSyncStatusUI({ force: 'offline', label: 'Offline', keep: true });
         });
+
+        // Initial badge
+        if (typeof document !== 'undefined') {
+            setTimeout(() => updateSyncStatusUI(), 0);
+        }
 
         /* ── DOM REFS ─────────────────────────────────────── */
         const $ = id => document.getElementById(id);
@@ -9591,55 +11232,26 @@
             const cloudT = cloudState?.updatedAt || 0;
             const localT = state.updatedAt || 0;
 
-            // Se l'utente ha appena aperto l'app da un nuovo dispositivo, l'app genera una quest e fa saveLocal()
-            // il che porta localT > cloudT. Dobbiamo ignorare localT se lo stato locale è vuoto (0 XP).
+            // Empty local install should prefer cloud; otherwise field-level merge
+            // avoids multi-device lost updates (party cancel, completed quests, etc.).
             const isLocalEmpty = state.xp === 0 && (!state.completed || state.completed.length === 0);
             const hasCloudProgress = cloudState && (cloudState.xp > 0 || cloudState.username || (cloudState.completed && cloudState.completed.length > 0));
+            const hasLocalProgress = !isLocalEmpty || (state.username && state.username.length > 0);
 
-            if (cloudState && (cloudT > localT || (isLocalEmpty && hasCloudProgress))) {
-
-                // If cloud is newer OR local is an empty fresh state, overwrite local completely BUT keep the new date
-                state = {
-                    ...state,
-                    xp: cloudState.xp ?? 0,
-                    currentQuest: cloudState.currentQuest ?? null,
-                    completed: cloudState.completed ?? [],
-                    streak: cloudState.streak ?? 0,
-                    lastQuestDate: cloudState.lastQuestDate ?? null,
-                    lastQuestTimestamp: cloudState.lastQuestTimestamp ?? 0,
-                    xpHistory: cloudState.xpHistory ?? [],
-                    stats: cloudState.stats ?? {
-                        easy: { count: 0, totalXp: 0 },
-                        medium: { count: 0, totalXp: 0 },
-                        hard: { count: 0, totalXp: 0 }
-                    },
-                    questTimestamps: cloudState.questTimestamps ?? [],
-                    customQuests: cloudState.customQuests ?? [],
-                    challenges_sent: cloudState.challenges_sent ?? [],
-                    profilePublic: cloudState.profilePublic ?? false,
-                    achievements: cloudState.achievements ?? [],
-                    bossCompleted: cloudState.bossCompleted ?? [],
-                    questsSinceBoss: cloudState.questsSinceBoss ?? 0,
-                    dailyCompleted: cloudState.dailyCompleted ?? null,
-                    dailyBonusAwards: cloudState.dailyBonusAwards ?? [],
-                    pendingDailyBonus: cloudState.pendingDailyBonus ?? null,
-                    dailyBonusSchemaVersion: cloudState.dailyBonusSchemaVersion ?? 2,
-                    chainBonusAwards: cloudState.chainBonusAwards ?? [],
-                    pendingChainBonus: cloudState.pendingChainBonus ?? null,
-                    chainBonusSchemaVersion: cloudState.chainBonusSchemaVersion ?? 2,
-                    notificationsEnabled: cloudState.notificationsEnabled ?? false,
-                    selectedTitle: cloudState.selectedTitle ?? null,
-                    bookmarkedQuests: cloudState.bookmarkedQuests ?? [],
-                    completedChains: cloudState.completedChains ?? [],
-                    chainProgress: cloudState.chainProgress ?? {},
-                    partyQuestsCompleted: cloudState.partyQuestsCompleted ?? [],
-                    displayName: cloudState.displayName ?? state.displayName ?? "",
-                    username: cloudState.username ?? state.username ?? "",
-                    bio: cloudState.bio ?? state.bio ?? "",
-                    avatarColor: cloudState.avatarColor ?? state.avatarColor ?? "",
-                    joinedAt: cloudState.joinedAt ?? state.joinedAt ?? 0,
-                    updatedAt: cloudT
-                };
+            if (cloudState && (hasCloudProgress || hasLocalProgress)) {
+                const shouldPreferCloudOnly = isLocalEmpty && hasCloudProgress && cloudT >= localT;
+                if (shouldPreferCloudOnly) {
+                    state = mergeUserStates({ ...state, completed: [], xp: 0 }, cloudState);
+                } else if (cloudT !== localT || hasCloudProgress) {
+                    const beforeFp = stableStringify(sanitizeForFirestore({ ...state, updatedAt: 0 }));
+                    state = mergeUserStates(state, cloudState);
+                    const afterFp = stableStringify(sanitizeForFirestore({ ...state, updatedAt: 0 }));
+                    if (beforeFp !== afterFp) {
+                        showToast('Progressi uniti dai tuoi dispositivi');
+                    }
+                } else {
+                    state = mergeUserStates(state, cloudState);
+                }
 
                 ensureStateShape();
                 migrateLegacyDailyBonuses();
@@ -9647,8 +11259,10 @@
                 rebuildProgressFromSource({ notifyAchievements: false });
 
                 localStorage.setItem('more_state', JSON.stringify(state));
+                rememberCloudSyncedState(sanitizeForFirestore(state));
                 updateXPUI();
                 renderActiveQuest();
+                renderWillCoachSection();
                 renderCompleted();
                 initSeasonalCarousel();
                 initDailyQuest();
@@ -9657,13 +11271,17 @@
                 processCompletedPartyInvitesForCurrentUser({ notify: true });
                 refreshProfileAlertCounts();
                 scheduleStaleQuestReminder();
+                // Push merged truth so other devices converge
+                scheduleCloudSync({ immediate: true, reason: 'login-merge' });
+                processOfflineQueue({ reason: 'login' });
             } else if (localT > cloudT || (localT >= cloudT && cloudLoadedOnce)) {
-                // If local is newer, push it after reading cloud once enough to prevent empty overwrites.
                 scheduleCloudSync({ immediate: true, reason: 'login-local-newer' });
+                processOfflineQueue({ reason: 'login' });
             } else if (cloudState) {
                 rememberCloudSyncedState(sanitizeForFirestore(cloudState));
             }
             cloudLoadedOnce = true;
+            updateSyncStatusUI();
 
             let display = 'Utente';
             if (cloudState && cloudState.username) display = cloudState.username;
@@ -9707,15 +11325,25 @@
             pendingGoogleCreds = null;
 
             renderActiveQuest();
+            renderWillCoachSection();
+            // Catch-up: if user already hit a coach milestone (e.g. 5 quest) but coach never ran
+            maybeScheduleWillCoach();
             renderPartyInvites();
             processCompletedPartyInvitesForCurrentUser({ notify: true });
+            // After login/cloud merge: clear stale partyInviteId if party was already
+            // cancelled on another device (prevents false "annulla party" warnings).
+            reconcileCurrentPartyQuest({ persist: true }).then((active) => {
+                if (!active) renderActiveQuest();
+            }).catch(() => {});
             refreshProfileAlertCounts();
             setupProfileAlertListeners();
+            processOfflineQueue({ reason: 'login-ui' });
             if (notificationPromptedForUid !== user.uid) {
                 notificationPromptedForUid = user.uid;
                 setTimeout(requestNotificationPermission, 1500);
             }
             scheduleStaleQuestReminder();
+            updateSyncStatusUI();
         }
 
         let unsubSnapshot = null;
@@ -10221,6 +11849,35 @@
                 </button>`;
         }
 
+        function formatQuestAge(assignedAt) {
+            if (!assignedAt) return null;
+            const ms = Date.now() - Number(assignedAt);
+            if (ms < 0 || !Number.isFinite(ms)) return null;
+            const mins = Math.floor(ms / 60000);
+            if (mins < 1) return 'Appena assegnata';
+            if (mins < 60) return `${mins} min fa`;
+            const hours = Math.floor(mins / 60);
+            if (hours < 48) return `${hours}h fa`;
+            const days = Math.floor(hours / 24);
+            return `${days}g fa`;
+        }
+
+        function bindQuestDescToggle() {
+            const desc = questContainer.querySelector('.quest-desc');
+            const btn = questContainer.querySelector('.quest-desc-toggle');
+            if (!desc || !btn) return;
+            // Show toggle only if text is clamped
+            const needsToggle = desc.scrollHeight > desc.clientHeight + 2;
+            if (!needsToggle) return;
+            btn.classList.add('is-visible');
+            btn.addEventListener('click', () => {
+                const open = desc.classList.toggle('is-expanded');
+                btn.innerHTML = open
+                    ? '<i class="fa-solid fa-chevron-up"></i> Mostra meno'
+                    : '<i class="fa-solid fa-chevron-down"></i> Leggi tutto';
+            });
+        }
+
         function renderActiveQuest() {
             // Party pin label
             const pinHeader = $('party-pin-header');
@@ -10234,6 +11891,8 @@
                 return;
             }
             const q = state.currentQuest;
+            const ageLabel = formatQuestAge(q.assignedAt);
+            const catLabel = q.category ? String(q.category) : '';
 
             if (q.isBoss) {
                 const warningHtml = q.warning ? `
@@ -10242,26 +11901,31 @@
                     <div class="quest-warning-text">${escapeHtml(q.warning)}</div>
                 </div>` : '';
                 questContainer.innerHTML = `
-                <div class="quest-card boss-card card-pop-in" style="border: 2px solid var(--diff-hard); box-shadow: 0 0 20px rgba(255, 79, 79, 0.4); background: rgba(255, 79, 79, 0.05);">
-                  <div class="quest-top">
+                <div class="quest-card boss-card card-pop-in diff-glow-hard" style="border: 1px solid rgba(255, 79, 79, 0.45); box-shadow: 0 0 28px rgba(255, 79, 79, 0.28), var(--shadow-card); background: radial-gradient(ellipse 90% 60% at 50% 0%, rgba(255,79,79,0.14), transparent 55%), rgba(255, 79, 79, 0.04);">
+                  <div class="quest-meta-row">
                     <span class="diff-badge" style="background:var(--diff-hard); color:var(--bg); font-weight:800; border:none;"><span class="dot" style="background:var(--bg);"></span>BOSS FIGHT</span>
-                    <span class="quest-title" style="width:100%; margin-top:8px;">${escapeHtml(q.title)}</span>
+                    ${catLabel ? `<span class="quest-meta-chip cat"><i class="fa-solid fa-tag"></i>${escapeHtml(catLabel)}</span>` : ''}
+                    ${ageLabel ? `<span class="quest-meta-chip"><i class="fa-regular fa-clock"></i>${escapeHtml(ageLabel)}</span>` : ''}
                   </div>
-                  <p class="quest-desc" style="color:var(--text); font-size:15px; -webkit-line-clamp:unset; line-clamp:unset; margin-bottom: 20px;">${escapeHtml(q.description)}</p>
+                  <div class="quest-top">
+                    <span class="quest-title" style="width:100%; margin-top:0;">${escapeHtml(q.title)}</span>
+                  </div>
+                  <p class="quest-desc is-expanded" style="color:var(--text); font-size:15px; margin-bottom: 16px;">${escapeHtml(q.description)}</p>
                   ${warningHtml}
                   <div class="quest-footer">
-                    <span class="quest-xp" style="color:var(--diff-hard); text-shadow:0 0 10px rgba(255, 79, 79, 0.5);"><i class="fa-solid fa-gem"></i>+${q.xp.toLocaleString('it-IT')} XP</span>
+                    <span class="quest-xp" style="color:var(--diff-hard); text-shadow:0 0 12px rgba(255, 79, 79, 0.45);"><i class="fa-solid fa-gem"></i>+${q.xp.toLocaleString('it-IT')} XP</span>
                   </div>
-                  <div class="quest-actions" style="margin-top:16px;">
-                    <button class="btn-quest-action qa-small" id="btn-challenge-quest"><i class="fa-solid fa-arrow-up-from-bracket"></i><span class="qa-label">Sfida un amico</span></button>
+                  <div class="quest-actions" style="margin-top:14px;">
+                    <button class="btn-quest-action qa-small" id="btn-challenge-quest"><i class="fa-solid fa-arrow-up-from-bracket"></i><span class="qa-label">Sfida</span></button>
                     <button class="btn-quest-action qa-small" id="btn-bookmark-quest"><i class="fa-solid fa-bookmark"></i><span class="qa-label">Salva</span></button>
                   </div>
-                  <button class="btn-complete" id="btn-complete-quest" style="width:100%; margin-top:16px; padding:14px; font-size:15px; justify-content:center;"><i class="fa-solid fa-check"></i>Sconfitto</button>
+                  <button class="btn-complete" id="btn-complete-quest" style="width:100%; margin-top:14px; padding:14px; font-size:15px; justify-content:center;"><i class="fa-solid fa-check"></i>Sconfitto</button>
                 </div>`;
             } else {
-                const diffClass = q.difficulty === 'easy' ? 'diff-easy' : q.difficulty === 'medium' ? 'diff-medium' : 'diff-hard';
-                const diffLabel = q.difficulty === 'easy' ? 'Facile' : q.difficulty === 'medium' ? 'Media' : 'Difficile';
-                const iconClass = `icon-${q.difficulty}`;
+                const diff = q.difficulty === 'medium' || q.difficulty === 'hard' ? q.difficulty : 'easy';
+                const diffClass = `diff-${diff}`;
+                const diffLabel = diff === 'easy' ? 'Facile' : diff === 'medium' ? 'Media' : 'Difficile';
+                const iconClass = `icon-${diff}`;
                 const customTag = q.isCustom ? '<span class="custom-tag">Custom</span>' : '';
                 const partyInviteHtml = getPartyInviteActionHtml(q);
                 const warningHtml = q.warning ? `
@@ -10270,23 +11934,32 @@
                     <div class="quest-warning-text">${escapeHtml(q.warning)}</div>
                 </div>` : '';
                 questContainer.innerHTML = `
-        <div class="quest-card card-pop-in">
-          <div class="quest-top">
-            <div class="quest-icon ${iconClass}">${getQuestIconSVG(q.difficulty)}</div>
-            <span class="diff-badge ${diffClass}"><span class="dot dot-${q.difficulty}"></span>${diffLabel}</span>
+        <div class="quest-card card-pop-in diff-glow-${diff}">
+          <div class="quest-meta-row">
+            <div class="quest-icon ${iconClass}">${getQuestIconSVG(diff)}</div>
+            <span class="diff-badge ${diffClass}"><span class="dot dot-${diff}"></span>${diffLabel}</span>
+            ${catLabel ? `<span class="quest-meta-chip cat"><i class="fa-solid fa-tag"></i>${escapeHtml(catLabel)}</span>` : ''}
+            ${q._chainId ? `<span class="quest-meta-chip"><i class="fa-solid fa-link"></i>Chain</span>` : ''}
+            ${ageLabel ? `<span class="quest-meta-chip"><i class="fa-regular fa-clock"></i>${escapeHtml(ageLabel)}</span>` : ''}
+          </div>
+          <div class="quest-top" style="margin-bottom:10px;">
             <span class="quest-title">${escapeHtml(q.title)}${customTag}</span>
           </div>
           <p class="quest-desc">${escapeHtml(q.description)}</p>
+          <button type="button" class="quest-desc-toggle"><i class="fa-solid fa-chevron-down"></i> Leggi tutto</button>
           ${warningHtml}
               <div class="quest-footer">
-                <span class="quest-xp"><i class="fa-solid fa-gem"></i>+${q.xp.toLocaleString('it-IT')} XP</span>
+                <span class="quest-xp"><i class="fa-solid fa-gem"></i>+${Number(q.xp || 0).toLocaleString('it-IT')} XP</span>
+                <div class="quest-footer-right">
+                  ${q.partyInviteId ? `<span class="quest-meta-chip" style="color:#c084fc;border-color:rgba(168,85,247,0.35);"><i class="fa-solid fa-user-group"></i>Party</span>` : ''}
+                </div>
               </div>
-              <div class="quest-actions" style="margin-top:16px;">
-                <button class="btn-quest-action qa-small" id="btn-challenge-quest"><i class="fa-solid fa-paper-plane"></i><span class="qa-label">Sfida un amico</span></button>
+              <div class="quest-actions" style="margin-top:14px;">
+                <button class="btn-quest-action qa-small" id="btn-challenge-quest"><i class="fa-solid fa-paper-plane"></i><span class="qa-label">Sfida</span></button>
                 <button class="btn-quest-action qa-small" id="btn-bookmark-quest"><i class="fa-solid fa-bookmark"></i><span class="qa-label">Salva</span></button>
               </div>
               ${partyInviteHtml}
-              <button class="btn-complete" id="btn-complete-quest" style="width:100%; margin-top:16px; padding:14px; font-size:15px; justify-content:center;"><i class="fa-solid fa-check"></i>Completata</button>
+              <button class="btn-complete" id="btn-complete-quest" style="width:100%; margin-top:14px; padding:14px; font-size:15px; justify-content:center;"><i class="fa-solid fa-check"></i>Completata</button>
             </div>`;
             }
 
@@ -10306,6 +11979,7 @@
                 bookmarkBtn.style.background = _saved ? 'rgba(200,241,53,0.07)' : '';
                 bookmarkBtn.addEventListener('click', () => toggleBookmark(q));
             }
+            if (!q.isBoss) bindQuestDescToggle();
         }
 
         function toggleBookmark(quest) {
@@ -10906,20 +12580,54 @@
         // active quest card in real time — no polling needed.
         function syncPartyInviteStatusesFromCache() {
             const q = state.currentQuest;
-            if (!q?.partyInvites || !Array.isArray(q.partyInvites) || q.partyInvites.length === 0) return;
+            if (!q?.partyInviteId) return;
             if (!cachedOutgoingReqs || cachedOutgoingReqs.length === 0) return;
 
             let changed = false;
-            for (const inv of q.partyInvites) {
-                // Find the matching Firestore doc by docId
-                const doc = cachedOutgoingReqs.find(d => d.id === inv.docId);
-                if (!doc) continue;
-                const fresh = normalizePartyInviteFromFriendDoc(doc.data, doc.id, doc.ref);
-                if (!fresh) continue;
-                const freshStatus = fresh.status || 'pending';
-                if (freshStatus !== (inv.status || 'pending')) {
-                    inv.status = freshStatus;
-                    changed = true;
+
+            // Multi-friend: update each invite status from cache
+            if (Array.isArray(q.partyInvites) && q.partyInvites.length > 0) {
+                for (const inv of q.partyInvites) {
+                    const doc = cachedOutgoingReqs.find(d => d.id === inv.docId);
+                    if (!doc) continue;
+                    const fresh = normalizePartyInviteFromFriendDoc(doc.data, doc.id, doc.ref);
+                    if (!fresh) {
+                        // Doc no longer carries our invite → treat as gone
+                        if (isActivePartyInviteStatus(inv.status)) {
+                            inv.status = 'deleted';
+                            changed = true;
+                        }
+                        continue;
+                    }
+                    // If invite id/group no longer matches, our party invite was replaced/cleared
+                    const sameInvite = (!inv.inviteId || fresh.id === inv.inviteId)
+                        || (q.partyGroupId && fresh.partyGroupId === q.partyGroupId);
+                    const freshStatus = sameInvite ? (fresh.status || 'pending') : 'deleted';
+                    if (freshStatus !== (inv.status || 'pending')) {
+                        inv.status = freshStatus;
+                        changed = true;
+                    }
+                }
+
+                // If no invite is still pending/accepted, drop stale party metadata
+                if (!q.partyInvites.some(inv => isActivePartyInviteStatus(inv.status))) {
+                    if (clearPartyMetadataFromQuest(q)) changed = true;
+                }
+            } else {
+                // Legacy single-friend: resolve via relation doc / invite id
+                const relationDocId = q.partyInviteDocId || q.partyInviteRelationId || null;
+                let doc = relationDocId ? cachedOutgoingReqs.find(d => d.id === relationDocId) : null;
+                if (!doc) {
+                    doc = cachedOutgoingReqs.find(d => {
+                        const inv = normalizePartyInviteFromFriendDoc(d.data, d.id, d.ref);
+                        return inv && inv.id === q.partyInviteId;
+                    });
+                }
+                if (doc) {
+                    const fresh = normalizePartyInviteFromFriendDoc(doc.data, doc.id, doc.ref);
+                    if (!fresh || fresh.id !== q.partyInviteId || !isActivePartyInviteStatus(fresh.status)) {
+                        if (clearPartyMetadataFromQuest(q)) changed = true;
+                    }
                 }
             }
 
@@ -10928,14 +12636,13 @@
                 // Re-render only the party status block if the quest card is visible,
                 // to avoid a full card rebuild that would reset scroll position.
                 const block = document.getElementById('party-group-status-block');
-                if (block) {
-                    // Surgical update: replace only the status block HTML
+                if (block && state.currentQuest?.partyInviteId) {
                     const tmpDiv = document.createElement('div');
-                    tmpDiv.innerHTML = getPartyInviteActionHtml(q);
+                    tmpDiv.innerHTML = getPartyInviteActionHtml(state.currentQuest);
                     const newBlock = tmpDiv.querySelector('#party-group-status-block');
                     if (newBlock) block.replaceWith(newBlock);
+                    else renderActiveQuest();
                 } else {
-                    // Fallback: full card re-render
                     renderActiveQuest();
                 }
             }
@@ -11288,6 +12995,10 @@
                 window._pendingPartyInviteCount = invites.length;
                 window._pendingPartyInviteKeys = invites.map(invite => `party:${invite.id || invite.relationDocId}`);
                 updatePendingFriendsBadge();
+                const piCount = $('party-invites-count');
+                if (piCount) piCount.textContent = String(invites.length);
+                const aStat = $('amici-stat-party');
+                if (aStat) aStat.textContent = String(invites.length);
 
                 if (invites.length === 0) {
                     section.style.display = 'none';
@@ -11342,6 +13053,11 @@
 
         window.acceptPartyInvite = async function (inviteId) {
             if (isGuest || !currentUser || !fb || !inviteId) return;
+            if (!navigator.onLine) {
+                enqueueOfflineAction('party_accept', { _key: `party_accept:${inviteId}`, inviteId });
+                showToast('Accettato offline — si sincronizza al ritorno rete');
+                return;
+            }
             try {
                 const inviteRef = fb.doc(fb.db, 'comparison_requests', inviteId);
                 await fb.runTransaction(fb.db, async (transaction) => {
@@ -11360,12 +13076,22 @@
                 await renderPartyInvites();
                 await refreshProfileAlertCounts();
             } catch (err) {
+                if (!navigator.onLine || /network|offline|Failed to fetch/i.test(String(err?.message || ''))) {
+                    enqueueOfflineAction('party_accept', { _key: `party_accept:${inviteId}`, inviteId });
+                    showToast('Salvato offline — si sincronizza al ritorno della rete');
+                    return;
+                }
                 showFirestoreError(err, 'Errore accettazione invito.');
             }
         };
 
         window.declinePartyInvite = async function (inviteId) {
             if (isGuest || !currentUser || !fb || !inviteId) return;
+            if (!navigator.onLine) {
+                enqueueOfflineAction('party_decline', { _key: `party_decline:${inviteId}`, inviteId });
+                showToast('Rifiutato offline — si sincronizza al ritorno rete');
+                return;
+            }
             try {
                 const inviteRef = fb.doc(fb.db, 'comparison_requests', inviteId);
                 await fb.runTransaction(fb.db, async (transaction) => {
@@ -11384,6 +13110,11 @@
                 await refreshProfileAlertCounts();
                 showToast('Invito rifiutato');
             } catch (err) {
+                if (!navigator.onLine || /network|offline|Failed to fetch/i.test(String(err?.message || ''))) {
+                    enqueueOfflineAction('party_decline', { _key: `party_decline:${inviteId}`, inviteId });
+                    showToast('Salvato offline — si sincronizza al ritorno della rete');
+                    return;
+                }
                 showFirestoreError(err, 'Errore rifiuto invito.');
             }
         };
@@ -11603,10 +13334,162 @@
         // shared by the two friends, so the app does not need a separate
         // more_party_invites collection or cross-user writes to more_users.
 
-        /* ── PARTY QUEST CHANGE GUARD ────────────────────── */
+        /* ── PARTY QUEST METADATA / CHANGE GUARD ──────────── */
+        // partyInviteId on currentQuest is sticky local metadata. After cancel on
+        // another device (or after invites become deleted/declined), it can linger
+        // and falsely re-trigger the "annulla party" warning. Always verify activity.
+
+        const PARTY_QUEST_META_KEYS = [
+            'partyInviteId',
+            'partyInviteDocId',
+            'partyInviteRelationId',
+            'partyGroupId',
+            'partyInvites',
+            'partyWithUid',
+            'partyWithUsername',
+            'partyWithDisplayName',
+            'partyWithAvatarColor'
+        ];
+
+        function clearPartyMetadataFromQuest(q) {
+            if (!q || typeof q !== 'object') return false;
+            let changed = false;
+            for (const key of PARTY_QUEST_META_KEYS) {
+                if (Object.prototype.hasOwnProperty.call(q, key)) {
+                    delete q[key];
+                    changed = true;
+                }
+            }
+            return changed;
+        }
+
+        function isActivePartyInviteStatus(status) {
+            const s = status || 'pending';
+            return s === 'pending' || s === 'accepted';
+        }
+
+        function localPartyQuestStillActive(q = state.currentQuest) {
+            if (!q?.partyInviteId) return false;
+            if (Array.isArray(q.partyInvites) && q.partyInvites.length > 0) {
+                return q.partyInvites.some(inv => isActivePartyInviteStatus(inv.status));
+            }
+            // Legacy single-friend without status list: treat id as active until reconciled
+            return true;
+        }
+
+        /**
+         * Reconcile currentQuest party metadata with Firestore/cache.
+         * Clears stale partyInviteId when invites are already deleted/declined/gone.
+         * Returns true if an active party invite still exists.
+         */
+        async function reconcileCurrentPartyQuest({ persist = true } = {}) {
+            const q = state.currentQuest;
+            if (!q?.partyInviteId) return false;
+
+            // Fast local: all multi-friend invites already terminal
+            if (Array.isArray(q.partyInvites) && q.partyInvites.length > 0) {
+                if (cachedOutgoingReqs && cachedOutgoingReqs.length > 0) {
+                    for (const inv of q.partyInvites) {
+                        const doc = cachedOutgoingReqs.find(d => d.id === inv.docId);
+                        if (!doc) continue;
+                        const fresh = normalizePartyInviteFromFriendDoc(doc.data, doc.id, doc.ref);
+                        if (!fresh) {
+                            inv.status = 'deleted';
+                            continue;
+                        }
+                        const sameInvite = (!inv.inviteId || fresh.id === inv.inviteId)
+                            || (q.partyGroupId && fresh.partyGroupId === q.partyGroupId);
+                        inv.status = sameInvite ? (fresh.status || 'pending') : 'deleted';
+                    }
+                }
+                if (!q.partyInvites.some(inv => isActivePartyInviteStatus(inv.status))) {
+                    clearPartyMetadataFromQuest(q);
+                    if (persist) saveState();
+                    return false;
+                }
+            }
+
+            // Online truth from Firestore
+            if (fb && currentUser && !isGuest) {
+                try {
+                    if (Array.isArray(q.partyInvites) && q.partyInvites.length > 0) {
+                        let anyActive = false;
+                        await Promise.all(q.partyInvites.map(async (inv) => {
+                            if (!inv.docId) return;
+                            try {
+                                const snap = await fb.getDoc(fb.doc(fb.db, 'comparison_requests', inv.docId));
+                                if (!snap.exists()) {
+                                    inv.status = 'deleted';
+                                    return;
+                                }
+                                const fresh = normalizePartyInviteFromFriendDoc(snap.data(), snap.id, snap.ref);
+                                if (!fresh) {
+                                    inv.status = 'deleted';
+                                    return;
+                                }
+                                const sameInvite = (!inv.inviteId || fresh.id === inv.inviteId)
+                                    || (q.partyGroupId && fresh.partyGroupId === q.partyGroupId);
+                                inv.status = sameInvite ? (fresh.status || 'pending') : 'deleted';
+                                if (isActivePartyInviteStatus(inv.status)) anyActive = true;
+                            } catch (_) {
+                                // keep local status on per-invite read failure
+                                if (isActivePartyInviteStatus(inv.status)) anyActive = true;
+                            }
+                        }));
+                        if (!anyActive) {
+                            clearPartyMetadataFromQuest(q);
+                            if (persist) saveState();
+                            return false;
+                        }
+                        if (persist) saveState();
+                        return true;
+                    }
+
+                    // Legacy single-friend path
+                    const invite = await getPartyInviteForQuest(q);
+                    if (!invite || !isActivePartyInviteStatus(invite.status)) {
+                        clearPartyMetadataFromQuest(q);
+                        if (persist) saveState();
+                        return false;
+                    }
+                    return true;
+                } catch (_) {
+                    // Offline / transient error: trust local statuses only
+                    return localPartyQuestStillActive(q);
+                }
+            }
+
+            return localPartyQuestStillActive(q);
+        }
+
         function guardPartyQuestChange(callback) {
-            if (!state.currentQuest?.partyInviteId) { callback(); return; }
-            showPartyQuestChangeWarning(callback);
+            const q = state.currentQuest;
+            if (!q?.partyInviteId) {
+                callback();
+                return;
+            }
+
+            // Fast path without network: multi-friend invites all already terminal locally
+            if (Array.isArray(q.partyInvites) && q.partyInvites.length > 0
+                && !q.partyInvites.some(inv => isActivePartyInviteStatus(inv.status))) {
+                clearPartyMetadataFromQuest(q);
+                saveState();
+                renderActiveQuest();
+                callback();
+                return;
+            }
+
+            // Reconcile with Firestore so a party cancelled on another device
+            // does not keep blocking new-quest generation forever.
+            (async () => {
+                const stillActive = await reconcileCurrentPartyQuest({ persist: true });
+                if (!stillActive) {
+                    renderActiveQuest();
+                    callback();
+                    return;
+                }
+                showPartyQuestChangeWarning(callback);
+            })();
         }
 
         function showPartyQuestChangeWarning(onConfirm) {
@@ -11638,7 +13521,20 @@
                     hideOverlay();
                     const q = state.currentQuest;
                     if (q?.partyInviteId) {
-                        try { await markPartyInviteDeletedForQuest(q); } catch (e) { /* best effort */ }
+                        const questSnap = JSON.parse(JSON.stringify(q));
+                        try {
+                            if (!navigator.onLine) throw new Error('offline');
+                            await markPartyInviteDeletedForQuest(q);
+                        } catch (e) {
+                            enqueueOfflineAction('party_delete_quest', {
+                                _key: `party_delete:${questSnap.partyInviteId}`,
+                                quest: questSnap
+                            });
+                        }
+                        // Always clear local party metadata so the warning cannot reappear
+                        // from a stale currentQuest after cancel (cross-device / delayed sync).
+                        clearPartyMetadataFromQuest(q);
+                        saveState();
                     }
                     onConfirm();
                 });
@@ -12884,14 +14780,67 @@
                 renderStatsScreen();
             }
 
-            // Show XP modal
+            // Show XP modal (enhanced)
+            const levelBefore = typeof getLevelInfo === 'function' ? getLevelInfo(Math.max(0, (state.xp || 0) - awardedXp)) : null;
+            const levelAfter = typeof getLevelInfo === 'function' ? getLevelInfo(state.xp || 0) : null;
+            const leveledUp = levelBefore && levelAfter && levelAfter.level > levelBefore.level;
+
             if (modalXpText) modalXpText.textContent = `+ ${awardedXp.toLocaleString('it-IT')} XP`;
             if (modalQuestName) {
                 modalQuestName.innerHTML = shouldQueueDailyBonus
                     ? `${escapeHtml(q.title || '')}<br><span style="display:inline-block;margin-top:6px;font-size:11px;color:var(--accent);background:var(--accent-dim);padding:3px 12px;border-radius:20px;font-weight:800;letter-spacing:.5px;">✦ Bonus daily in verifica</span>`
                     : escapeHtml(q.title || '');
             }
-            if (modalHype) modalHype.textContent = HYPES[Math.floor(Math.random() * HYPES.length)];
+            if (modalHype) {
+                modalHype.textContent = leveledUp
+                    ? `Livello ${levelAfter.level}! Continua così`
+                    : HYPES[Math.floor(Math.random() * HYPES.length)];
+            }
+
+            const metaEl = $('xp-modal-meta');
+            if (metaEl) {
+                const chips = [];
+                if (state.streak > 0) chips.push(`<span class="xp-modal-chip streak"><i class="fa-solid fa-fire"></i> ${state.streak} streak</span>`);
+                if (leveledUp) chips.push(`<span class="xp-modal-chip level-up"><i class="fa-solid fa-crown"></i> Level up</span>`);
+                if (q.difficulty) {
+                    const dl = q.difficulty === 'easy' ? 'Facile' : q.difficulty === 'medium' ? 'Media' : q.difficulty === 'hard' ? 'Difficile' : 'Boss';
+                    chips.push(`<span class="xp-modal-chip">${escapeHtml(dl)}</span>`);
+                }
+                if (partyInvite) chips.push(`<span class="xp-modal-chip" style="color:#c084fc;">Party</span>`);
+                metaEl.innerHTML = chips.join('');
+            }
+            if (levelAfter) {
+                let pct = 100;
+                if (levelAfter.nextLevelXP != null) {
+                    const span = Math.max(1, levelAfter.nextLevelXP - levelAfter.prevLevelXP);
+                    pct = Math.max(0, Math.min(100, Math.round(((levelAfter.currentXP - levelAfter.prevLevelXP) / span) * 100)));
+                }
+                const lvlLabel = $('xp-modal-level-label');
+                const lvlPct = $('xp-modal-level-pct');
+                const lvlFill = $('xp-modal-level-fill');
+                if (lvlLabel) lvlLabel.textContent = String(levelAfter.level);
+                if (lvlPct) lvlPct.textContent = `${pct}%`;
+                if (lvlFill) {
+                    lvlFill.style.width = '0%';
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => { lvlFill.style.width = pct + '%'; });
+                    });
+                }
+            }
+            // Particle burst
+            const particles = $('xp-modal-particles');
+            if (particles) {
+                particles.innerHTML = '';
+                for (let i = 0; i < 12; i++) {
+                    const s = document.createElement('span');
+                    s.style.left = (8 + Math.random() * 84) + '%';
+                    s.style.bottom = (10 + Math.random() * 20) + '%';
+                    s.style.animationDelay = (Math.random() * 0.35) + 's';
+                    s.style.background = i % 3 === 0 ? 'var(--will-soft)' : 'var(--accent)';
+                    particles.appendChild(s);
+                }
+            }
+
             if (xpModal) xpModal.classList.add('show');
 
             updateXPUI();
@@ -12901,6 +14850,9 @@
             checkChainCompletions();
             renderChainsSection();
             if (shouldQueueDailyBonus) initDailyQuest();
+
+            // Will coach every N completions (silent if offline / model fails)
+            maybeScheduleWillCoach();
         }
 
         btnCloseModal.addEventListener('click', closeModal);
@@ -13391,8 +15343,8 @@
                     return `<div class="prof-activity-item">
                         <div class="prof-activity-dot" style="background:${dotColor};"></div>
                         <div class="prof-activity-info">
-                            <div class="prof-activity-title">${q.title}</div>
-                            <div class="prof-activity-time">${relTime}</div>
+                            <div class="prof-activity-title">${escapeHtml(q.title || '')}</div>
+                            <div class="prof-activity-time">${escapeHtml(relTime || '')}</div>
                         </div>
                         <div class="prof-activity-xp">+${(q.xp || 0).toLocaleString('it-IT')}</div>
                     </div>`;
@@ -13410,28 +15362,33 @@
                     <div class="prof-badge-name" style="color:${b.unlocked ? 'var(--text)' : 'var(--text-muted)'};">${b.name}</div>
                 </div>`).join('');
 
+            const partyDone = (state.partyQuestsCompleted || []).length;
+            const unlockedN = (typeof getAchievementBadges === 'function'
+                ? getAchievementBadges().filter(b => b.unlocked).length
+                : (state.achievements || []).length);
+
             loggedView.innerHTML = `
                 <!-- Hero -->
                 <div class="prof-hero">
                     <div class="prof-avatar-wrap">
                         <div class="prof-avatar" style="background:${state.avatarColor};">
                             <div class="prof-avatar-ring"></div>
-                            ${initial}
+                            ${escapeHtml(initial)}
                         </div>
                     </div>
-                    <div class="prof-display-name">${displayName}</div>
-                    <div class="prof-username">${username}</div>
+                    <div class="prof-display-name">${escapeHtml(displayName)}</div>
+                    <div class="prof-username">${escapeHtml(username)}</div>
                     <div class="prof-title-badge" style="${titleBadgeStyle}">
                         <i class="fa-solid fa-crown"></i>
-                        LVL ${lvl} &middot; ${titLabel.toUpperCase()}
+                        LVL ${lvl} &middot; ${escapeHtml(titLabel.toUpperCase())}
                     </div>
-                    ${bio ? `<div class="prof-bio">${bio}</div>` : ''}
+                    ${bio ? `<div class="prof-bio">${escapeHtml(bio)}</div>` : `<div class="prof-bio" style="opacity:0.55;font-style:italic;">Aggiungi una bio dalle Impostazioni</div>`}
                 </div>
 
-                <!-- Stats tiles -->
+                <!-- Stats tiles: un'unica griglia 3×2 -->
                 <div class="prof-stats-row">
                     <div class="prof-stat-tile">
-                        <span class="prof-stat-val" style="color:var(--accent);">${state.xp.toLocaleString('it-IT')}</span>
+                        <span class="prof-stat-val" style="color:var(--accent);" title="${Number(state.xp || 0).toLocaleString('it-IT')} XP">${formatCompactXp(state.xp)}</span>
                         <span class="prof-stat-label">XP</span>
                     </div>
                     <div class="prof-stat-tile">
@@ -13439,8 +15396,20 @@
                         <span class="prof-stat-label">Quest</span>
                     </div>
                     <div class="prof-stat-tile">
-                        <span class="prof-stat-val" style="color:#ffb347;">${state.streak}</span>
-                        <span class="prof-stat-label">Streak 🔥</span>
+                        <span class="prof-stat-val" style="color:#ffb347;">${state.streak || 0}</span>
+                        <span class="prof-stat-label">Streak</span>
+                    </div>
+                    <div class="prof-stat-tile">
+                        <span class="prof-stat-val" style="color:var(--will-soft);">${unlockedN}</span>
+                        <span class="prof-stat-label">Badge</span>
+                    </div>
+                    <div class="prof-stat-tile">
+                        <span class="prof-stat-val" style="color:#c084fc;">${partyDone}</span>
+                        <span class="prof-stat-label">Party</span>
+                    </div>
+                    <div class="prof-stat-tile">
+                        <span class="prof-stat-val">${(state.completedChains || []).length}</span>
+                        <span class="prof-stat-label">Chain</span>
                     </div>
                 </div>
 
@@ -13456,13 +15425,18 @@
 
                 <!-- Achievement badges -->
                 <div class="prof-achievements">
-                    <span class="prof-section-label">Obiettivi</span>
+                    <div class="amici-section-head" style="margin-bottom:10px;">
+                        <span class="amici-section-title"><i class="fa-solid fa-trophy"></i> Obiettivi</span>
+                        <span class="amici-count-pill">${unlockedN}</span>
+                    </div>
                     <div class="prof-badges-row">${badgesHTML}</div>
                 </div>
 
                 <!-- Activity feed -->
                 <div class="prof-activity">
-                    <span class="prof-section-label">Attività recente</span>
+                    <div class="amici-section-head" style="margin-bottom:10px;">
+                        <span class="amici-section-title"><i class="fa-solid fa-clock-rotate-left"></i> Attività recente</span>
+                    </div>
                     <div class="prof-activity-card">${activityItemsHTML}</div>
                 </div>
             `;
@@ -13664,7 +15638,7 @@
                             <div style="width: 48px; height: 48px; border-radius: 50%; background: ${state.avatarColor}; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 20px; color: #fff;">${myInit}</div>
                             <div>
                                 <div style="font-weight:700; font-size:15px; font-family:var(--font-display);">Tu</div>
-                                <div style="color:var(--text-dim); font-size:12px;">${myWeeklyXp.toLocaleString('it-IT')} XP</div>
+                                <div style="color:var(--text-dim); font-size:12px;" title="${myWeeklyXp.toLocaleString('it-IT')} XP">${formatCompactXp(myWeeklyXp)} XP</div>
                             </div>
                         </div>
                         
@@ -13675,7 +15649,7 @@
                         <div style="display:flex; align-items:center; gap:12px; text-align:right;">
                             <div>
                                 <div style="font-weight:700; font-size:15px; font-family:var(--font-display);">${escapeHtml(friendData.displayName || 'Amico')}</div>
-                                <div style="color:var(--text-dim); font-size:12px;">${friendWeeklyXp.toLocaleString('it-IT')} XP</div>
+                                <div style="color:var(--text-dim); font-size:12px;" title="${friendWeeklyXp.toLocaleString('it-IT')} XP">${formatCompactXp(friendWeeklyXp)} XP</div>
                             </div>
                             <div style="width: 48px; height: 48px; border-radius: 50%; background: ${friendData.avatarColor || '#555'}; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 20px; color: #fff;">${fInit}</div>
                         </div>
@@ -13860,7 +15834,14 @@
 
         async function loadSquadFeed(friendUids) {
             const container = $('squad-feed-list');
-            if (!container || !friendUids || friendUids.length === 0) return;
+            if (!container) return;
+            if (!friendUids || friendUids.length === 0) {
+                container.innerHTML = `<div class="prof-activity-card" style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px;">
+                    <i class="fa-solid fa-rss" style="font-size:22px;display:block;margin:0 auto 8px;opacity:0.5;"></i>
+                    Aggiungi amici per vedere le loro quest qui.
+                </div>`;
+                return;
+            }
 
             try {
                 const items = [];
@@ -13876,28 +15857,31 @@
                     });
                 }
                 if (items.length === 0) {
-                    container.innerHTML = '<div class="prof-activity-card" style="padding:20px;text-align:center;color:var(--text-muted);font-size:14px;">Nessuna attività recente degli amici.</div>';
+                    container.innerHTML = `<div class="prof-activity-card" style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px;">
+                        <i class="fa-solid fa-ghost" style="font-size:22px;display:block;margin:0 auto 8px;opacity:0.5;"></i>
+                        Nessuna attività recente degli amici.
+                    </div>`;
                     return;
                 }
 
                 items.sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
                 const recent = items.slice(0, 20);
-
-                const diffClass = d => d === 'easy' ? 'diff-easy' : d === 'medium' ? 'diff-medium' : d === 'hard' ? 'diff-hard' : 'diff-hard';
                 const diffLabel = d => d === 'easy' ? 'Facile' : d === 'medium' ? 'Media' : d === 'hard' ? 'Difficile' : 'Boss';
+                const diffColor = d => d === 'easy' ? 'var(--diff-easy)' : d === 'medium' ? 'var(--diff-medium)' : 'var(--diff-hard)';
 
+                container.className = 'squad-feed-list';
                 container.innerHTML = recent.map(q => `
-            <div class="completed-item" style="display:flex; align-items:center; gap:12px; margin-bottom:10px;">
-                <div style="width:32px;height:32px;border-radius:50%;background:${q._color};display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:13px;color:#fff;flex-shrink:0;">${q._init}</div>
-                <div style="flex:1;min-width:0;">
-                    <div style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(q.title)}</div>
-                    <div style="font-size:11px;color:var(--text-dim);">${escapeHtml(q._name)} &middot; ${getRelativeTime(q.completedAt)}</div>
-                </div>
-                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;">
-                    <span style="font-family:var(--font-display);font-weight:800;font-size:13px;color:var(--accent);">+${(q.xp || 0).toLocaleString('it-IT')}</span>
-                    <span class="diff-badge ${diffClass(q.difficulty)}" style="font-size:9px;padding:2px 6px;">${diffLabel(q.difficulty)}</span>
-                </div>
-            </div>`).join('');
+                    <div class="squad-feed-item">
+                        <div class="squad-feed-avatar" style="background:${safeCssColor(q._color, '#555')}">${escapeHtml(q._init)}</div>
+                        <div class="squad-feed-body">
+                            <div class="squad-feed-title">${escapeHtml(q.title || 'Quest')}</div>
+                            <div class="squad-feed-meta">${escapeHtml(q._name)} · ${escapeHtml(getRelativeTime(q.completedAt) || '')}</div>
+                        </div>
+                        <div class="squad-feed-side">
+                            <span class="squad-feed-xp">+${(q.xp || 0).toLocaleString('it-IT')}</span>
+                            <span style="font-size:10px;font-weight:700;color:${diffColor(q.difficulty)};">${diffLabel(q.difficulty)}</span>
+                        </div>
+                    </div>`).join('');
             } catch (e) { showFirestoreError(e, 'Errore caricamento feed amici.'); }
         }
 
@@ -13969,6 +15953,43 @@
                     pendingSec.style.display = 'none';
                 }
 
+                // Stats strip
+                const partyPendingCount = window._pendingPartyInviteCount || 0;
+                const setStat = (id, val) => { const n = $(id); if (n) n.textContent = String(val); };
+                setStat('amici-stat-friends', accepted.length);
+                setStat('amici-stat-pending', incomingPending.length);
+                setStat('amici-stat-party', partyPendingCount);
+                const flCount = $('friends-list-count');
+                if (flCount) flCount.textContent = String(accepted.length);
+                const prCount = $('pending-requests-count');
+                if (prCount) prCount.textContent = String(incomingPending.length);
+                const piCount = $('party-invites-count');
+                if (piCount) piCount.textContent = String(partyPendingCount);
+
+                // Max weekly XP for relative bars
+                let maxWeekly = 1;
+                const weeklyMap = new Map();
+                if (accepted.length > 0) {
+                    const now = new Date();
+                    const day = now.getDay() || 7;
+                    const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day + 1);
+                    monday.setHours(0, 0, 0, 0);
+                    for (const req of accepted) {
+                        const friendUid = req.from === currentUser.uid ? req.to : req.from;
+                        const friendData = friendDocsMap.get(friendUid);
+                        let weeklyXp = 0;
+                        if (friendData?.completed) {
+                            friendData.completed.forEach(c => {
+                                if (c.completedAt && new Date(c.completedAt).getTime() >= monday.getTime()) {
+                                    weeklyXp += (c.xp || 0);
+                                }
+                            });
+                        }
+                        weeklyMap.set(friendUid, weeklyXp);
+                        if (weeklyXp > maxWeekly) maxWeekly = weeklyXp;
+                    }
+                }
+
                 if (accepted.length > 0 && friendsList) {
                     let aHTML = '';
                     for (let req of accepted) {
@@ -13979,19 +16000,10 @@
                         const color = getAvatarColor(friendData, friendUid);
                         const username = ensureAtUsername(friendData.username || 'amico');
                         const displayName = friendData.displayName || cleanUsername(username) || 'Amico';
-
-                        let weeklyXp = 0;
-                        if (friendData.completed) {
-                            const now = new Date();
-                            const day = now.getDay() || 7;
-                            const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day + 1);
-                            monday.setHours(0, 0, 0, 0);
-                            friendData.completed.forEach(c => {
-                                if (c.completedAt && new Date(c.completedAt).getTime() >= monday.getTime()) {
-                                    weeklyXp += (c.xp || 0);
-                                }
-                            });
-                        }
+                        const weeklyXp = weeklyMap.get(friendUid) || 0;
+                        const barPct = Math.max(4, Math.round((weeklyXp / maxWeekly) * 100));
+                        const lvl = typeof getLevelInfo === 'function' ? getLevelInfo(friendData.xp || 0).level : 1;
+                        const totalQ = Array.isArray(friendData.completed) ? friendData.completed.length : 0;
 
                         aHTML += `
                         <div class="friend-card">
@@ -13999,23 +16011,32 @@
                             <div class="friend-info">
                                 <div class="friend-name">${escapeHtml(displayName)}</div>
                                 <div class="friend-username">${escapeHtml(username)}</div>
-                                <div style="color:var(--accent); font-weight:700; font-size:12px; margin-top:4px;">+${weeklyXp.toLocaleString('it-IT')} XP questa sett.</div>
+                                <span class="friend-lvl-chip"><i class="fa-solid fa-crown"></i> LVL ${lvl} · ${totalQ} quest</span>
+                                <div class="friend-xp-bar-wrap"><div class="friend-xp-bar" style="width:${barPct}%"></div></div>
+                                <div class="friend-xp-label" title="+${weeklyXp.toLocaleString('it-IT')} XP">+${formatCompactXp(weeklyXp)} XP questa sett.</div>
                             </div>
-                            <div class="friend-actions" style="flex-direction:column;">
-                                <button class="friend-btn remove" onclick="viewPublicProfile('${friendUid}')">Profilo</button>
-                                <button class="friend-btn remove" onclick="replyRequest('${req.id}', 'declined')">Rimuovi</button>
+                            <div class="friend-actions">
+                                <button class="friend-btn primary" onclick="viewPublicProfile('${friendUid}')">Profilo</button>
+                                <button class="friend-btn danger" onclick="replyRequest('${req.id}', 'declined')">Rimuovi</button>
                             </div>
                         </div>
                         `;
                     }
                     if (aHTML) friendsList.innerHTML = aHTML;
-                    else friendsList.innerHTML = '<div class="quest-empty"><i class="fa-solid fa-user" style="color: rgb(0, 0, 0);"></i>Nessun amico aggiunto</div>';
+                    else friendsList.innerHTML = '<div class="quest-empty" style="padding:24px 12px;"><i class="fa-solid fa-user-plus" style="font-size:28px;display:block;margin:0 auto 10px;color:var(--text-muted);"></i>Nessun amico ancora.<br><span style="font-size:12px;color:var(--text-muted);">Cerca un @username qui sopra.</span></div>';
 
                     const friendUids = window._moreFriendUids || accepted.map(r => r.from === currentUser.uid ? r.to : r.from);
                     loadSquadFeed(friendUids);
                 } else if (friendsList) {
                     window._moreFriendUids = [];
-                    friendsList.innerHTML = '<div class="quest-empty"><i class="fa-solid fa-user" style="color: rgb(0, 0, 0);"></i>Nessun amico aggiunto</div>';
+                    friendsList.innerHTML = '<div class="quest-empty" style="padding:24px 12px;"><i class="fa-solid fa-user-plus" style="font-size:28px;display:block;margin:0 auto 10px;color:var(--text-muted);"></i>Nessun amico ancora.<br><span style="font-size:12px;color:var(--text-muted);">Cerca un @username qui sopra.</span></div>';
+                    const feed = $('squad-feed-list');
+                    if (feed) {
+                        feed.innerHTML = `<div class="prof-activity-card" style="padding:20px;text-align:center;color:var(--text-muted);font-size:14px;">
+                            <i class="fa-solid fa-ghost" style="font-size:28px;display:block;margin:0 auto 10px;color:var(--text-muted);"></i>
+                            Nessuna attività recente degli amici.
+                        </div>`;
+                    }
                 }
 
             } catch (err) {
@@ -14027,7 +16048,12 @@
         }
 
         window.replyRequest = async (reqId, status) => {
-            if (!fb) return;
+            if (!fb || !currentUser) return;
+            if (!navigator.onLine) {
+                enqueueOfflineAction('friend_reply', { _key: `friend_reply:${reqId}`, reqId, status });
+                showToast(status === 'declined' ? 'Rimosso (si sincronizza online)' : 'Accettato (si sincronizza online)');
+                return;
+            }
             try {
                 const reqRef = fb.doc(fb.db, "comparison_requests", reqId);
                 await fb.runTransaction(fb.db, async (transaction) => {
@@ -14050,6 +16076,11 @@
                 await refreshProfileAlertCounts();
                 showToast(status === 'declined' ? 'Richiesta rimossa' : 'Richiesta accettata');
             } catch (e) {
+                if (!navigator.onLine || /network|offline|Failed to fetch/i.test(String(e?.message || ''))) {
+                    enqueueOfflineAction('friend_reply', { _key: `friend_reply:${reqId}`, reqId, status });
+                    showToast('Salvato offline — si sincronizza al ritorno della rete');
+                    return;
+                }
                 showFirestoreError(e, 'Impossibile aggiornare la richiesta.');
             }
         };
@@ -14113,6 +16144,10 @@
             if (toggleNotifications) {
                 if (state.notificationsEnabled) toggleNotifications.classList.add('active');
                 else toggleNotifications.classList.remove('active');
+            }
+            const toggleWillCoach = $('toggle-will-coach');
+            if (toggleWillCoach) {
+                toggleWillCoach.classList.toggle('active', state.willCoachEnabled !== false);
             }
 
             // Profile Edit Fields
@@ -14789,6 +16824,15 @@
             });
         }
 
+        const toggleWillCoachEl = $('toggle-will-coach');
+        if (toggleWillCoachEl) {
+            toggleWillCoachEl.addEventListener('click', () => {
+                const next = state.willCoachEnabled === false;
+                setWillCoachEnabled(next);
+                showToast(next ? 'Recap Will attivato' : 'Recap Will disattivato');
+            });
+        }
+
         function checkProfileRoute() {
             const hash = location.hash;
             if (hash.startsWith('#profile/')) {
@@ -14859,7 +16903,7 @@
                             </div>
                             
                             <div class="xp-card blur-reveal" style="--enter-delay:.05s;display:flex;justify-content:space-around;padding:16px;margin-bottom:0;">
-                                <div style="text-align:center;"><div style="font-family:var(--font-display);font-weight:800;font-size:18px;color:var(--accent);">${(data.xp || 0).toLocaleString('it-IT')}</div><div style="font-size:10px;text-transform:uppercase;color:var(--text-dim);font-weight:700;">XP</div></div>
+                                <div style="text-align:center;"><div style="font-family:var(--font-display);font-weight:800;font-size:18px;color:var(--accent);" title="${(data.xp || 0).toLocaleString('it-IT')} XP">${formatCompactXp(data.xp)}</div><div style="font-size:10px;text-transform:uppercase;color:var(--text-dim);font-weight:700;">XP</div></div>
                                 <div style="text-align:center;"><div style="font-family:var(--font-display);font-weight:800;font-size:18px;">${totalQuests}</div><div style="font-size:10px;text-transform:uppercase;color:var(--text-dim);font-weight:700;">Quest</div></div>
                                 <div style="text-align:center;"><div style="font-family:var(--font-display);font-weight:800;font-size:18px;color:#ffb347;">${streak}</div><div style="font-size:10px;text-transform:uppercase;color:var(--text-dim);font-weight:700;">Streak</div></div>
                             </div>
@@ -15460,9 +17504,13 @@
         } else {
             renderActiveQuest();
         }
+        renderWillCoachSection();
+        // If already ≥5 quest completed offline/local, generate coach (or restore from state)
+        setTimeout(() => { try { maybeScheduleWillCoach(); } catch (_) {} }, 600);
         renderCompleted();
         initSeasonalCarousel();
         renderChainsSection();
+        updateSyncStatusUI();
         // initAuth() ritardata: la UI è già stata renderizzata da localStorage sopra.
         // Su connessioni lente, Firebase SDK potrebbe non essere ancora disponibile.
         // Rimandiamo a dopo il primo paint per non bloccare l'interattività.
@@ -15953,11 +18001,11 @@
                                 <input type="search" id="search-input" placeholder="Parola chiave, o una domanda a Will…" autocomplete="off" autocorrect="off" spellcheck="false">
                             </div>
                             <div class="search-actions-row">
+                                <button type="button" class="search-cancel-btn" id="search-cancel-btn">Annulla</button>
                                 <button type="button" class="search-ask-btn" id="search-ask-btn" title="Chiedi a Will">
                                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                                     <span>Chiedi</span>
                                 </button>
-                                <button type="button" class="search-cancel-btn" id="search-cancel-btn">Annulla</button>
                             </div>
                         </div>
                         <div class="search-results-area" id="search-results-area"></div>
@@ -16455,18 +18503,28 @@
                     picks.push({ quest, reason: String(reason).slice(0, 180) });
                 });
 
-                // Fallback: if model returned nothing valid, take top candidate scores as soft recs
+                // ALWAYS ≥1 quest: soft fallback from catalog candidates
                 if (!picks.length && candidates.length) {
                     candidates.slice(0, 3).forEach(c => {
-                        const quest = byTitle.get((c.t || '').toLowerCase());
+                        const quest = byTitle.get((c.t || '').toLowerCase())
+                            || (typeof c.i === 'number' ? byIndex.get(c.i) : null);
                         if (quest && !seen.has(quest.title)) {
                             seen.add(quest.title);
-                            picks.push({ quest, reason: 'Tra le più vicine alla tua richiesta nella pool.' });
+                            picks.push({ quest, reason: 'Alternativa dalla pool più vicina alla tua richiesta.' });
                         }
                     });
                 }
+                if (!picks.length) {
+                    const pool = getPool();
+                    const done = new Set((state.completed || []).map(c => c.title));
+                    const alt = pool.find(q => q && q.title && !done.has(q.title) && q.difficulty !== 'boss');
+                    if (alt) picks.push({ quest: alt, reason: 'Una sidequest per non restare a mani vuote.' });
+                }
 
-                const message = (data && (data.message || data.intro || data.reply)) || 'Ecco le quest che Will ha scelto per te.';
+                const message = (data && (data.message || data.intro || data.reply))
+                    || (picks.length
+                        ? 'Non ho trovato un match perfetto, ma ecco almeno una sidequest utile.'
+                        : 'Ecco le quest che Will ha scelto per te.');
                 return { message: String(message).slice(0, 320), picks };
             }
 
@@ -16512,15 +18570,16 @@
                 const apiKey = typeof getActiveWillApiKey === 'function' ? getActiveWillApiKey() : WILL_SHARED_API_KEY;
                 const usingSharedKey = typeof hasWillUserApiKey === 'function' ? !hasWillUserApiKey() : true;
 
-                const system = `Sei Will, la guida AI dell'app more che gamifica la vita reale con side quest.
-Rispondi SEMPRE in italiano, tono caldo, curioso e un po' magico ma concreto.
-Hai SOLO le quest nel catalogo JSON fornito. Non inventare titoli nuovi.
-Scegli 1-3 quest che rispondono meglio alla domanda dell'utente.
-Preferisci quest non presenti in completed_titles se possibile.
-Output: SOLO un unico oggetto JSON valido. Niente markdown, niente testo prima o dopo.
-Schema esatto:
-{"message":"1-2 frasi di consiglio","recommendations":[{"i":0,"title":"titolo esatto dal catalogo","reason":"perché in max 12 parole"}]}
-Il campo i è l'indice del catalogo. title deve essere IDENTICO a "t" nel catalogo.`;
+                const system = `Sei Will, guida AI di more (side quest nella vita reale).
+Regole OBBLIGATORIE:
+1) Rispondi SEMPRE in italiano.
+2) Usa SOLO quest del catalogo JSON (campo "t"). NON inventare titoli.
+3) recommendations DEVE contenere ALMENO 1 quest (max 3), SEMPRE — anche se la richiesta non combacia o non esiste nulla di simile: scegli la più vicina o una alternativa utile e spiegalo in message.
+4) Preferisci quest non in completed_titles se possibile.
+5) Output: SOLO un JSON valido, zero markdown/testo extra.
+Schema:
+{"message":"1-2 frasi","recommendations":[{"i":0,"title":"titolo esatto da t","reason":"max 12 parole"}]}
+"i" = indice catalogo; "title" IDENTICO a "t". Mai array recommendations vuoto.`;
 
                 const userPayload = {
                     question,
@@ -16542,6 +18601,7 @@ Il campo i è l'indice del catalogo. title deve essere IDENTICO a "t" nel catalo
                             model: OPENROUTER_MODEL,
                             temperature: 0.45,
                             max_tokens: 700,
+                            stream: true,
                             messages: [
                                 { role: 'system', content: system },
                                 { role: 'user', content: JSON.stringify(userPayload) }
@@ -16558,8 +18618,68 @@ Il campo i è l'indice del catalogo. title deve essere IDENTICO a "t" nel catalo
                         throw new Error(detail || `OpenRouter HTTP ${res.status}`);
                     }
 
-                    const body = await res.json();
-                    const content = body?.choices?.[0]?.message?.content;
+                    // Stream tokens into a live Will panel (JSON assembled at end).
+                    // Prefer SSE when the body is readable and response is not plain JSON.
+                    let content = '';
+                    const ctype = (res.headers.get('content-type') || '').toLowerCase();
+                    const canStream = !!(res.body && typeof res.body.getReader === 'function'
+                        && (ctype.includes('event-stream') || ctype.includes('text/plain')
+                            || ctype.includes('octet-stream') || !ctype.includes('application/json')));
+
+                    if (canStream) {
+                        resultsArea.innerHTML = `
+                            <div class="ai-will-panel">
+                                <div class="ai-will-label"><i class="fa-solid fa-wand-magic-sparkles"></i> Will</div>
+                                <div class="ai-will-message" id="will-stream-msg"><span class="will-stream-cursor">▍</span></div>
+                                <div class="ai-will-hint">Sta scrivendo…</div>
+                            </div>`;
+                        const streamMsg = document.getElementById('will-stream-msg');
+                        const reader = res.body.getReader();
+                        const decoder = new TextDecoder();
+                        let buffer = '';
+                        while (true) {
+                            const { done, value } = await reader.read();
+                            if (done) break;
+                            buffer += decoder.decode(value, { stream: true });
+                            const lines = buffer.split('\n');
+                            buffer = lines.pop() || '';
+                            for (const line of lines) {
+                                const trimmed = line.trim();
+                                if (!trimmed.startsWith('data:')) continue;
+                                const dataStr = trimmed.slice(5).trim();
+                                if (!dataStr || dataStr === '[DONE]') continue;
+                                try {
+                                    const chunk = JSON.parse(dataStr);
+                                    const delta = chunk?.choices?.[0]?.delta?.content
+                                        || chunk?.choices?.[0]?.message?.content
+                                        || '';
+                                    if (delta) {
+                                        content += delta;
+                                        if (streamMsg) {
+                                            // Show progressive "thinking" text without raw JSON braces flood
+                                            const preview = content
+                                                .replace(/[{}\[\]"]/g, ' ')
+                                                .replace(/message\s*:?/gi, '')
+                                                .replace(/recommendations\s*:?/gi, '')
+                                                .replace(/\s+/g, ' ')
+                                                .trim()
+                                                .slice(0, 220);
+                                            streamMsg.innerHTML = escapeHtml(preview || '…')
+                                                + '<span class="will-stream-cursor">▍</span>';
+                                        }
+                                    }
+                                } catch (_) { /* partial SSE line */ }
+                            }
+                        }
+                        if (!content.trim()) {
+                            throw new Error('Will non ha inviato contenuto. Riprova.');
+                        }
+                    } else {
+                        // Fallback non-stream JSON body
+                        const body = await res.json();
+                        content = body?.choices?.[0]?.message?.content || '';
+                    }
+
                     let data;
                     try {
                         data = parseOracleJson(content);
