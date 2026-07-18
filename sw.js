@@ -1,9 +1,9 @@
-const CACHE_NAME = 'more-v9.1.2';
+const CACHE_NAME = 'more-v9.1.3';
 
 const CORE_ASSETS = [
     './',
     './index.html',
-    './questpool.js?v=2',
+    './questpool.js?v=3',
     './manifest.json?v=7',
     'https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js',
     'https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js',
