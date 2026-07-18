@@ -30,7 +30,7 @@
         else window.addEventListener('load', () => setTimeout(loadAnalytics, 1200), { once: true });
     </script>
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" crossorigin="anonymous">
-    <link rel="preload" href="questpool.js?v=2" as="script">
+    <link rel="preload" href="questpool.js?v=3" as="script">
     <link rel="preload" href="https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js" as="script" crossorigin>
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
@@ -1190,12 +1190,32 @@
         }
 
         .search-result-cat {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             font-size: 10px;
-            font-weight: 600;
-            color: var(--text-muted);
-            background: rgba(255,255,255,0.05);
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--cat-color, var(--text-muted));
+            background: var(--cat-bg, rgba(255,255,255,0.05));
+            border: 1px solid var(--cat-border, transparent);
             padding: 2px 7px;
-            border-radius: 6px;
+            border-radius: 999px;
+        }
+
+        .search-result-cat i {
+            font-size: 9px;
+            color: var(--cat-color, var(--text-muted));
+        }
+
+        .search-result-cat.will-tag {
+            --cat-color: var(--will-soft, #7ec0ff);
+            --cat-bg: rgba(79, 163, 255, 0.12);
+            --cat-border: rgba(79, 163, 255, 0.28);
+            text-transform: none;
+            letter-spacing: 0.02em;
+            font-weight: 700;
         }
 
         mark.search-hl {
@@ -1434,12 +1454,6 @@
             font-size: 10px;
             opacity: 0.9;
             flex-shrink: 0;
-        }
-
-        .search-result-cat.will-tag {
-            color: var(--will-soft);
-            border: 1px solid rgba(79, 163, 255, 0.28);
-            background: rgba(79, 163, 255, 0.1);
         }
 
         .ai-loading-state {
@@ -1848,9 +1862,85 @@
         .quest-meta-row {
             display: flex;
             align-items: center;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             gap: 8px;
             margin-bottom: 12px;
+            padding-right: 40px; /* room for category icon badge */
+            min-width: 0;
+        }
+
+        .quest-meta-row .diff-badge {
+            flex-shrink: 0;
+        }
+
+        .quest-meta-row .quest-icon {
+            flex-shrink: 0;
+        }
+
+        /* Category: icon only, top-right of card */
+        .quest-cat-badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 34px;
+            height: 34px;
+            border-radius: 11px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--cat-bg, rgba(255, 255, 255, 0.06));
+            border: 1px solid var(--cat-border, var(--border-light));
+            color: var(--cat-color, var(--text));
+            z-index: 3;
+            box-shadow: none;
+            pointer-events: none;
+        }
+
+        .quest-cat-badge i {
+            font-size: 14px;
+            color: var(--cat-color, var(--text));
+            filter: none;
+        }
+
+        /* Age + creator nickname under description — single line */
+        .quest-submeta {
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            gap: 12px;
+            margin: 8px 0 4px;
+            min-width: 0;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .quest-submeta-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-dim);
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100%;
+        }
+
+        .quest-submeta-item i {
+            font-size: 10px;
+            color: var(--text-dim);
+            opacity: 0.85;
+            flex-shrink: 0;
+        }
+
+        .quest-submeta-item .quest-creator-nick {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: var(--text-dim);
+            font-weight: 600;
         }
 
         .quest-meta-chip {
@@ -1872,8 +1962,135 @@
         }
 
         .quest-meta-chip.cat {
-            color: var(--text);
-            background: rgba(255, 255, 255, 0.06);
+            color: var(--cat-color, var(--text));
+            background: var(--cat-bg, rgba(255, 255, 255, 0.06));
+            border-color: var(--cat-border, var(--border-light));
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            font-size: 10px;
+        }
+
+        .quest-meta-chip.cat i {
+            font-size: 10px;
+            opacity: 1;
+            color: var(--cat-color, var(--text));
+            filter: drop-shadow(0 0 6px var(--cat-glow, transparent));
+        }
+
+        .quest-meta-chip.creator {
+            color: var(--text-dim);
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--border);
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            text-transform: none;
+            font-size: 11px;
+        }
+
+        .quest-meta-chip.creator i {
+            color: var(--text-dim);
+            opacity: 0.85;
+        }
+
+        /* Category color tokens — chip, search, and top-right card badge */
+        .quest-meta-chip.cat-natura,
+        .search-result-cat.cat-natura,
+        .quest-cat-badge.cat-natura {
+            --cat-color: #3dd68c;
+            --cat-bg: rgba(61, 214, 140, 0.12);
+            --cat-border: rgba(61, 214, 140, 0.32);
+            --cat-glow: rgba(61, 214, 140, 0.35);
+        }
+
+        .quest-meta-chip.cat-urbex,
+        .search-result-cat.cat-urbex,
+        .quest-cat-badge.cat-urbex {
+            --cat-color: #c5cdd8;
+            --cat-bg: rgba(197, 205, 216, 0.10);
+            --cat-border: rgba(197, 205, 216, 0.28);
+            --cat-glow: rgba(197, 205, 216, 0.22);
+        }
+
+        .quest-meta-chip.cat-sociale,
+        .search-result-cat.cat-sociale,
+        .quest-cat-badge.cat-sociale {
+            --cat-color: #4fa3ff;
+            --cat-bg: rgba(79, 163, 255, 0.12);
+            --cat-border: rgba(79, 163, 255, 0.32);
+            --cat-glow: rgba(79, 163, 255, 0.35);
+        }
+
+        .quest-meta-chip.cat-sport,
+        .search-result-cat.cat-sport,
+        .quest-cat-badge.cat-sport {
+            --cat-color: #ff8c42;
+            --cat-bg: rgba(255, 140, 66, 0.12);
+            --cat-border: rgba(255, 140, 66, 0.32);
+            --cat-glow: rgba(255, 140, 66, 0.35);
+        }
+
+        .quest-meta-chip.cat-cibo,
+        .search-result-cat.cat-cibo,
+        .quest-cat-badge.cat-cibo {
+            --cat-color: #f0a030;
+            --cat-bg: rgba(240, 160, 48, 0.12);
+            --cat-border: rgba(240, 160, 48, 0.32);
+            --cat-glow: rgba(240, 160, 48, 0.35);
+        }
+
+        .quest-meta-chip.cat-creativo,
+        .search-result-cat.cat-creativo,
+        .quest-cat-badge.cat-creativo {
+            --cat-color: #e879f9;
+            --cat-bg: rgba(232, 121, 249, 0.12);
+            --cat-border: rgba(232, 121, 249, 0.32);
+            --cat-glow: rgba(232, 121, 249, 0.35);
+        }
+
+        .quest-meta-chip.cat-mentale,
+        .search-result-cat.cat-mentale,
+        .quest-cat-badge.cat-mentale {
+            --cat-color: #a78bfa;
+            --cat-bg: rgba(167, 139, 250, 0.12);
+            --cat-border: rgba(167, 139, 250, 0.32);
+            --cat-glow: rgba(167, 139, 250, 0.35);
+        }
+
+        .quest-meta-chip.cat-sfida,
+        .search-result-cat.cat-sfida,
+        .quest-cat-badge.cat-sfida {
+            --cat-color: #ff4f4f;
+            --cat-bg: rgba(255, 79, 79, 0.12);
+            --cat-border: rgba(255, 79, 79, 0.32);
+            --cat-glow: rgba(255, 79, 79, 0.35);
+        }
+
+        .quest-meta-chip.cat-esplorazione,
+        .search-result-cat.cat-esplorazione,
+        .quest-cat-badge.cat-esplorazione {
+            --cat-color: #2dd4bf;
+            --cat-bg: rgba(45, 212, 191, 0.12);
+            --cat-border: rgba(45, 212, 191, 0.32);
+            --cat-glow: rgba(45, 212, 191, 0.35);
+        }
+
+        .quest-meta-chip.cat-casa,
+        .search-result-cat.cat-casa,
+        .quest-cat-badge.cat-casa {
+            --cat-color: #c4a882;
+            --cat-bg: rgba(196, 168, 130, 0.12);
+            --cat-border: rgba(196, 168, 130, 0.32);
+            --cat-glow: rgba(196, 168, 130, 0.28);
+        }
+
+        .quest-meta-chip.cat-custom,
+        .search-result-cat.cat-custom,
+        .quest-cat-badge.cat-custom {
+            --cat-color: #c8f135;
+            --cat-bg: rgba(200, 241, 53, 0.12);
+            --cat-border: rgba(200, 241, 53, 0.35);
+            --cat-glow: rgba(200, 241, 53, 0.4);
         }
 
         .quest-top {
@@ -8804,17 +9021,10 @@
                     <option value="hard">Difficile (5.000 XP)</option>
                 </select>
             </div>
-            <div class="create-field">
-                <label>Categoria</label>
-                <select id="cq-cat">
-                    <option value="sfida">Sfida</option>
-                    <option value="natura">Natura</option>
-                    <option value="sport">Sport</option>
-                    <option value="sociale">Sociale</option>
-                    <option value="creatività">Creatività</option>
-                    <option value="altro">Altro</option>
-                </select>
-            </div>
+            <p style="margin:0 0 14px;font-size:12px;line-height:1.45;color:var(--text-dim);">
+                Le quest create da te sono sempre <strong style="color:var(--accent);">CUSTOM</strong>
+                e mostrano il tuo username quando le condividi.
+            </p>
             <div class="create-modal-btns">
                 <button class="btn-cancel" id="btn-cq-cancel">Annulla</button>
                 <button class="btn-create-save" id="btn-cq-save">Salva quest</button>
@@ -9004,7 +9214,7 @@
 
         window.firebaseApp = { auth, db, googleProvider, persistenceReady, signInWithPopup, signInWithRedirect, getRedirectResult, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile, doc, setDoc, getDoc, serverTimestamp, collection, query, where, limit, getDocs, updateDoc, deleteDoc, onSnapshot, documentId, runTransaction, addDoc };
     </script>
-    <script src="questpool.js?v=2"></script>
+    <script src="questpool.js?v=3"></script>
 
     <script>
         // Dev-mode error overlay (auto-dismissed in production)
@@ -9036,6 +9246,120 @@
             { name: 'Renegade', xp: 55000 },
             { name: 'Legend', xp: 90000 },
         ];
+
+        /* ── QUEST CATEGORIES (icon + color + label) ─────────
+           Stored lowercase; UI always shows UPPERCASE label.
+           `custom` is reserved for user-created / shared quests. */
+        const QUEST_CATEGORIES = {
+            natura:       { id: 'natura',       label: 'NATURA',       icon: 'fa-leaf' },
+            urbex:        { id: 'urbex',        label: 'URBEX',        icon: 'fa-building' },
+            sociale:      { id: 'sociale',      label: 'SOCIALE',      icon: 'fa-users' },
+            sport:        { id: 'sport',        label: 'SPORT',        icon: 'fa-person-running' },
+            cibo:         { id: 'cibo',         label: 'CIBO',         icon: 'fa-utensils' },
+            creativo:     { id: 'creativo',     label: 'CREATIVO',     icon: 'fa-palette' },
+            mentale:      { id: 'mentale',      label: 'MENTALE',      icon: 'fa-brain' },
+            sfida:        { id: 'sfida',        label: 'SFIDA',        icon: 'fa-bolt' },
+            esplorazione: { id: 'esplorazione', label: 'ESPLORAZIONE', icon: 'fa-compass' },
+            casa:         { id: 'casa',         label: 'CASA',         icon: 'fa-house' },
+            custom:       { id: 'custom',       label: 'CUSTOM',       icon: 'fa-wand-magic-sparkles' },
+        };
+
+        const CATEGORY_ALIASES = {
+            creatività: 'creativo',
+            creativita: 'creativo',
+            creativity: 'creativo',
+            altro: 'sfida',
+            other: 'sfida',
+            nature: 'natura',
+            social: 'sociale',
+            food: 'cibo',
+            mental: 'mentale',
+            home: 'casa',
+            explore: 'esplorazione',
+            exploration: 'esplorazione',
+            urban: 'urbex',
+        };
+
+        function resolveQuestCategory(q) {
+            if (!q) return 'sfida';
+            if (q.isCustom || q.isCustom === true) return 'custom';
+            const raw = String(q.category || '').trim().toLowerCase();
+            if (!raw) return 'sfida';
+            const mapped = CATEGORY_ALIASES[raw] || raw;
+            return QUEST_CATEGORIES[mapped] ? mapped : 'sfida';
+        }
+
+        function getCategoryMeta(qOrId) {
+            const id = (typeof qOrId === 'string')
+                ? (CATEGORY_ALIASES[qOrId] || qOrId)
+                : resolveQuestCategory(qOrId);
+            return QUEST_CATEGORIES[id] || QUEST_CATEGORIES.sfida;
+        }
+
+        /** Nickname (@username), never display name / nome e cognome. */
+        function getCurrentNickname() {
+            if (state.username) {
+                const nick = String(state.username).replace(/^@+/, '').trim();
+                if (nick) return nick;
+            }
+            return 'explorer';
+        }
+
+        function getQuestCreatorName(q) {
+            // Alias kept for older call sites — always nickname, not displayName.
+            return getQuestCreatorNickname(q);
+        }
+
+        function getQuestCreatorNickname(q) {
+            if (!q) return '';
+            const raw = q.createdByUsername || q.createdBy || q.creator || q.fromUsername || q.from || '';
+            let nick = String(raw).replace(/^@+/, '').trim();
+            // If someone stored a full display name (has spaces), prefer current account nickname when own custom
+            if (nick && /\s/.test(nick) && q.isCustom && state.username) {
+                const own = String(state.username).replace(/^@+/, '').trim();
+                if (own) return own;
+                // else keep first token as last resort
+                nick = nick.split(/\s+/)[0];
+            }
+            return nick;
+        }
+
+        /** Icon-only category badge (top-right). Label kept in title/aria for a11y. */
+        function renderCategoryIconBadge(q) {
+            const meta = getCategoryMeta(q);
+            return `<span class="quest-cat-badge cat-${meta.id}" title="${escapeHtml(meta.label)}" aria-label="${escapeHtml(meta.label)}"><i class="fa-solid ${meta.icon}"></i></span>`;
+        }
+
+        /** Age + creator nickname under description — same line, no wrap. */
+        function renderQuestSubmetaHtml(q, ageLabel) {
+            const parts = [];
+            if (ageLabel) {
+                parts.push(`<span class="quest-submeta-item"><i class="fa-regular fa-clock"></i><span>${escapeHtml(ageLabel)}</span></span>`);
+            }
+            if (q && (q.isCustom || resolveQuestCategory(q) === 'custom')) {
+                const nick = getQuestCreatorNickname(q);
+                if (nick) {
+                    parts.push(`<span class="quest-submeta-item"><i class="fa-solid fa-user"></i><span class="quest-creator-nick">${escapeHtml(nick)}</span></span>`);
+                }
+            }
+            if (!parts.length) return '';
+            return `<div class="quest-submeta">${parts.join('')}</div>`;
+        }
+
+        /** Compact chips for secondary UIs (search/settings). Icon + label optional. */
+        function renderCategoryChipsHtml(q, { iconOnly = false, showCreator = false } = {}) {
+            const meta = getCategoryMeta(q);
+            let html = iconOnly
+                ? `<span class="quest-meta-chip cat cat-${meta.id}" title="${escapeHtml(meta.label)}" aria-label="${escapeHtml(meta.label)}"><i class="fa-solid ${meta.icon}"></i></span>`
+                : `<span class="quest-meta-chip cat cat-${meta.id}"><i class="fa-solid ${meta.icon}"></i>${meta.label}</span>`;
+            if (showCreator && (meta.id === 'custom' || q?.isCustom)) {
+                const by = getQuestCreatorNickname(q);
+                if (by) {
+                    html += `<span class="quest-meta-chip creator"><i class="fa-solid fa-user"></i>${escapeHtml(by)}</span>`;
+                }
+            }
+            return html;
+        }
 
         const HYPES = [
             'Leggendario!', 'Fenomenale!', 'Incredibile!',
@@ -9681,18 +10005,31 @@
         }
 
         function persistWillCoach(coach, atCount) {
-            state.willCoach = coach;
-            state.willCoachLastAtCount = atCount;
-            state.willCoachDismissedAt = 0;
-            // Hidden anti-abuse: at most one auto-recap per calendar day
+            // Never overwrite an existing same-day recap (cross-device lock)
+            let today = '';
             try {
-                state.willCoachLastDay = (typeof getRomeDateString === 'function')
+                today = (typeof getRomeDateString === 'function')
                     ? getRomeDateString()
                     : new Date().toISOString().slice(0, 10);
             } catch (_) {
-                state.willCoachLastDay = new Date().toISOString().slice(0, 10);
+                today = new Date().toISOString().slice(0, 10);
             }
+            if (state.willCoachLastDay === today && state.willCoach && state.willCoach.message) {
+                renderWillCoachSection();
+                scheduleCloudSync({ immediate: true, reason: 'will-coach-keepalive' });
+                return;
+            }
+
+            const payload = coach && typeof coach === 'object'
+                ? { ...coach, day: coach.day || today, atCount: coach.atCount != null ? coach.atCount : atCount }
+                : coach;
+            state.willCoach = payload;
+            state.willCoachLastAtCount = atCount;
+            state.willCoachDismissedAt = 0;
+            // Account-level anti-abuse + cross-device: at most one auto-recap per calendar day
+            state.willCoachLastDay = today;
             saveState();
+            // Force immediate Firebase write so other devices see 1/1 + same recap
             scheduleCloudSync({ immediate: true, reason: 'will-coach' });
             renderWillCoachSection();
         }
@@ -9821,6 +10158,9 @@
             });
         }
 
+        // Prevent generating a new Will recap before Firebase state is merged.
+        let _cloudStateHydrated = false;
+
         function maybeScheduleWillCoach() {
             // Always paint existing coach first (respects enabled flag)
             renderWillCoachSection();
@@ -9828,13 +10168,9 @@
             if (state.willCoachEnabled === false) return;
             if (!isWillLoggedIn()) return;
 
-            const count = (state.completed || []).length;
-            const lastAt = Number(state.willCoachLastAtCount || 0);
-            // Every ~5 quests since last recap
-            if (count < WILL_COACH_EVERY) return;
-            if (count - lastAt < WILL_COACH_EVERY) return;
+            // Wait for cloud merge so we don't create a second recap on another device
+            if (currentUser && !isGuest && !_cloudStateHydrated) return;
 
-            // Hidden anti-abuse: max 1 recap / day (not shown in UI)
             let today = '';
             try {
                 today = (typeof getRomeDateString === 'function')
@@ -9843,7 +10179,33 @@
             } catch (_) {
                 today = new Date().toISOString().slice(0, 10);
             }
-            if (state.willCoachLastDay && state.willCoachLastDay === today) return;
+
+            // Account-level lock (synced via Firebase): already generated today → 1/1, only show existing
+            if (state.willCoachLastDay && state.willCoachLastDay === today) {
+                renderWillCoachSection();
+                return;
+            }
+
+            const count = (state.completed || []).length;
+            const lastAt = Number(state.willCoachLastAtCount || 0);
+            // Every ~5 quests since last recap
+            if (count < WILL_COACH_EVERY) return;
+            if (count - lastAt < WILL_COACH_EVERY) return;
+
+            // Double-check: if we already have a coach object for today, do not regenerate
+            if (state.willCoach && state.willCoach.message) {
+                const coachDay = state.willCoach.day
+                    || (state.willCoach.generatedAt
+                        ? (typeof getRomeDateString === 'function'
+                            ? getRomeDateString(new Date(state.willCoach.generatedAt))
+                            : null)
+                        : null);
+                if (coachDay === today || state.willCoachLastDay === today) {
+                    if (!state.willCoachLastDay) state.willCoachLastDay = today;
+                    renderWillCoachSection();
+                    return;
+                }
+            }
 
             if (!navigator.onLine) {
                 persistWillCoach(buildLocalCoach(count), count);
@@ -10007,6 +10369,36 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             if (typeof state.willCoachLastAtCount !== 'number') state.willCoachLastAtCount = 0;
             if (typeof state.willCoachEnabled !== 'boolean') state.willCoachEnabled = true;
             if (state.willCoachLastDay != null && typeof state.willCoachLastDay !== 'string') state.willCoachLastDay = null;
+            // Migrate custom quests → always category CUSTOM + creator nickname (username)
+            if (Array.isArray(state.customQuests)) {
+                const fallbackCreator = state.username
+                    ? String(state.username).replace(/^@+/, '').trim()
+                    : 'explorer';
+                state.customQuests = state.customQuests.map(q => {
+                    if (!q || typeof q !== 'object') return q;
+                    const nick = getQuestCreatorNickname(q) || fallbackCreator;
+                    return {
+                        ...q,
+                        isCustom: true,
+                        category: 'custom',
+                        createdBy: nick,
+                        createdByUsername: nick
+                    };
+                });
+            }
+            if (state.currentQuest && (state.currentQuest.isCustom || state.currentQuest.category === 'custom')) {
+                const nick = getQuestCreatorNickname(state.currentQuest)
+                    || (state.username ? String(state.username).replace(/^@+/, '').trim() : 'explorer');
+                state.currentQuest = {
+                    ...state.currentQuest,
+                    isCustom: true,
+                    category: 'custom',
+                    createdBy: nick,
+                    createdByUsername: nick
+                };
+            } else if (state.currentQuest && state.currentQuest.category) {
+                state.currentQuest.category = resolveQuestCategory(state.currentQuest);
+            }
             ensureWillUsageShape();
             resetWillWindowIfExpired({ persist: false });
             ensureCurrentQuestAssignedAt();
@@ -10024,7 +10416,27 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             } else {
                 // Always start clean: party metadata is attached only by sendPartyInvite.
                 // Stripping avoids reintroducing stale partyInviteId from bookmarks/cloud copies.
-                state.currentQuest = { ...quest, assignedAt: Date.now() };
+                let next = { ...quest, assignedAt: Date.now() };
+                if (next.isCustom || next.category === 'custom') {
+                    const nick = getQuestCreatorNickname(next) || getCurrentNickname();
+                    next = {
+                        ...next,
+                        isCustom: true,
+                        category: 'custom',
+                        createdBy: nick,
+                        createdByUsername: nick
+                    };
+                } else if (next.category) {
+                    next.category = resolveQuestCategory(next);
+                } else if (next.title && window.QUESTS_POOL) {
+                    // Enrich missing category from pool when possible
+                    const fromPool = (window.QUESTS_POOL || []).find(p => p.title === next.title);
+                    if (fromPool?.category) next.category = fromPool.category;
+                    else next.category = resolveQuestCategory(next);
+                } else {
+                    next.category = resolveQuestCategory(next);
+                }
+                state.currentQuest = next;
                 clearPartyMetadataFromQuest(state.currentQuest);
                 if (generated) state.currentQuestGeneratedAt = Date.now();
             }
@@ -10762,17 +11174,45 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     if (!c) return l;
                     return (l.date || '') >= (c.date || '') ? l : c;
                 })(),
+                // Will recap: same account = same day = same recap across devices.
+                // Prefer cloud when it already has today's recap so a second device
+                // never regenerates picks/message.
                 willCoach: (() => {
+                    let today = '';
+                    try {
+                        today = (typeof getRomeDateString === 'function')
+                            ? getRomeDateString()
+                            : new Date().toISOString().slice(0, 10);
+                    } catch (_) {
+                        today = new Date().toISOString().slice(0, 10);
+                    }
                     const l = localState.willCoach;
                     const c = cloudState.willCoach;
+                    const lDay = localState.willCoachLastDay || null;
+                    const cDay = cloudState.willCoachLastDay || null;
+                    if (cDay === today && c && c.message) return c;
+                    if (lDay === today && l && l.message) return l;
                     if (!l) return c || null;
                     if (!c) return l;
                     return (l.generatedAt || 0) >= (c.generatedAt || 0) ? l : c;
                 })(),
-                willCoachLastAtCount: Math.max(
-                    Number(localState.willCoachLastAtCount || 0),
-                    Number(cloudState.willCoachLastAtCount || 0)
-                ),
+                willCoachLastAtCount: (() => {
+                    let today = '';
+                    try {
+                        today = (typeof getRomeDateString === 'function')
+                            ? getRomeDateString()
+                            : new Date().toISOString().slice(0, 10);
+                    } catch (_) {
+                        today = new Date().toISOString().slice(0, 10);
+                    }
+                    const l = localState.willCoachLastAtCount;
+                    const c = cloudState.willCoachLastAtCount;
+                    // If cloud already logged today's recap, keep its milestone count
+                    if (cloudState.willCoachLastDay === today && cloudState.willCoach) {
+                        return Math.max(Number(c || 0), Number(l || 0));
+                    }
+                    return Math.max(Number(l || 0), Number(c || 0));
+                })(),
                 willCoachDismissedAt: Math.max(
                     Number(localState.willCoachDismissedAt || 0),
                     Number(cloudState.willCoachDismissedAt || 0)
@@ -10784,8 +11224,18 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     return true;
                 })(),
                 willCoachLastDay: (() => {
+                    let today = '';
+                    try {
+                        today = (typeof getRomeDateString === 'function')
+                            ? getRomeDateString()
+                            : new Date().toISOString().slice(0, 10);
+                    } catch (_) {
+                        today = new Date().toISOString().slice(0, 10);
+                    }
                     const l = localState.willCoachLastDay || null;
                     const c = cloudState.willCoachLastDay || null;
+                    // Account-level daily lock: if either side has today, keep today (1/1)
+                    if (c === today || l === today) return today;
                     if (!l) return c;
                     if (!c) return l;
                     return l >= c ? l : c;
@@ -11044,7 +11494,6 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
         const cqTitle = $('cq-title');
         const cqDesc = $('cq-desc');
         const cqDiff = $('cq-diff');
-        const cqCat = $('cq-cat');
         const challengeBannerCont = $('challenge-banner-container');
         const profileScreen = $('profile-screen');
         const profileContent = $('profile-content');
@@ -11326,7 +11775,10 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
 
             renderActiveQuest();
             renderWillCoachSection();
+            // Cloud (or empty cloud) is now merged into local state — safe to schedule Will
+            _cloudStateHydrated = true;
             // Catch-up: if user already hit a coach milestone (e.g. 5 quest) but coach never ran
+            // (no-op if willCoachLastDay === today — same recap on every device)
             maybeScheduleWillCoach();
             renderPartyInvites();
             processCompletedPartyInvitesForCurrentUser({ notify: true });
@@ -11505,6 +11957,9 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             btnLogout.style.display = 'none';
             btnLoginPrompt.style.display = 'block';
             showToast('Sei entrato come Ospite');
+            // Guest has no Firebase account — allow local Will scheduling
+            _cloudStateHydrated = true;
+            maybeScheduleWillCoach();
 
             setTimeout(requestNotificationPermission, 1500);
         });
@@ -11541,8 +11996,14 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     pendingChainBonus: null,
                     chainBonusSchemaVersion: 2,
                     partyQuestsCompleted: [],
+                    willCoach: null,
+                    willCoachLastAtCount: 0,
+                    willCoachDismissedAt: 0,
+                    willCoachEnabled: true,
+                    willCoachLastDay: null,
                     updatedAt: 0
                 };
+                _cloudStateHydrated = false;
                 localStorage.removeItem('more_state');
                 window._pendingFriendRequestCount = 0;
                 window._pendingPartyInviteCount = 0;
@@ -11892,7 +12353,8 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             }
             const q = state.currentQuest;
             const ageLabel = formatQuestAge(q.assignedAt);
-            const catLabel = q.category ? String(q.category) : '';
+            const catBadge = renderCategoryIconBadge(q);
+            const submetaHtml = renderQuestSubmetaHtml(q, ageLabel);
 
             if (q.isBoss) {
                 const warningHtml = q.warning ? `
@@ -11902,15 +12364,16 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 </div>` : '';
                 questContainer.innerHTML = `
                 <div class="quest-card boss-card card-pop-in diff-glow-hard" style="border: 1px solid rgba(255, 79, 79, 0.45); box-shadow: 0 0 28px rgba(255, 79, 79, 0.28), var(--shadow-card); background: radial-gradient(ellipse 90% 60% at 50% 0%, rgba(255,79,79,0.14), transparent 55%), rgba(255, 79, 79, 0.04);">
+                  ${catBadge}
                   <div class="quest-meta-row">
                     <span class="diff-badge" style="background:var(--diff-hard); color:var(--bg); font-weight:800; border:none;"><span class="dot" style="background:var(--bg);"></span>BOSS FIGHT</span>
-                    ${catLabel ? `<span class="quest-meta-chip cat"><i class="fa-solid fa-tag"></i>${escapeHtml(catLabel)}</span>` : ''}
-                    ${ageLabel ? `<span class="quest-meta-chip"><i class="fa-regular fa-clock"></i>${escapeHtml(ageLabel)}</span>` : ''}
+                    ${q._chainId ? `<span class="quest-meta-chip"><i class="fa-solid fa-link"></i>Chain</span>` : ''}
                   </div>
                   <div class="quest-top">
                     <span class="quest-title" style="width:100%; margin-top:0;">${escapeHtml(q.title)}</span>
                   </div>
-                  <p class="quest-desc is-expanded" style="color:var(--text); font-size:15px; margin-bottom: 16px;">${escapeHtml(q.description)}</p>
+                  <p class="quest-desc is-expanded" style="color:var(--text); font-size:15px; margin-bottom: 4px;">${escapeHtml(q.description)}</p>
+                  ${submetaHtml}
                   ${warningHtml}
                   <div class="quest-footer">
                     <span class="quest-xp" style="color:var(--diff-hard); text-shadow:0 0 12px rgba(255, 79, 79, 0.45);"><i class="fa-solid fa-gem"></i>+${q.xp.toLocaleString('it-IT')} XP</span>
@@ -11926,7 +12389,6 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 const diffClass = `diff-${diff}`;
                 const diffLabel = diff === 'easy' ? 'Facile' : diff === 'medium' ? 'Media' : 'Difficile';
                 const iconClass = `icon-${diff}`;
-                const customTag = q.isCustom ? '<span class="custom-tag">Custom</span>' : '';
                 const partyInviteHtml = getPartyInviteActionHtml(q);
                 const warningHtml = q.warning ? `
                 <div class="quest-warning-banner">
@@ -11935,18 +12397,18 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 </div>` : '';
                 questContainer.innerHTML = `
         <div class="quest-card card-pop-in diff-glow-${diff}">
+          ${catBadge}
           <div class="quest-meta-row">
             <div class="quest-icon ${iconClass}">${getQuestIconSVG(diff)}</div>
             <span class="diff-badge ${diffClass}"><span class="dot dot-${diff}"></span>${diffLabel}</span>
-            ${catLabel ? `<span class="quest-meta-chip cat"><i class="fa-solid fa-tag"></i>${escapeHtml(catLabel)}</span>` : ''}
             ${q._chainId ? `<span class="quest-meta-chip"><i class="fa-solid fa-link"></i>Chain</span>` : ''}
-            ${ageLabel ? `<span class="quest-meta-chip"><i class="fa-regular fa-clock"></i>${escapeHtml(ageLabel)}</span>` : ''}
           </div>
           <div class="quest-top" style="margin-bottom:10px;">
-            <span class="quest-title">${escapeHtml(q.title)}${customTag}</span>
+            <span class="quest-title">${escapeHtml(q.title)}</span>
           </div>
           <p class="quest-desc">${escapeHtml(q.description)}</p>
           <button type="button" class="quest-desc-toggle"><i class="fa-solid fa-chevron-down"></i> Leggi tutto</button>
+          ${submetaHtml}
           ${warningHtml}
               <div class="quest-footer">
                 <span class="quest-xp"><i class="fa-solid fa-gem"></i>+${Number(q.xp || 0).toLocaleString('it-IT')} XP</span>
@@ -11993,7 +12455,16 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     showToast('Massimo 3 quest salvate! Rimuovine una prima.');
                     return;
                 }
-                state.bookmarkedQuests.push({ title: quest.title, description: quest.description, difficulty: quest.difficulty, xp: quest.xp, category: quest.category, isCustom: quest.isCustom || false });
+                state.bookmarkedQuests.push({
+                    title: quest.title,
+                    description: quest.description,
+                    difficulty: quest.difficulty,
+                    xp: quest.xp,
+                    category: quest.isCustom ? 'custom' : resolveQuestCategory(quest),
+                    isCustom: quest.isCustom || false,
+                    createdBy: quest.createdBy || (quest.isCustom ? getCurrentNickname() : undefined),
+                    createdByUsername: quest.createdByUsername || quest.createdBy || (quest.isCustom ? getCurrentNickname() : undefined)
+                });
                 showToast('Quest salvata! (' + state.bookmarkedQuests.length + '/3)');
             }
             saveState();
@@ -12029,12 +12500,18 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 const done = completedTitles.has(q.title);
                 const diffColor = q.difficulty === 'easy' ? 'var(--diff-easy)' : q.difficulty === 'medium' ? 'var(--diff-medium)' : 'var(--diff-hard)';
                 const diffLabel = q.difficulty === 'easy' ? 'Facile' : q.difficulty === 'medium' ? 'Media' : 'Difficile';
+                const catIcon = renderCategoryChipsHtml(q, { iconOnly: true });
+                const nick = (q.isCustom || resolveQuestCategory(q) === 'custom') ? getQuestCreatorNickname(q) : '';
                 return `
                     <div class="saved-slot${done ? '" style="opacity:0.65;' : '"'}">
                         <div class="saved-slot-header">
                             <span style="display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; color:${diffColor}; background:rgba(${q.difficulty === 'easy' ? '79,163,255' : q.difficulty === 'medium' ? '255,179,71' : '255,79,79'},0.12); padding:3px 8px; border-radius:6px; flex-shrink:0;">${diffLabel}</span>
                             <span class="saved-slot-title">${escapeHtml(q.title)}</span>
                             ${done ? `<span style="font-size:11px; color:var(--diff-easy); font-weight:700; flex-shrink:0;">✓</span>` : ''}
+                        </div>
+                        <div style="display:flex;flex-wrap:nowrap;align-items:center;gap:8px;margin:6px 0 4px;overflow:hidden;">
+                          ${catIcon}
+                          ${nick ? `<span class="quest-submeta-item"><i class="fa-solid fa-user"></i><span class="quest-creator-nick">${escapeHtml(nick)}</span></span>` : ''}
                         </div>
                         <div class="saved-slot-body">
                             <span class="saved-slot-desc">${escapeHtml(q.description || '')}</span>
@@ -12371,11 +12848,16 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             const fromUsername = ensureAtUsername(invite.fromUsername);
             const questTitle = invite.questTitle || 'Quest';
 
+            const partyCat = invite.questIsCustom
+                ? 'custom'
+                : resolveQuestCategory({ category: invite.questCategory, isCustom: invite.questIsCustom });
             state.completed.push({
                 title: questTitle,
                 xp: questXP,
                 difficulty: diff,
-                category: invite.questCategory || 'sfida',
+                category: partyCat,
+                isCustom: !!invite.questIsCustom,
+                createdBy: invite.questCreatedBy || undefined,
                 completedAt: completedAtSafeIso,
                 note: invite.completionNote || null,
                 photo: invite.completionPhoto || null,
@@ -12873,7 +13355,9 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                         questDescription: q.description || '',
                         questDifficulty: q.difficulty || 'easy',
                         questXP: Number(q.xp) || 0,
-                        questCategory: q.category || 'sfida',
+                        questCategory: q.isCustom ? 'custom' : resolveQuestCategory(q),
+                        questIsCustom: !!q.isCustom,
+                        questCreatedBy: q.isCustom ? (getQuestCreatorNickname(q) || getCurrentNickname()) : null,
                         questRef: q.ref || q.title || '',
                         status: 'pending',
                         createdAt: fb.serverTimestamp(),
@@ -13031,6 +13515,14 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                             <div class="party-meta-row">
                               <span class="party-meta-chip"><i class="fa-solid fa-signal"></i>${escapeHtml(diffLabel)}</span>
                               <span class="party-meta-chip xp"><i class="fa-solid fa-gem"></i>${(Number(invite.questXP) || 0).toLocaleString('it-IT')} XP</span>
+                              ${renderCategoryChipsHtml({
+                                  category: invite.questCategory,
+                                  isCustom: !!invite.questIsCustom,
+                                  createdBy: invite.questCreatedBy
+                              }, { iconOnly: true })}
+                              ${invite.questIsCustom && invite.questCreatedBy
+                                  ? `<span class="quest-submeta-item"><i class="fa-solid fa-user"></i><span class="quest-creator-nick">${escapeHtml(String(invite.questCreatedBy).replace(/^@+/, ''))}</span></span>`
+                                  : ''}
                             </div>
                             <div class="social-actions">
                               <button onclick="acceptPartyInvite('${invite.relationDocId}')" class="sett-btn primary">
@@ -13753,10 +14245,13 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
 
             $('daily-quest-container').innerHTML = `
                 <div class="quest-card card-pop-in" style="border: 1px solid var(--accent); position:relative; overflow:hidden;">
-                  <div style="position:absolute; top:0; right:0; background:var(--accent); color:var(--bg); font-size:10px; font-weight:800; padding:2px 8px; border-bottom-left-radius:8px;">+500 XP BONUS</div>
-                  <div class="quest-top">
+                  <div style="position:absolute; top:0; right:44px; background:var(--accent); color:var(--bg); font-size:10px; font-weight:800; padding:2px 8px; border-bottom-left-radius:8px; border-bottom-right-radius:8px; z-index:2;">+500 XP BONUS</div>
+                  ${renderCategoryIconBadge(dailyQuest)}
+                  <div class="quest-meta-row">
                     <div class="quest-icon ${iconClass}">${getQuestIconSVG(dailyQuest.difficulty)}</div>
                     <span class="diff-badge ${diffClass}"><span class="dot dot-${dailyQuest.difficulty}"></span>${diffLabel}</span>
+                  </div>
+                  <div class="quest-top" style="margin-bottom:10px;">
                     <span class="quest-title">${escapeHtml(dailyQuest.title)}</span>
                   </div>
                   <p class="quest-desc">${escapeHtml(dailyQuest.description)}</p>
@@ -14138,7 +14633,9 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 title: q.title,
                 xp: baseXp,
                 difficulty: q.difficulty,
-                category: q.category,
+                category: q.isCustom ? 'custom' : resolveQuestCategory(q),
+                isCustom: !!q.isCustom,
+                createdBy: q.isCustom ? (getQuestCreatorNickname(q) || getCurrentNickname()) : undefined,
                 completedAt: today.toISOString(),
                 note,
                 photo,
@@ -14465,10 +14962,13 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     : `<button class="btn-complete" style="width:100%; justify-content:center; padding:12px; font-size:15px; margin-top:16px;" onclick="promptQuestReview(currentSeasonalQuests[${i}], 'seasonal', ${i})"><i class="fa-solid fa-check"></i>Completata</button>`;
 
                 return `
-                    <div class="seasonal-card card-pop-in ${isCompleted ? 'completed' : ''}" style="--enter-delay:${i * 0.06}s; border: 2px solid ${isCompleted ? 'var(--border)' : info.color}; box-shadow: ${isCompleted ? 'none' : `0 0 15px ${info.color}33`};">
-                      <div class="quest-top">
+                    <div class="seasonal-card card-pop-in ${isCompleted ? 'completed' : ''}" style="--enter-delay:${i * 0.06}s; border: 2px solid ${isCompleted ? 'var(--border)' : info.color}; box-shadow: ${isCompleted ? 'none' : `0 0 15px ${info.color}33`}; position:relative;">
+                      ${renderCategoryIconBadge(q)}
+                      <div class="quest-meta-row">
                         <div class="quest-icon ${iconClass}">${getQuestIconSVG(q.difficulty)}</div>
                         <span class="diff-badge ${diffClass}"><span class="dot dot-${q.difficulty}"></span>${diffLabel}</span>
+                      </div>
+                      <div class="quest-top" style="margin-bottom:10px;">
                         <span class="quest-title">${escapeHtml(q.title)}</span>
                       </div>
                       <p class="quest-desc" style="margin-bottom:12px;">${escapeHtml(q.description)}</p>
@@ -14536,7 +15036,18 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             }
             state.questTimestamps.push(Date.now());
 
-            state.completed.push({ title: q.title, xp: q.xp, difficulty: q.difficulty, category: q.category, completedAt: today.toISOString(), note, photo, feeling });
+            state.completed.push({
+                title: q.title,
+                xp: q.xp,
+                difficulty: q.difficulty,
+                category: q.isCustom ? 'custom' : resolveQuestCategory(q),
+                isCustom: !!q.isCustom,
+                createdBy: q.isCustom ? (getQuestCreatorNickname(q) || getCurrentNickname()) : undefined,
+                completedAt: today.toISOString(),
+                note,
+                photo,
+                feeling
+            });
 
             // Recalculate XP from full history for consistency
             recalculateTotalXp();
@@ -14576,8 +15087,20 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
 
         function getFullPool() {
             if (!window.QUESTS_POOL) return [];
-            const custom = (state.customQuests || []).map(q => ({ ...q, isCustom: true }));
+            const custom = (state.customQuests || []).map(q => normalizeCustomQuest(q));
             return [...QUESTS_POOL, ...custom];
+        }
+
+        function normalizeCustomQuest(q) {
+            if (!q) return q;
+            const creator = getQuestCreatorNickname(q) || getCurrentNickname();
+            return {
+                ...q,
+                isCustom: true,
+                category: 'custom',
+                createdBy: creator,
+                createdByUsername: creator
+            };
         }
         function getTodaysDailyTitle() {
             const todayStr = getRomeDateString();
@@ -14687,14 +15210,24 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             }
 
             if (q.isBoss) {
-                state.bossCompleted.push({ title: q.title, xp: q.xp, category: q.category, completedAt: completedAtIso, note, photo, feeling });
+                state.bossCompleted.push({
+                    title: q.title,
+                    xp: q.xp,
+                    category: resolveQuestCategory(q),
+                    completedAt: completedAtIso,
+                    note,
+                    photo,
+                    feeling
+                });
             } else {
                 state.questsSinceBoss = (state.questsSinceBoss || 0) + 1;
                 completedRecord = {
                     title: q.title,
                     xp: awardedXp,
                     difficulty: q.difficulty || 'easy',
-                    category: q.category || 'sfida',
+                    category: q.isCustom ? 'custom' : resolveQuestCategory(q),
+                    isCustom: !!q.isCustom,
+                    createdBy: q.isCustom ? (getQuestCreatorNickname(q) || getCurrentNickname()) : undefined,
                     completedAt: completedAtIso,
                     note,
                     photo,
@@ -16208,23 +16741,31 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             // Custom quests list
             if (state.customQuests && state.customQuests.length > 0) {
                 customQuestsSection.style.display = 'block';
-                customQuestList.innerHTML = state.customQuests.map((cq, i) => `
-                        <div class="custom-quest-item">
-                        <span class="cq-title">${escapeHtml(cq.title)}</span>
-                        <div style="display:flex; gap:6px;">
+                customQuestList.innerHTML = state.customQuests.map((cq, i) => {
+                    const nq = normalizeCustomQuest(cq);
+                    return `
+                        <div class="custom-quest-item" style="display:flex;align-items:flex-start;gap:10px;">
+                        <div style="display:flex;flex-direction:column;gap:6px;min-width:0;flex:1;">
+                          <span class="cq-title">${escapeHtml(nq.title)}</span>
+                          <div style="display:flex;flex-wrap:nowrap;align-items:center;gap:8px;overflow:hidden;">
+                            ${renderCategoryChipsHtml(nq, { iconOnly: true })}
+                            ${getQuestCreatorNickname(nq) ? `<span class="quest-submeta-item"><i class="fa-solid fa-user"></i><span class="quest-creator-nick">${escapeHtml(getQuestCreatorNickname(nq))}</span></span>` : ''}
+                          </div>
+                        </div>
+                        <div style="display:flex; gap:6px; flex-shrink:0;">
                             <button class="btn-use-cq" data-idx="${i}" style="font-size:11px; padding:4px 10px; border:1px solid var(--accent); color:var(--accent); background:none; border-radius:var(--radius-sm); cursor:pointer;">Usa</button>
                             <button class="btn-send-cq" data-idx="${i}" style="font-size:11px; padding:4px 10px; border:1px solid var(--accent); color:var(--accent); background:none; border-radius:var(--radius-sm); cursor:pointer;">Invia</button>
                             <button class="btn-delete-cq" data-idx="${i}">Elimina</button>
                         </div>
-                    </div>
-                            `).join('');
+                    </div>`;
+                }).join('');
                 customQuestList.querySelectorAll('.btn-use-cq').forEach(btn => {
                     btn.addEventListener('click', () => {
                         const idx = parseInt(btn.dataset.idx);
                         const cq = state.customQuests[idx];
                         if (cq) {
                             guardPartyQuestChange(() => {
-                                assignCurrentQuest(cq);
+                                assignCurrentQuest(normalizeCustomQuest(cq));
                                 saveLocal();
                                 renderActiveQuest();
                                 btnHome.click(); // navigate back to home
@@ -16568,7 +17109,9 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
         /* ── CUSTOM QUESTS ────────────────────────────────── */
         btnCreateQuest.addEventListener('click', () => {
             guardPartyQuestChange(() => {
-                cqTitle.value = ''; cqDesc.value = ''; cqDiff.value = 'easy'; cqCat.value = 'sfida';
+                cqTitle.value = '';
+                cqDesc.value = '';
+                cqDiff.value = 'easy';
                 createQuestOverlay.classList.add('show');
             });
         });
@@ -16579,26 +17122,44 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             const title = cqTitle.value.trim();
             const desc = cqDesc.value.trim();
             const diff = cqDiff.value;
-            const cat = cqCat.value;
             if (!title) { showToast('Inserisci un titolo'); return; }
             const xpMap = { easy: 1000, medium: 2000, hard: 5000 };
-            const newQuest = { title, description: desc || title, difficulty: diff, xp: xpMap[diff], category: cat, isCustom: true };
+            const creator = getCurrentNickname();
+            const newQuest = {
+                title,
+                description: desc || title,
+                difficulty: diff,
+                xp: xpMap[diff],
+                category: 'custom',
+                isCustom: true,
+                createdBy: creator,
+                createdByUsername: creator
+            };
             if (!state.customQuests) state.customQuests = [];
             state.customQuests.push(newQuest);
             saveState();
             closeOverlayAnimated(createQuestOverlay);
-            showToast('Quest personalizzata creata!');
+            showToast('Quest CUSTOM creata!');
         });
 
         /* ── CHALLENGE A FRIEND ───────────────────────────── */
         function challengeQuest(quest) {
-            const username = getCurrentUsername();
+            const username = getCurrentNickname();
             const xpMap = { easy: 1000, medium: 2000, hard: 5000 };
+            const isCustom = !!quest.isCustom;
+            const cat = isCustom ? 'custom' : resolveQuestCategory(quest);
+            const creator = isCustom
+                ? (getQuestCreatorNickname(quest) || username)
+                : '';
             let url = `${location.origin}${location.pathname}?challenge=${encodeURIComponent(quest.title)}&from=${encodeURIComponent(username)}`;
             // Include quest metadata so custom quests work for recipients
             url += `&diff=${encodeURIComponent(quest.difficulty || 'easy')}`;
             url += `&xp=${quest.xp || xpMap[quest.difficulty] || 1000}`;
-            url += `&cat=${encodeURIComponent(quest.category || 'sfida')}`;
+            url += `&cat=${encodeURIComponent(cat)}`;
+            if (isCustom) {
+                url += `&custom=1`;
+                url += `&by=${encodeURIComponent(creator)}`;
+            }
             if (quest.description) url += `&desc=${encodeURIComponent(quest.description)}`;
 
             if (!state.challenges_sent) state.challenges_sent = [];
@@ -16639,23 +17200,49 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 try { _decodedFrom = decodeURIComponent(fromUser || 'qualcuno'); } catch (e) { _decodedFrom = 'qualcuno'; }
                 const pool = getFullPool();
                 let quest = pool.find(q => q.title === _decodedTitle);
+                const isCustomParam = params.get('custom') === '1' || params.get('cat') === 'custom';
+                let creatorFromLink = params.get('by') || '';
+                try { if (creatorFromLink) creatorFromLink = decodeURIComponent(creatorFromLink); } catch (e) { /* keep raw */ }
+                creatorFromLink = String(creatorFromLink || _decodedFrom || '').replace(/^@+/, '').trim();
 
                 // Se non trovata nel pool (es. quest custom del mittente), ricostruisci dai params URL
                 if (!quest) {
                     const xpMap = { easy: 1000, medium: 2000, hard: 5000 };
                     const diff = params.get('diff') || 'easy';
                     const xp = parseInt(params.get('xp')) || xpMap[diff] || 1000;
-                    const cat = params.get('cat') || 'sfida';
                     let desc = params.get('desc') || _decodedTitle;
                     try { desc = decodeURIComponent(desc); } catch (e) { }
-                    quest = { title: _decodedTitle, description: desc, difficulty: diff, xp, category: cat, isCustom: true };
+                    const nick = (creatorFromLink || _decodedFrom || '').replace(/^@+/, '').trim();
+                    quest = {
+                        title: _decodedTitle,
+                        description: desc,
+                        difficulty: diff,
+                        xp,
+                        category: 'custom',
+                        isCustom: true,
+                        createdBy: nick,
+                        createdByUsername: nick
+                    };
+                } else if (isCustomParam || quest.isCustom) {
+                    const nick = getQuestCreatorNickname(quest) || creatorFromLink || _decodedFrom;
+                    quest = {
+                        ...quest,
+                        isCustom: true,
+                        category: 'custom',
+                        createdBy: nick,
+                        createdByUsername: nick
+                    };
                 }
+
+                const challengeMeta = renderCategoryChipsHtml(quest, { iconOnly: true });
+                const challengeNick = getQuestCreatorNickname(quest) || String(_decodedFrom || '').replace(/^@+/, '');
 
                 challengeBannerCont.innerHTML = `
                     <div class="challenge-banner" style="flex-direction:column; align-items:flex-start; gap:8px; padding:14px 16px; background:rgba(79,163,255,0.08); border:1px solid rgba(79,163,255,0.2); border-radius:var(--radius-sm); margin-bottom:16px;">
                         <div style="display:flex; align-items:center; gap:8px;">
                             <i class="fa-solid fa-paper-plane"></i>
-                            <span style="font-weight:700; color:var(--text); font-size:14px;">Sfida da <strong style="color:var(--diff-easy);">${escapeHtml(_decodedFrom)}</strong></span>
+                            <span style="font-weight:700; color:var(--text); font-size:14px;">Sfida da <strong style="color:var(--diff-easy);">${escapeHtml(challengeNick)}</strong></span>
+                            ${challengeMeta}
                         </div>
                         <div style="font-size:13px; color:var(--text-dim); padding-left:24px; font-style:italic;">"${escapeHtml(_decodedTitle)}"</div>
                         <div style="display:flex; gap:8px; padding-left:24px; margin-top:4px;">
@@ -16667,7 +17254,10 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 const btnAccept = document.getElementById('btn-accept-challenge');
                 const btnReject = document.getElementById('btn-reject-challenge');
                 if (btnAccept) btnAccept.addEventListener('click', () => {
-                    assignCurrentQuest(quest); saveLocal(); renderActiveQuest(); showToast('Sfida accettata!');
+                    assignCurrentQuest(quest);
+                    saveLocal();
+                    renderActiveQuest();
+                    showToast('Sfida accettata!');
                     challengeBannerCont.innerHTML = '';
                 });
                 if (btnReject) btnReject.addEventListener('click', () => {
@@ -17505,7 +18095,13 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             renderActiveQuest();
         }
         renderWillCoachSection();
+        // Guest / already-local session can schedule Will immediately.
+        // Logged-in users wait until completeLoginFlow sets _cloudStateHydrated.
+        if (isGuest || !navigator.onLine) {
+            _cloudStateHydrated = true;
+        }
         // If already ≥5 quest completed offline/local, generate coach (or restore from state)
+        // Skips when cloud not hydrated yet (avoids a second recap on another device).
         setTimeout(() => { try { maybeScheduleWillCoach(); } catch (_) {} }, 600);
         renderCompleted();
         initSeasonalCarousel();
@@ -17519,6 +18115,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 initAuth();
             } else {
                 window.__moreAuthDeferred = true;
+                _cloudStateHydrated = true;
             }
         }, 0);
         initFilterBar();
@@ -18144,9 +18741,16 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 const completedSet = questCardHtml._completed || new Set();
                 const done = completedSet.has(quest.title);
                 const xpVal = quest.xp || (diff === 'easy' ? 150 : diff === 'medium' ? 300 : diff === 'hard' ? 600 : 1000);
-                const cat = quest.category || quest.tags?.[0] || '';
+                const meta = typeof getCategoryMeta === 'function' ? getCategoryMeta(quest) : null;
+                const creator = typeof getQuestCreatorName === 'function' ? getQuestCreatorName(quest) : '';
                 const icon = DIFF_ICON[diff] || DIFF_ICON.easy;
                 const delayStyle = ai && delayIndex ? `animation-delay:${delayIndex * 0.06}s;` : '';
+                const catHtml = meta
+                    ? `<span class="search-result-cat cat-${meta.id}"><i class="fa-solid ${meta.icon}"></i>${meta.label}</span>`
+                    : '';
+                const creatorHtml = (meta && meta.id === 'custom' && creator)
+                    ? `<span class="search-result-cat" style="text-transform:none;letter-spacing:0.02em;font-weight:600;"><i class="fa-solid fa-user"></i>@${escapeHtml(creator)}</span>`
+                    : '';
                 return `
                     <div class="search-result-card${ai ? ' ai-pick' : ''}" onclick="searchSelectQuest('${escapeAttr(quest.title)}')"
                          style="${done ? 'opacity:0.55;' : ''}${delayStyle}">
@@ -18157,7 +18761,8 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                             ${reason ? `<div class="search-result-reason"><i class="fa-solid fa-sparkles"></i><span>${escapeHtml(reason)}</span></div>` : ''}
                             <div class="search-result-meta">
                                 <span class="search-result-xp">+${xpVal.toLocaleString('it-IT')} XP</span>
-                                ${cat ? `<span class="search-result-cat">${escapeHtml(cat)}</span>` : ''}
+                                ${catHtml}
+                                ${creatorHtml}
                                 ${ai ? '<span class="search-result-cat will-tag">Will</span>' : ''}
                             </div>
                         </div>
@@ -18189,8 +18794,15 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 let results = pool.filter(quest => {
                     const inTitle = (quest.title || '').toLowerCase().includes(q);
                     const inDesc = (quest.description || '').toLowerCase().includes(q);
-                    const inCat = (quest.category || '').toLowerCase().includes(q);
-                    return inTitle || inDesc || inCat;
+                    const catId = typeof resolveQuestCategory === 'function'
+                        ? resolveQuestCategory(quest)
+                        : (quest.category || '').toLowerCase();
+                    const catMeta = typeof getCategoryMeta === 'function' ? getCategoryMeta(quest) : null;
+                    const catLabel = (catMeta?.label || catId || '').toLowerCase();
+                    const inCat = catId.includes(q) || catLabel.includes(q);
+                    const creator = (typeof getQuestCreatorName === 'function' ? getQuestCreatorName(quest) : '').toLowerCase();
+                    const inCreator = creator && creator.includes(q);
+                    return inTitle || inDesc || inCat || inCreator;
                 });
                 results.sort((a, b) => {
                     const aTitle = (a.title || '').toLowerCase().startsWith(q) ? 0 : 1;
@@ -18226,7 +18838,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 if (results.length > 0) {
                     const countLabel = q
                         ? `${results.length} risultat${results.length === 1 ? 'o' : 'i'} per "${escapeHtml(query)}"`
-                        : (lastAiPayload ? 'Altre idee dalla pool' : 'Ispirazione dalla pool');
+                        : (lastAiPayload ? 'Altre idee dalla pool' : 'Ispirazioni');
                     html += `<div class="search-results-header">${countLabel}</div>`;
                     results.forEach(quest => {
                         html += questCardHtml(quest, { query: q });
@@ -18369,12 +18981,17 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 const scored = pool.map((quest, idx) => {
                     const title = (quest.title || '').toLowerCase();
                     const desc = (quest.description || '').toLowerCase();
-                    const cat = (quest.category || '').toLowerCase();
-                    const hay = title + ' ' + desc + ' ' + cat;
+                    const cat = (typeof resolveQuestCategory === 'function'
+                        ? resolveQuestCategory(quest)
+                        : (quest.category || '')).toLowerCase();
+                    const catLabel = (typeof getCategoryMeta === 'function'
+                        ? getCategoryMeta(quest).label
+                        : cat).toLowerCase();
+                    const hay = title + ' ' + desc + ' ' + cat + ' ' + catLabel;
                     let score = 0;
                     tokens.forEach(t => {
                         if (title.includes(t)) score += 5;
-                        else if (cat.includes(t)) score += 3;
+                        else if (cat.includes(t) || catLabel.includes(t)) score += 3;
                         else if (desc.includes(t)) score += 2;
                     });
                     boostWords.forEach(w => {
@@ -18402,14 +19019,19 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     }
                 }
 
-                return chosen.map(({ quest, idx }) => ({
-                    i: idx,
-                    t: quest.title,
-                    d: (quest.description || '').slice(0, 110),
-                    diff: quest.difficulty || 'easy',
-                    cat: quest.category || '',
-                    xp: quest.xp || 0
-                }));
+                return chosen.map(({ quest, idx }) => {
+                    const catId = typeof resolveQuestCategory === 'function'
+                        ? resolveQuestCategory(quest)
+                        : (quest.category || '');
+                    return {
+                        i: idx,
+                        t: quest.title,
+                        d: (quest.description || '').slice(0, 110),
+                        diff: quest.difficulty || 'easy',
+                        cat: catId,
+                        xp: quest.xp || 0
+                    };
+                });
             }
 
             function extractFirstJsonObject(text) {
