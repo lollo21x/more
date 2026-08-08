@@ -11557,15 +11557,85 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
         const inputRestoreLocal = $('input-restore-local');
 
         /* ── LOCAL BACKUP & RESTORE ───────────────────────── */
+        /**
+         * Salva lo state come JSON scaricabile.
+         * - Desktop: Blob + <a download> (i data: URL falliscono con state grandi)
+         * - iOS / PWA standalone: Web Share API con File (l'attributo download
+         *   è ignorato da Safari/iOS e non salva nulla sul dispositivo)
+         * - Fallback: apri il blob in una nuova scheda / copia negli appunti
+         */
+        async function exportLocalProgressBackup() {
+            const filename = `more_backup_${new Date().toISOString().slice(0, 10)}.json`;
+            const json = JSON.stringify(state, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+
+            // Preferisci share sheet su iOS / dispositivi touch con supporto file share
+            const isIOSLike = /iPad|iPhone|iPod/.test(navigator.userAgent)
+                || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                || !!(window.navigator).standalone;
+
+            try {
+                if (typeof File !== 'undefined' && navigator.share && navigator.canShare) {
+                    const file = new File([blob], filename, { type: 'application/json' });
+                    if (navigator.canShare({ files: [file] }) && (isIOSLike || isStandalone || /Android/i.test(navigator.userAgent))) {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Backup More',
+                            text: 'I tuoi progressi More'
+                        });
+                        showToast('Progressi salvati!');
+                        return;
+                    }
+                }
+            } catch (err) {
+                // Utente ha annullato lo share → non mostrare errore
+                if (err && (err.name === 'AbortError' || err.name === 'NotAllowedError')) return;
+                // Altrimenti prosegui con fallback download
+                console.warn('[backup] share failed, falling back to download', err);
+            }
+
+            // Download classico via object URL (più affidabile dei data: URL)
+            const url = URL.createObjectURL(blob);
+            try {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.rel = 'noopener';
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                // Su iOS Safari a volte "download" apre il file: dai tempo prima di revocare
+                setTimeout(() => URL.revokeObjectURL(url), 4000);
+                showToast('Progressi salvati!');
+            } catch (err) {
+                console.warn('[backup] anchor download failed', err);
+                // Ultimo fallback: copia JSON negli appunti
+                try {
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        await navigator.clipboard.writeText(json);
+                        showToast('JSON copiato negli appunti (download non supportato)');
+                        return;
+                    }
+                } catch (_) { /* ignore */ }
+                // Apri in nuova scheda come ultima spiaggia
+                try {
+                    window.open(url, '_blank', 'noopener');
+                    showToast('Apri e salva il file dalla nuova scheda');
+                } catch (_) {
+                    showToast('Impossibile salvare. Riprova da browser.');
+                } finally {
+                    setTimeout(() => URL.revokeObjectURL(url), 4000);
+                }
+            }
+        }
+
         btnBackupLocal.addEventListener('click', () => {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
-            const downloadAnchorNode = document.createElement('a');
-            downloadAnchorNode.setAttribute("href", dataStr);
-            downloadAnchorNode.setAttribute("download", "more_backup.json");
-            document.body.appendChild(downloadAnchorNode); // required for firefox
-            downloadAnchorNode.click();
-            downloadAnchorNode.remove();
-            showToast('Progressi salvati!');
+            exportLocalProgressBackup().catch(err => {
+                console.warn('[backup]', err);
+                showToast('Salvataggio non riuscito. Riprova.');
+            });
         });
 
         inputRestoreLocal.addEventListener('change', (e) => {
@@ -18732,8 +18802,16 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 return escaped.replace(re, '<mark class="search-hl">$1</mark>');
             }
 
+            // Escape sicuro per attributi HTML (incl. apostrofi e virgolette).
+            // NON usare mai il titolo dentro un onclick="..." JS: i &#39; vengono
+            // decodificati dal browser e rompono la stringa JS (es. "all'aperto").
             function escapeAttr(title) {
-                return escapeHtml(title).replace(/'/g, '&#39;');
+                return String(title || '')
+                    .replace(/&/g, '&amp;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
             }
 
             function questCardHtml(quest, { query = '', reason = null, ai = false, delayIndex = 0 } = {}) {
@@ -18752,7 +18830,8 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     ? `<span class="search-result-cat" style="text-transform:none;letter-spacing:0.02em;font-weight:600;"><i class="fa-solid fa-user"></i>@${escapeHtml(creator)}</span>`
                     : '';
                 return `
-                    <div class="search-result-card${ai ? ' ai-pick' : ''}" onclick="searchSelectQuest('${escapeAttr(quest.title)}')"
+                    <div class="search-result-card${ai ? ' ai-pick' : ''}" role="button" tabindex="0"
+                         data-quest-title="${escapeAttr(quest.title)}"
                          style="${done ? 'opacity:0.55;' : ''}${delayStyle}">
                         <div class="search-result-diff ${diff}">${icon}</div>
                         <div class="search-result-body">
@@ -18768,6 +18847,22 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                         </div>
                     </div>`;
             }
+
+            // Event delegation: evita onclick inline con titoli che contengono apostrofi
+            resultsArea.addEventListener('click', (e) => {
+                const card = e.target.closest('.search-result-card');
+                if (!card || !resultsArea.contains(card)) return;
+                const title = card.getAttribute('data-quest-title');
+                if (title) window.searchSelectQuest(title);
+            });
+            resultsArea.addEventListener('keydown', (e) => {
+                if (e.key !== 'Enter' && e.key !== ' ') return;
+                const card = e.target.closest('.search-result-card');
+                if (!card || !resultsArea.contains(card)) return;
+                e.preventDefault();
+                const title = card.getAttribute('data-quest-title');
+                if (title) window.searchSelectQuest(title);
+            });
 
             function filterLocalResults(query) {
                 const pool = getPool();
