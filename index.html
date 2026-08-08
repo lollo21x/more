@@ -11894,43 +11894,13 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                                 const localT = state.updatedAt || 0;
 
                                 // Merge solo se i dati cloud sono più recenti
-                                // NON sovrascrivere se l'XP cloud è minore di quello locale (evita rollback post-completamento)
+                                // Usa mergeUserStates per unione completa di completed quests, XP, achievements, etc.
+                                // Questo evita overwrite parziale e perdita di quest completate su altri dispositivi
                                 if (cloudT > localT) {
+                                    const merged = mergeUserStates(state, cloud);
                                     state = {
                                         ...state,
-                                        xp: cloud.xp ?? state.xp,
-                                        currentQuest: cloud.currentQuest ?? state.currentQuest,
-                                        completed: cloud.completed ?? state.completed,
-                                        streak: cloud.streak ?? state.streak,
-                                        lastQuestDate: cloud.lastQuestDate ?? state.lastQuestDate,
-                                        lastQuestTimestamp: cloud.lastQuestTimestamp ?? state.lastQuestTimestamp,
-                                        xpHistory: cloud.xpHistory ?? state.xpHistory,
-                                        stats: cloud.stats ?? state.stats,
-                                        questTimestamps: cloud.questTimestamps ?? state.questTimestamps,
-                                        customQuests: cloud.customQuests ?? state.customQuests,
-                                        challenges_sent: cloud.challenges_sent ?? state.challenges_sent,
-                                        profilePublic: cloud.profilePublic ?? state.profilePublic,
-                                        achievements: cloud.achievements ?? state.achievements,
-                                        bossCompleted: cloud.bossCompleted ?? state.bossCompleted,
-                                        questsSinceBoss: cloud.questsSinceBoss ?? state.questsSinceBoss,
-                                        dailyCompleted: cloud.dailyCompleted ?? state.dailyCompleted,
-                                        dailyBonusAwards: cloud.dailyBonusAwards ?? state.dailyBonusAwards,
-                                        pendingDailyBonus: cloud.pendingDailyBonus ?? state.pendingDailyBonus,
-                                        dailyBonusSchemaVersion: cloud.dailyBonusSchemaVersion ?? state.dailyBonusSchemaVersion,
-                                        chainBonusAwards: cloud.chainBonusAwards ?? state.chainBonusAwards,
-                                        pendingChainBonus: cloud.pendingChainBonus ?? state.pendingChainBonus,
-                                        chainBonusSchemaVersion: cloud.chainBonusSchemaVersion ?? state.chainBonusSchemaVersion,
-                                        notificationsEnabled: cloud.notificationsEnabled ?? state.notificationsEnabled,
-                                        selectedTitle: cloud.selectedTitle ?? state.selectedTitle,
-                                        bookmarkedQuests: cloud.bookmarkedQuests ?? state.bookmarkedQuests,
-                                        completedChains: cloud.completedChains ?? state.completedChains,
-                                        chainProgress: cloud.chainProgress ?? state.chainProgress,
-                                        partyQuestsCompleted: cloud.partyQuestsCompleted ?? state.partyQuestsCompleted,
-                                        displayName: cloud.displayName ?? state.displayName,
-                                        username: cloud.username ?? state.username,
-                                        bio: cloud.bio ?? state.bio,
-                                        avatarColor: cloud.avatarColor ?? state.avatarColor,
-                                        joinedAt: cloud.joinedAt ?? state.joinedAt,
+                                        ...merged,
                                         updatedAt: Math.max(localT, cloudT)
                                     };
                                     ensureStateShape();
