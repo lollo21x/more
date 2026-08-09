@@ -1,4 +1,4 @@
-const CACHE_NAME = 'more-v9.2.1';
+const CACHE_NAME = 'more-v9.2.2';
 
 const CORE_ASSETS = [
     './',
@@ -254,8 +254,31 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Navigation (index.html): Cache First with background update
+    // Navigation (index.html): Cache First with background update.
+    // Exception: explicit refresh from the in-app update button (?_more_refresh=…)
+    // must hit the network so a broken cached shell cannot trap the user.
     if (isNavigationRequest(event.request, url)) {
+        if (url.searchParams.has('_more_refresh')) {
+            event.respondWith((async () => {
+                try {
+                    const response = await fetch(event.request, { cache: 'reload' });
+                    await putOkResponse(event.request, response);
+                    // Also refresh the canonical app-shell entries
+                    try {
+                        const cache = await caches.open(CACHE_NAME);
+                        const shell = response.clone();
+                        await cache.put('./', shell.clone());
+                        await cache.put('./index.html', shell);
+                    } catch (_) { /* ignore */ }
+                    return response;
+                } catch (error) {
+                    return (await caches.match('./index.html'))
+                        || (await caches.match('./'))
+                        || new Response('Offline', { status: 503 });
+                }
+            })());
+            return;
+        }
         event.respondWith(cacheFirstWithUpdate(event.request, event.preloadResponse));
         return;
     }
