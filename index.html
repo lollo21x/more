@@ -10749,19 +10749,38 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             return obj;
         }
 
+        const PENDING_CLOUD_PUSH_KEY = 'more_pending_cloud_push';
+
+        function hasPendingCloudPush() {
+            try {
+                return localStorage.getItem(PENDING_CLOUD_PUSH_KEY) === '1';
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function setPendingCloudPush(pending) {
+            try {
+                if (pending) localStorage.setItem(PENDING_CLOUD_PUSH_KEY, '1');
+                else localStorage.removeItem(PENDING_CLOUD_PUSH_KEY);
+            } catch (_) { /* ignore quota / private mode */ }
+        }
+
         function saveLocal() {
             state.updatedAt = Date.now();
             try {
                 localStorage.setItem('more_state', JSON.stringify(state));
-                rememberCloudSyncedState();
+                // Mark dirty until flushCloudSync confirms the cloud write.
+                // Never call rememberCloudSyncedState() here — that would skip the real push.
+                setPendingCloudPush(true);
             } catch (error) {
                 showFirestoreError(error, 'Salvataggio locale non riuscito. Libera spazio e riprova.');
             }
         }
 
-        function saveState() {
+        function saveState({ immediate = false, reason = 'state' } = {}) {
             saveLocal();
-            scheduleCloudSync({ reason: 'state' });
+            scheduleCloudSync({ immediate, reason });
             updateSyncStatusUI();
         }
 
@@ -10951,9 +10970,9 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     label = offlineQueueProcessing ? 'Coda offline…' : 'Sincronizzo…';
                 } else {
                     const qLen = loadOfflineQueue().length;
-                    if (qLen > 0 || cloudSyncQueued) {
+                    if (qLen > 0 || cloudSyncQueued || hasPendingCloudPush()) {
                         mode = 'pending';
-                        label = qLen > 0 ? `In coda (${qLen})` : 'In attesa…';
+                        label = qLen > 0 ? `In coda (${qLen})` : (hasPendingCloudPush() ? 'Da sincronizzare' : 'In attesa…');
                     } else if (lastSyncError) {
                         mode = 'pending';
                         label = 'Sync in ritardo';
@@ -11330,8 +11349,20 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             }
 
             const syncUid = currentUser.uid;
+            const forcePending = hasPendingCloudPush() || reason === 'pending-startup';
             const { pureState, fingerprint } = getCloudSyncPayload();
-            if (fingerprint === lastSyncedCloudFingerprint) {
+            // Skip only if content matches last confirmed write AND nothing is pending.
+            // If dirty flag is set, still push (or clear dirty if content already matches).
+            if (fingerprint === lastSyncedCloudFingerprint && !forcePending) {
+                cloudSyncQueued = false;
+                lastSyncOkAt = Date.now();
+                lastSyncError = null;
+                updateSyncStatusUI();
+                return false;
+            }
+            if (fingerprint === lastSyncedCloudFingerprint && forcePending) {
+                // Local content already matches last successful cloud write — clear stale dirty bit
+                setPendingCloudPush(false);
                 cloudSyncQueued = false;
                 lastSyncOkAt = Date.now();
                 lastSyncError = null;
@@ -11344,10 +11375,12 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             updateSyncStatusUI({ force: 'syncing', label: 'Sincronizzo…' });
 
             try {
-                // Read-merge-write to reduce lost updates across devices
-                let toWrite = pureState;
-                try {
-                    const snap = await fb.getDoc(fb.doc(fb.db, 'more_users', syncUid));
+                const docRef = fb.doc(fb.db, 'more_users', syncUid);
+                // Atomic read-merge-write: if remote changes mid-flight, Firestore retries the transaction.
+                let writtenState = pureState;
+                await fb.runTransaction(fb.db, async (transaction) => {
+                    const snap = await transaction.get(docRef);
+                    let toWrite = pureState;
                     if (snap.exists()) {
                         const remote = snap.data();
                         if (remote && remote.updatedAt && pureState.updatedAt && remote.updatedAt !== pureState.updatedAt) {
@@ -11368,15 +11401,15 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                             }
                         }
                     }
-                } catch (readErr) {
-                    // If read fails, still attempt write with local pureState
-                    console.warn('[sync] pre-write merge skipped', readErr);
-                }
+                    transaction.set(docRef, toWrite, { merge: true });
+                    writtenState = toWrite;
+                });
 
-                await fb.setDoc(fb.doc(fb.db, 'more_users', syncUid), toWrite, { merge: true });
-                const fpSrc = { ...toWrite };
+                // Confirm fingerprint only after the transaction commits successfully
+                const fpSrc = { ...writtenState };
                 delete fpSrc.updatedAt;
                 lastSyncedCloudFingerprint = stableStringify(fpSrc);
+                setPendingCloudPush(false);
                 cloudSyncRetryDelay = 4000;
                 lastSyncOkAt = Date.now();
                 lastSyncError = null;
@@ -11778,7 +11811,8 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 rebuildProgressFromSource({ notifyAchievements: false });
 
                 localStorage.setItem('more_state', JSON.stringify(state));
-                rememberCloudSyncedState(sanitizeForFirestore(state));
+                // Do NOT mark as synced here — flushCloudSync confirms after a real write
+                setPendingCloudPush(true);
                 updateXPUI();
                 renderActiveQuest();
                 renderWillCoachSection();
@@ -11793,13 +11827,13 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 // Push merged truth so other devices converge
                 scheduleCloudSync({ immediate: true, reason: 'login-merge' });
                 processOfflineQueue({ reason: 'login' });
-            } else if (localT > cloudT || (localT >= cloudT && cloudLoadedOnce)) {
-                scheduleCloudSync({ immediate: true, reason: 'login-local-newer' });
+            } else if (localT > cloudT || (localT >= cloudT && cloudLoadedOnce) || hasPendingCloudPush()) {
+                scheduleCloudSync({ immediate: true, reason: hasPendingCloudPush() ? 'pending-startup' : 'login-local-newer' });
                 processOfflineQueue({ reason: 'login' });
-            } else if (cloudState) {
-                rememberCloudSyncedState(sanitizeForFirestore(cloudState));
             }
+            // else: cloud already matches / empty — nothing to push; leave fingerprint to flush after any future write
             cloudLoadedOnce = true;
+            initialSnapshotDone = true;
             updateSyncStatusUI();
 
             let display = 'Utente';
@@ -11893,9 +11927,8 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                                 const cloudT = cloud.updatedAt || 0;
                                 const localT = state.updatedAt || 0;
 
-                                // Merge solo se i dati cloud sono più recenti
-                                // Usa mergeUserStates per unione completa di completed quests, XP, achievements, etc.
-                                // Questo evita overwrite parziale e perdita di quest completate su altri dispositivi
+                                // Light apply for recurrent realtime events (point 3 fix)
+                                // Only heavy completeLoginFlow called once per session on first snapshot
                                 if (cloudT > localT) {
                                     const merged = mergeUserStates(state, cloud);
                                     state = {
@@ -11908,7 +11941,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                                     migrateLegacyChainBonuses();
                                     rebuildProgressFromSource({ notifyAchievements: false });
                                     localStorage.setItem('more_state', JSON.stringify(state));
-                                    rememberCloudSyncedState();
+                                    // NO rememberCloudSyncedState() here — mark synced only after successful push in flushCloudSync
                                     updateXPUI();
                                     renderActiveQuest();
                                     renderCompleted();
@@ -11918,10 +11951,15 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                                 }
 
                                 if (cloud.username) {
-                                    completeLoginFlow(user, cloud);
-                                    if (!pendingGoogleCreds && !initialSnapshotDone) {
-                                        showToast('Accesso effettuato');
-                                        initialSnapshotDone = true;
+                                    // completeLoginFlow is heavy (UI, bonuses, notifications) — run once per session
+                                    if (!initialSnapshotDone) {
+                                        completeLoginFlow(user, cloud);
+                                        if (!pendingGoogleCreds) {
+                                            showToast('Accesso effettuato');
+                                        }
+                                    } else if (hasPendingCloudPush()) {
+                                        // Resume any interrupted push from a previous session / background kill
+                                        scheduleCloudSync({ immediate: true, reason: 'pending-startup' });
                                     }
                                 } else {
                                     handleMissingUsername(user);
@@ -12138,7 +12176,9 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     };
                     const pureNewState = sanitizeForFirestore(newState);
                     await fb.setDoc(fb.doc(fb.db, 'more_users', pendingGoogleCreds.uid), pureNewState, { merge: true });
+                    // Confirmed write — safe to mark fingerprint and clear dirty flag
                     rememberCloudSyncedState(pureNewState);
+                    setPendingCloudPush(false);
 
                     completeLoginFlow(pendingGoogleCreds, newState);
                     showToast('Account completato con successo!');
@@ -14696,7 +14736,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
 
             queueDailyBonusAward(q.title, todayStr);
             lastCompletedQuest = { ...q, xp: baseXp, _isDaily: true };
-            saveState();
+            saveState({ immediate: true, reason: 'daily-complete' });
             updateXPUI();
             renderCompleted();
             checkAchievements();
@@ -15099,7 +15139,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             }
 
             updateXPUI();
-            saveState();
+            saveState({ immediate: true, reason: 'seasonal-complete' });
             renderCompleted();
             initSeasonalCarousel();
             checkAchievements();
@@ -15344,7 +15384,9 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 const _bi = state.bookmarkedQuests.findIndex(b => b.title === q.title);
                 if (_bi !== -1) state.bookmarkedQuests.splice(_bi, 1);
             }
-            saveState();
+            // Immediate cloud push: completing a quest is high-value data; the 900ms debounce
+            // often loses the race against mobile background/screen-lock (see analysis point 4).
+            saveState({ immediate: true, reason: 'quest-complete' });
             if (shouldQueueDailyBonus) {
                 schedulePendingDailyBonusProcessing({ delayMs: 540, notify: true });
             }
@@ -18334,12 +18376,17 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
         })();
 
 
-        /* ── PAGE VISIBILITY: pause intervals when hidden ── */
+        /* ── PAGE VISIBILITY / LIFECYCLE: flush cloud before suspend ── */
+        function flushCloudOnBackground(reason) {
+            // Best-effort immediate push when the OS may freeze the tab (mobile lock, app switch, close).
+            scheduleCloudSync({ immediate: true, reason });
+        }
+
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) {
                 if (window.dailyInterval) { clearInterval(window.dailyInterval); window.dailyInterval = null; }
                 if (window.seasonalInterval) { clearInterval(window.seasonalInterval); window.seasonalInterval = null; }
-                scheduleCloudSync({ immediate: true, reason: 'hidden' });
+                flushCloudOnBackground('hidden');
             } else {
                 // Resume intervals on page focus
                 if (!window.dailyInterval) {
@@ -18354,8 +18401,13 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 schedulePendingChainBonusProcessing({ delayMs: 0, notify: false });
                 processCompletedPartyInvitesForCurrentUser({ notify: true });
                 refreshProfileAlertCounts();
-                scheduleCloudSync({ immediate: true, reason: 'visible' });
+                scheduleCloudSync({ immediate: true, reason: hasPendingCloudPush() ? 'pending-visible' : 'visible' });
                 scheduleStaleQuestReminder();
+                // Long-lived PWA sessions: re-check updates when coming back to foreground
+                try {
+                    if (typeof checkServiceWorkerUpdate === 'function') checkServiceWorkerUpdate();
+                    if (typeof checkForUpdates === 'function') checkForUpdates();
+                } catch (_) { /* update helpers may load later */ }
                 // Re-init daily quest in case date changed while page was hidden
                 const todayStr = getRomeDateString();
                 if (state.dailyCompleted && state.dailyCompleted.date !== todayStr) {
@@ -18367,124 +18419,288 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             }
         });
 
-        /* ── SERVICE WORKER ──────────────────────────────── */
-        if ('serviceWorker' in navigator) {
-            let swReloading = false;
-            const hadServiceWorkerController = !!navigator.serviceWorker.controller;
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                if (!hadServiceWorkerController || swReloading) return;
-                swReloading = true;
-                window.location.reload();
-            });
+        // pagehide is more reliable than visibilitychange on iOS Safari / PWA when the page is unloaded
+        window.addEventListener('pagehide', () => {
+            flushCloudOnBackground('pagehide');
+        });
 
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => {
-                        reg.update().catch(() => { });
-                    })
-                    .catch(err => showToast(`Service worker non attivo: ${(err.message || 'riprova').replace('Firebase: ', '')}`));
+        // freeze (Page Lifecycle API) — extra signal on Chromium when the tab is frozen
+        document.addEventListener('freeze', () => {
+            flushCloudOnBackground('freeze');
+        });
 
-                // GitHub Update Notifier Check
-                setTimeout(checkForUpdates, 4000);
+        /* ── PWA UPDATE + STORAGE RELIABILITY ─────────────── */
+        // Single coordinated update path:
+        //  - Service worker is the source of truth for applying updates (no silent reload)
+        //  - GitHub commit check is a soft notifier only (no cache wipe / SW unregister)
+        //  - User always confirms; pending cloud sync is drained first
+        let swRegistration = null;
+        let swUpdateAccepted = false;
+        let swReloading = false;
+        let updatePromptWired = false;
+        let lastGithubUpdateCheckAt = 0;
+        let lastSwUpdateCheckAt = 0;
+        const GITHUB_UPDATE_MIN_INTERVAL_MS = 30 * 60 * 1000; // respect public API rate limits
+        const SW_UPDATE_MIN_INTERVAL_MS = 60 * 1000;
+
+        function isCloudSyncBusy() {
+            try {
+                if (typeof cloudSyncInFlight !== 'undefined' && cloudSyncInFlight) return true;
+                if (typeof offlineQueueProcessing !== 'undefined' && offlineQueueProcessing) return true;
+                if (typeof cloudSyncQueued !== 'undefined' && cloudSyncQueued) return true;
+                if (typeof hasPendingCloudPush === 'function' && hasPendingCloudPush()) return true;
+                if (typeof loadOfflineQueue === 'function' && loadOfflineQueue().length > 0) return true;
+            } catch (_) { /* helpers may not be ready yet */ }
+            return false;
+        }
+
+        function waitForCloudSyncIdle({ timeoutMs = 12000, pollMs = 200 } = {}) {
+            return new Promise((resolve) => {
+                const started = Date.now();
+                const tick = () => {
+                    if (!isCloudSyncBusy()) {
+                        resolve(true);
+                        return;
+                    }
+                    if (Date.now() - started >= timeoutMs) {
+                        resolve(false);
+                        return;
+                    }
+                    setTimeout(tick, pollMs);
+                };
+                // Kick a best-effort flush so idle arrives sooner when only dirty-flag is set
+                try {
+                    if (typeof scheduleCloudSync === 'function') {
+                        scheduleCloudSync({ immediate: true, reason: 'pre-update-flush' });
+                    }
+                } catch (_) { /* ignore */ }
+                tick();
             });
         }
 
-        function checkForUpdates() {
+        async function requestPersistentStorage() {
             try {
+                if (!navigator.storage || typeof navigator.storage.persist !== 'function') return false;
+                if (typeof navigator.storage.persisted === 'function') {
+                    const already = await navigator.storage.persisted();
+                    if (already) return true;
+                }
+                return !!(await navigator.storage.persist());
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function hideUpdatePrompt() {
+            const prompt = $('update-prompt');
+            const sheet = $('update-sheet');
+            if (!prompt || !sheet) return;
+            prompt.style.opacity = '0';
+            sheet.style.transform = 'translateY(40px)';
+            sheet.style.opacity = '0';
+            setTimeout(() => { prompt.style.display = 'none'; }, 400);
+        }
+
+        function showUpdatePromptUI() {
+            const prompt = $('update-prompt');
+            const sheet = $('update-sheet');
+            if (!prompt || !sheet) return;
+            prompt.style.display = 'flex';
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                prompt.style.opacity = '1';
+                sheet.style.transform = 'translateY(0)';
+                sheet.style.opacity = '1';
+            }));
+            wireUpdatePromptOnce();
+        }
+
+        function wireUpdatePromptOnce() {
+            if (updatePromptWired) return;
+            updatePromptWired = true;
+
+            const dismiss = () => {
+                hideUpdatePrompt();
+                localStorage.setItem('more_update_ignored', String(Date.now() + 7 * 24 * 60 * 60 * 1000));
+                refreshSettingsUpdateBanner();
+            };
+
+            const dismissBtn = $('btn-update-dismiss');
+            if (dismissBtn) dismissBtn.onclick = dismiss;
+
+            const prompt = $('update-prompt');
+            if (prompt) {
+                prompt.onclick = (e) => {
+                    if (e.target === prompt) dismiss();
+                };
+            }
+
+            const confirmBtn = $('btn-update-confirm');
+            if (confirmBtn) {
+                confirmBtn.onclick = safeAsyncAction(async () => {
+                    confirmBtn.innerHTML = '<div class="spinner" style="width:20px;height:20px;margin:0;border-width:2px;"></div>';
+                    confirmBtn.style.pointerEvents = 'none';
+                    await applyPendingAppUpdate({ source: 'prompt' });
+                }, 'Aggiornamento non completato. Riprova tra poco.');
+            }
+        }
+
+        function markUpdateAvailable({ source = 'sw', sha = null } = {}) {
+            if (sha) localStorage.setItem('more_pending_sha', sha);
+            else if (!localStorage.getItem('more_pending_sha')) {
+                localStorage.setItem('more_pending_sha', `sw:${Date.now()}`);
+            }
+
+            const ignoredUntil = parseInt(localStorage.getItem('more_update_ignored') || '0', 10);
+            const snoozed = ignoredUntil && Date.now() < ignoredUntil;
+
+            refreshSettingsUpdateBanner();
+
+            if (snoozed) {
+                // Soft signal only — user already postponed
+                return;
+            }
+
+            // Show the same in-app prompt for both SW and GitHub signals
+            showUpdatePromptUI();
+            void source;
+        }
+
+        async function activateWaitingServiceWorker() {
+            if (!('serviceWorker' in navigator)) return false;
+            const reg = swRegistration || await navigator.serviceWorker.getRegistration();
+            if (!reg) return false;
+
+            // Prefer an already-waiting worker; otherwise ask for an update check
+            if (!reg.waiting) {
+                try { await reg.update(); } catch (_) { /* ignore */ }
+            }
+
+            const waiting = reg.waiting;
+            if (waiting) {
+                waiting.postMessage({ type: 'SKIP_WAITING' });
+                return true;
+            }
+
+            // No waiting worker: assets may already be current, or CDN not yet propagated.
+            // A plain reload still picks up network updates for navigation requests.
+            return false;
+        }
+
+        async function applyPendingAppUpdate({ source = 'manual' } = {}) {
+            // Drain cloud work first so a reload cannot orphan a just-completed quest
+            const idle = await waitForCloudSyncIdle({ timeoutMs: 12000 });
+            if (!idle && typeof showToast === 'function') {
+                showToast('Aspetto la sincronizzazione, poi aggiorno…');
+                await waitForCloudSyncIdle({ timeoutMs: 8000 });
+            }
+
+            // Promote pending GitHub SHA if present
+            const pendingSha = localStorage.getItem('more_pending_sha');
+            if (pendingSha && !String(pendingSha).startsWith('sw:')) {
+                localStorage.setItem('more_current_sha', pendingSha);
+            }
+            localStorage.removeItem('more_update_ignored');
+            localStorage.removeItem('more_pending_sha');
+
+            swUpdateAccepted = true;
+
+            // Source of truth: activate waiting SW (it rotates CACHE_NAME on activate).
+            // Do NOT unregister SW or wipe all caches — that caused empty reloads when CDN lagged.
+            const activated = await activateWaitingServiceWorker();
+
+            // Fallback reload if controllerchange does not fire (e.g. no waiting worker)
+            setTimeout(() => {
+                if (!swReloading) {
+                    swReloading = true;
+                    window.location.reload();
+                }
+            }, activated ? 2500 : 400);
+
+            void source;
+        }
+
+        function onServiceWorkerUpdateFound(reg) {
+            const installing = reg.installing;
+            if (!installing) return;
+            installing.addEventListener('statechange', () => {
+                // installed + waiting means a new version is ready behind the current controller
+                if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+                    markUpdateAvailable({ source: 'sw' });
+                }
+            });
+        }
+
+        function checkServiceWorkerUpdate({ force = false } = {}) {
+            if (!('serviceWorker' in navigator)) return;
+            const now = Date.now();
+            if (!force && now - lastSwUpdateCheckAt < SW_UPDATE_MIN_INTERVAL_MS) return;
+            lastSwUpdateCheckAt = now;
+
+            const run = async () => {
+                try {
+                    const reg = swRegistration || await navigator.serviceWorker.getRegistration();
+                    if (!reg) return;
+                    swRegistration = reg;
+                    await reg.update();
+                    if (reg.waiting && navigator.serviceWorker.controller) {
+                        markUpdateAvailable({ source: 'sw' });
+                    }
+                } catch (_) { /* offline / private mode */ }
+            };
+            run();
+        }
+
+        function checkForUpdates({ force = false } = {}) {
+            // Soft GitHub notifier — never destructive by itself
+            try {
+                const now = Date.now();
+                if (!force && now - lastGithubUpdateCheckAt < GITHUB_UPDATE_MIN_INTERVAL_MS) return;
+                lastGithubUpdateCheckAt = now;
+
                 const ignoredUntil = localStorage.getItem('more_update_ignored');
-                if (ignoredUntil && Date.now() < parseInt(ignoredUntil)) return;
+                // Still probe SW even when GitHub banner is snoozed
+                checkServiceWorkerUpdate({ force });
+
+                if (ignoredUntil && Date.now() < parseInt(ignoredUntil, 10) && !force) {
+                    refreshSettingsUpdateBanner();
+                    return;
+                }
 
                 fetch('https://api.github.com/repos/lollo21x/more/commits/main')
-                    .then(res => { if (!res.ok) throw new Error('rate limit or network'); return res.json(); })
+                    .then(res => {
+                        if (!res.ok) throw new Error('rate limit or network');
+                        return res.json();
+                    })
                     .then(data => {
                         const latestSha = data.sha;
                         if (!latestSha) return;
                         const currentSha = localStorage.getItem('more_current_sha');
 
                         if (!currentSha) {
-                            // Prima visita: salva SHA di riferimento, non mostrare nulla
                             localStorage.setItem('more_current_sha', latestSha);
                             return;
                         }
 
                         if (latestSha === currentSha) {
-                            // Nessun aggiornamento pendente: rimuovi banner impostazioni
-                            localStorage.removeItem('more_pending_sha');
+                            // Keep a pure-SW pending marker if SW already reported an update
+                            const pending = localStorage.getItem('more_pending_sha');
+                            if (pending && !String(pending).startsWith('sw:')) {
+                                localStorage.removeItem('more_pending_sha');
+                            }
                             refreshSettingsUpdateBanner();
                             return;
                         }
 
-                        // Salva lo SHA pendente per il banner nelle impostazioni
-                        localStorage.setItem('more_pending_sha', latestSha);
-                        refreshSettingsUpdateBanner();
-
-                        // Mostra il popup
-                        const prompt = $('update-prompt');
-                        const sheet = $('update-sheet');
-                        if (!prompt || !sheet) return;
-
-                        prompt.style.display = 'flex';
-                        requestAnimationFrame(() => requestAnimationFrame(() => {
-                            prompt.style.opacity = '1';
-                            sheet.style.transform = 'translateY(0)';
-                            sheet.style.opacity = '1';
-                        }));
-
-                        function hidePrompt() {
-                            prompt.style.opacity = '0';
-                            sheet.style.transform = 'translateY(40px)';
-                            sheet.style.opacity = '0';
-                            setTimeout(() => { prompt.style.display = 'none'; }, 400);
-                        }
-
-                        // Dismiss: ricorda tra 7 giorni + aggiorna banner impostazioni
-                        $('btn-update-dismiss').onclick = () => {
-                            hidePrompt();
-                            localStorage.setItem('more_update_ignored', Date.now() + 7 * 24 * 60 * 60 * 1000);
-                            refreshSettingsUpdateBanner();
-                        };
-
-                        // Click fuori per chiudere (= dismiss)
-                        prompt.onclick = (e) => {
-                            if (e.target === prompt) {
-                                hidePrompt();
-                                localStorage.setItem('more_update_ignored', Date.now() + 7 * 24 * 60 * 60 * 1000);
-                                refreshSettingsUpdateBanner();
-                            }
-                        };
-
-                        // Aggiorna
-                        $('btn-update-confirm').onclick = safeAsyncAction(async () => {
-                            const btn = $('btn-update-confirm');
-                            if (btn) {
-                                btn.innerHTML = '<div class="spinner" style="width:20px;height:20px;margin:0;border-width:2px;"></div>';
-                                btn.style.pointerEvents = 'none';
-                            }
-
-                            // Salva subito il nuovo SHA per non rimostrare il popup
-                            localStorage.setItem('more_current_sha', latestSha);
-                            localStorage.removeItem('more_update_ignored');
-
-                            // Pulizia cache: NON tocca localStorage (progressi + account salvi)
-                            try {
-                                if ('caches' in window) {
-                                    const keys = await caches.keys();
-                                    await Promise.all(keys.map(k => caches.delete(k)));
-                                }
-                                if ('serviceWorker' in navigator) {
-                                    const regs = await navigator.serviceWorker.getRegistrations();
-                                    await Promise.all(regs.map(r => r.unregister()));
-                                }
-                            } catch (e) {
-                                showToast('Pulizia cache parziale. Ricarico comunque.');
-                            }
-
-                            window.location.reload();
-                        }, 'Aggiornamento non completato. Riprova tra poco.');
+                        markUpdateAvailable({ source: 'github', sha: latestSha });
+                        // Also nudge the real update mechanism
+                        checkServiceWorkerUpdate({ force: true });
                     })
-                    .catch(() => { });
+                    .catch(() => { /* rate limit / offline — SW path still works */ });
             } catch (e) {
-                showToast('Controllo aggiornamenti non disponibile.');
+                // Keep silent for background checks; only toast on explicit user action
+                if (force && typeof showToast === 'function') {
+                    showToast('Controllo aggiornamenti non disponibile.');
+                }
             }
         }
 
@@ -18497,16 +18713,16 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             const currentSha = localStorage.getItem('more_current_sha');
             const ignoredUntil = localStorage.getItem('more_update_ignored');
 
-            // Mostra se c'è un aggiornamento pendente (SHA diverso) E l'utente ha rimandato
-            const hasPendingUpdate = pendingSha && pendingSha !== currentSha;
-            const hasSnoozed = !!ignoredUntil;
+            const hasPendingUpdate = !!(pendingSha && pendingSha !== currentSha);
+            const hasSnoozed = !!(ignoredUntil && Date.now() < parseInt(ignoredUntil, 10));
+            // Show banner when snoozed OR when a SW-only update is pending and prompt was closed
+            const showBanner = hasPendingUpdate && (hasSnoozed || String(pendingSha).startsWith('sw:'));
 
-            if (hasPendingUpdate && hasSnoozed) {
+            if (showBanner) {
                 banner.style.display = 'block';
 
                 const btn = $('btn-settings-update-confirm');
                 if (btn) {
-                    // Evita di aggiungere listener multipli
                     const newBtn = btn.cloneNode(true);
                     btn.parentNode.replaceChild(newBtn, btn);
 
@@ -18517,30 +18733,75 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     newBtn.onclick = safeAsyncAction(async () => {
                         newBtn.innerHTML = '<div class="spinner" style="width:18px;height:18px;margin:0;border-width:2px;"></div>';
                         newBtn.style.pointerEvents = 'none';
-
-                        localStorage.setItem('more_current_sha', pendingSha);
-                        localStorage.removeItem('more_update_ignored');
-                        localStorage.removeItem('more_pending_sha');
-
-                        try {
-                            if ('caches' in window) {
-                                const keys = await caches.keys();
-                                await Promise.all(keys.map(k => caches.delete(k)));
-                            }
-                            if ('serviceWorker' in navigator) {
-                                const regs = await navigator.serviceWorker.getRegistrations();
-                                await Promise.all(regs.map(r => r.unregister()));
-                            }
-                        } catch (e) {
-                            showToast('Pulizia cache parziale. Ricarico comunque.');
-                        }
-
-                        window.location.reload();
+                        await applyPendingAppUpdate({ source: 'settings' });
                     }, 'Aggiornamento non completato. Riprova tra poco.');
                 }
             } else {
                 banner.style.display = 'none';
             }
+        }
+
+        if ('serviceWorker' in navigator) {
+            const hadServiceWorkerController = !!navigator.serviceWorker.controller;
+
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                // First install: controller appears for the first time — do not reload.
+                if (!hadServiceWorkerController) return;
+                if (swReloading) return;
+
+                const doReload = () => {
+                    if (swReloading) return;
+                    swReloading = true;
+                    window.location.reload();
+                };
+
+                // Always drain in-flight sync before reload (accepted or unexpected takeover).
+                // Never interrupt a quest complete / photo / Firestore write mid-flight.
+                if (isCloudSyncBusy() || !swUpdateAccepted) {
+                    waitForCloudSyncIdle({ timeoutMs: swUpdateAccepted ? 8000 : 15000 }).then(doReload);
+                    return;
+                }
+                doReload();
+            });
+
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => {
+                        swRegistration = reg;
+                        reg.addEventListener('updatefound', () => onServiceWorkerUpdateFound(reg));
+
+                        // First install: no controller yet → activate immediately so offline cache works.
+                        // Subsequent updates stay waiting until the user confirms (see applyPendingAppUpdate).
+                        const activateFirstInstall = (worker) => {
+                            if (!worker || navigator.serviceWorker.controller) return;
+                            worker.postMessage({ type: 'SKIP_WAITING' });
+                        };
+                        if (reg.installing) {
+                            reg.installing.addEventListener('statechange', () => {
+                                if (reg.waiting) activateFirstInstall(reg.waiting);
+                            });
+                        }
+                        activateFirstInstall(reg.waiting);
+
+                        // Update already waiting from a previous session → prompt, do not auto-reload
+                        if (reg.waiting && navigator.serviceWorker.controller) {
+                            markUpdateAvailable({ source: 'sw' });
+                        }
+                        reg.update().catch(() => { });
+                    })
+                    .catch(err => showToast(`Service worker non attivo: ${(err.message || 'riprova').replace('Firebase: ', '')}`));
+
+                // Soft GitHub check (throttled) + persistent storage request
+                setTimeout(() => checkForUpdates({ force: true }), 4000);
+                setTimeout(() => { requestPersistentStorage(); }, 2500);
+                refreshSettingsUpdateBanner();
+            });
+        } else {
+            window.addEventListener('load', () => {
+                setTimeout(() => checkForUpdates({ force: true }), 4000);
+                setTimeout(() => { requestPersistentStorage(); }, 2500);
+                refreshSettingsUpdateBanner();
+            });
         }
 
         /* ── SUMMER VACATION COUNTDOWN ─────────────────── */
