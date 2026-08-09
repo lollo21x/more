@@ -1,4 +1,4 @@
-const CACHE_NAME = 'more-v9.1.7';
+const CACHE_NAME = 'more-v9.1.8';
 
 const CORE_ASSETS = [
     './',
@@ -201,8 +201,10 @@ function createEmptyFallback(request) {
     return new Response('', { status: 200 });
 }
 
+// Do NOT call skipWaiting() automatically on install.
+// A silent takeover + page reload can interrupt in-flight cloud writes / photo capture.
+// The page asks for activation explicitly via postMessage({ type: 'SKIP_WAITING' }).
 self.addEventListener('install', (event) => {
-    self.skipWaiting();
     event.waitUntil((async () => {
         const cache = await caches.open(CACHE_NAME);
         await Promise.allSettled(CORE_ASSETS.map((asset) => cache.add(asset)));
@@ -216,6 +218,7 @@ self.addEventListener('activate', (event) => {
             await self.registration.navigationPreload.enable();
         }
 
+        // Drop previous CACHE_NAME versions only — this is the safe cache rotation path.
         const keys = await caches.keys();
         await Promise.all(
             keys
