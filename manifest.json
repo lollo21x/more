@@ -1,49 +1,49 @@
-{
-    "name": "more",
-    "short_name": "more",
-    "id": "/?app=more",
-    "description": "more turns your real life into a video game. Complete side quests, earn XP, and level up.",
-    "lang": "it",
-    "dir": "ltr",
-    "start_url": "./?mode=standalone",
-    "scope": "./",
-    "display": "standalone",
-    "display_override": [
-        "standalone",
-        "minimal-ui",
-        "browser"
-    ],
-    "orientation": "portrait",
-    "background_color": "#0a0a0f",
-    "theme_color": "#0a0a0f",
-    "categories": [
-        "lifestyle",
-        "productivity"
-    ],
-    "icons": [
-        {
-            "src": "icons/icon-192.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "any"
-        },
-        {
-            "src": "icons/icon-512.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "any"
-        },
-        {
-            "src": "icons/icon-maskable-192.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "maskable"
-        },
-        {
-            "src": "icons/icon-maskable-512.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "maskable"
-        }
-    ]
-}
+    {
+        "name": "more",
+        "short_name": "more",
+        "id": "/?app=more",
+        "description": "more turns your real life into a video game. Complete side quests, earn XP, and level up.",
+        "lang": "it",
+        "dir": "ltr",
+        "start_url": "./?mode=standalone",
+        "scope": "./",
+        "display": "standalone",
+        "display_override": [
+            "standalone",
+            "minimal-ui",
+            "browser"
+        ],
+        "orientation": "portrait",
+        "background_color": "#0a0a0f",
+        "theme_color": "#0a0a0f",
+        "categories": [
+            "lifestyle",
+            "productivity"
+        ],
+        "icons": [
+            {
+                "src": "icons/icon-192.png",
+                "sizes": "192x192",
+                "type": "image/png",
+                "purpose": "any"
+            },
+            {
+                "src": "icons/icon-512.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "any"
+            },
+            {
+                "src": "icons/icon-maskable-192.png",
+                "sizes": "192x192",
+                "type": "image/png",
+                "purpose": "maskable"
+            },
+            {
+                "src": "icons/icon-maskable-512.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "maskable"
+            }
+        ]
+    }
