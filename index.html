@@ -10806,9 +10806,35 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             }
         }
 
+        // cloud_sync markers are obsolete: pendingCloudPush + scheduleCloudSync handle retries.
+        // Old markers stick in localStorage and show "In coda (1)" forever — purge them.
+        function isRealOfflineAction(action) {
+            return action && action.type && action.type !== 'cloud_sync';
+        }
+
+        function countRealOfflineActions(queue = loadOfflineQueue()) {
+            return queue.filter(isRealOfflineAction).length;
+        }
+
+        function purgeCloudSyncQueueMarkers() {
+            const queue = loadOfflineQueue();
+            const filtered = queue.filter(isRealOfflineAction);
+            if (filtered.length !== queue.length) {
+                try {
+                    localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(filtered.slice(-MAX_OFFLINE_QUEUE)));
+                } catch (_) { /* ignore */ }
+            }
+            return filtered;
+        }
+
+        // One-shot cleanup of sticky markers left by earlier builds
+        try { purgeCloudSyncQueueMarkers(); } catch (_) { /* ignore */ }
+
         function persistOfflineQueue(queue) {
             try {
-                localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue.slice(-MAX_OFFLINE_QUEUE)));
+                // Never persist obsolete cloud_sync markers
+                const clean = (Array.isArray(queue) ? queue : []).filter(isRealOfflineAction);
+                localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(clean.slice(-MAX_OFFLINE_QUEUE)));
             } catch (error) {
                 showFirestoreError(error, 'Coda offline piena. Libera spazio sul dispositivo.');
             }
@@ -10816,6 +10842,17 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
         }
 
         function enqueueOfflineAction(type, payload = {}) {
+            // cloud_sync must not enter the offline queue — it is a no-op there and only
+            // pollutes the UI. Use setPendingCloudPush(true) + scheduleCloudSync instead.
+            if (type === 'cloud_sync') {
+                setPendingCloudPush(true);
+                cloudSyncQueued = true;
+                updateSyncStatusUI();
+                if (navigator.onLine && currentUser && fb) {
+                    scheduleCloudSync({ immediate: true, reason: payload?.reason || 'cloud_sync-marker' });
+                }
+                return true;
+            }
             const queue = loadOfflineQueue();
             // Deduplicate identical friend/party ops by type+key
             const key = payload && payload._key ? String(payload._key) : null;
@@ -10839,7 +10876,8 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
 
         async function processOfflineQueue({ reason = 'manual' } = {}) {
             if (offlineQueueProcessing || !navigator.onLine || !fb || !currentUser) return false;
-            const queue = loadOfflineQueue();
+            // Drop stale cloud_sync markers before counting real work
+            const queue = purgeCloudSyncQueueMarkers();
             if (!queue.length) {
                 updateSyncStatusUI();
                 return false;
@@ -10849,6 +10887,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             const remaining = [];
             try {
                 for (const action of queue) {
+                    if (!isRealOfflineAction(action)) continue;
                     try {
                         await executeOfflineAction(action);
                     } catch (err) {
@@ -10859,9 +10898,6 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     }
                 }
                 persistOfflineQueue(remaining);
-                if (remaining.length === 0 && reason !== 'silent') {
-                    // all drained
-                }
                 // Always push local state after mutations
                 await scheduleCloudSync({ immediate: true, reason: 'offline-queue' });
                 return true;
@@ -10969,10 +11005,17 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     mode = 'syncing';
                     label = offlineQueueProcessing ? 'Coda offline…' : 'Sincronizzo…';
                 } else {
-                    const qLen = loadOfflineQueue().length;
-                    if (qLen > 0 || cloudSyncQueued || hasPendingCloudPush()) {
+                    const qLen = countRealOfflineActions();
+                    // Prefer real offline work over the soft dirty flag for the label
+                    if (qLen > 0) {
                         mode = 'pending';
-                        label = qLen > 0 ? `In coda (${qLen})` : (hasPendingCloudPush() ? 'Da sincronizzare' : 'In attesa…');
+                        label = `In coda (${qLen})`;
+                    } else if (cloudSyncInFlight) {
+                        mode = 'syncing';
+                        label = 'Sincronizzo…';
+                    } else if (cloudSyncQueued || hasPendingCloudPush()) {
+                        mode = 'pending';
+                        label = hasPendingCloudPush() ? 'Da sincronizzare' : 'In attesa…';
                     } else if (lastSyncError) {
                         mode = 'pending';
                         label = 'Sync in ritardo';
@@ -11001,7 +11044,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             // Auto-hide "synced" after a few seconds when online and idle
             if (mode === 'synced' && navigator.onLine && !opts.keep) {
                 syncStatusHideTimer = setTimeout(() => {
-                    if (navigator.onLine && !cloudSyncInFlight && loadOfflineQueue().length === 0) {
+                    if (navigator.onLine && !cloudSyncInFlight && countRealOfflineActions() === 0 && !hasPendingCloudPush()) {
                         el.classList.remove('is-visible');
                     }
                 }, 3200);
@@ -11334,11 +11377,15 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             }
 
             // Safety: never push empty state to cloud before loading cloud data
-            if (!cloudLoadedOnce && state.xp === 0 && (!state.completed || state.completed.length === 0)) return false;
-            // Skip if offline — the 'online' event will trigger sync on reconnect
+            if (!cloudLoadedOnce && state.xp === 0 && (!state.completed || state.completed.length === 0)) {
+                cloudSyncQueued = false;
+                updateSyncStatusUI();
+                return false;
+            }
+            // Skip if offline — pending flag + 'online' event will retry (no queue marker)
             if (!navigator.onLine) {
                 cloudSyncQueued = true;
-                enqueueOfflineAction('cloud_sync', { _key: 'cloud_sync', reason });
+                setPendingCloudPush(true);
                 updateSyncStatusUI();
                 return false;
             }
@@ -11355,6 +11402,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             // If dirty flag is set, still push (or clear dirty if content already matches).
             if (fingerprint === lastSyncedCloudFingerprint && !forcePending) {
                 cloudSyncQueued = false;
+                purgeCloudSyncQueueMarkers();
                 lastSyncOkAt = Date.now();
                 lastSyncError = null;
                 updateSyncStatusUI();
@@ -11364,6 +11412,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 // Local content already matches last successful cloud write — clear stale dirty bit
                 setPendingCloudPush(false);
                 cloudSyncQueued = false;
+                purgeCloudSyncQueueMarkers();
                 lastSyncOkAt = Date.now();
                 lastSyncError = null;
                 updateSyncStatusUI();
@@ -11410,6 +11459,8 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 delete fpSrc.updatedAt;
                 lastSyncedCloudFingerprint = stableStringify(fpSrc);
                 setPendingCloudPush(false);
+                purgeCloudSyncQueueMarkers();
+                cloudSyncQueued = false;
                 cloudSyncRetryDelay = 4000;
                 lastSyncOkAt = Date.now();
                 lastSyncError = null;
@@ -11428,8 +11479,9 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     return false;
                 }
 
+                // Retry via timer + dirty flag — do NOT park a no-op cloud_sync in the offline queue
                 cloudSyncQueued = true;
-                enqueueOfflineAction('cloud_sync', { _key: 'cloud_sync', reason: 'retry' });
+                setPendingCloudPush(true);
                 const retryDelay = navigator.onLine ? cloudSyncRetryDelay : 15000;
                 cloudSyncRetryDelay = Math.min(cloudSyncRetryDelay * 2, 30000);
                 if (cloudSyncRetryTimer) clearTimeout(cloudSyncRetryTimer);
@@ -18449,7 +18501,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 if (typeof offlineQueueProcessing !== 'undefined' && offlineQueueProcessing) return true;
                 if (typeof cloudSyncQueued !== 'undefined' && cloudSyncQueued) return true;
                 if (typeof hasPendingCloudPush === 'function' && hasPendingCloudPush()) return true;
-                if (typeof loadOfflineQueue === 'function' && loadOfflineQueue().length > 0) return true;
+                if (typeof countRealOfflineActions === 'function' && countRealOfflineActions() > 0) return true;
             } catch (_) { /* helpers may not be ready yet */ }
             return false;
         }
