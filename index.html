@@ -11343,6 +11343,40 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             };
         }
 
+        // Firestore docs max ~1 MiB. Photos as base64 can blow past that and make
+        // every setDoc fail → permanent "Da sincronizzare" + retry toast loop.
+        function prepareCloudWritePayload(pureState) {
+            let payload = pureState;
+            let size;
+            try {
+                size = JSON.stringify(payload).length;
+            } catch (_) {
+                return pureState;
+            }
+            // Stay under ~900 KiB raw JSON to leave headroom for Firestore encoding
+            if (size <= 900000) return payload;
+
+            const slim = sanitizeForFirestore(pureState) || {};
+            const stripPhotos = (arr) => (Array.isArray(arr) ? arr.map(item => {
+                if (!item || typeof item !== 'object' || !item.photo) return item;
+                const copy = { ...item };
+                copy.photo = null;
+                copy.photoOmitted = true;
+                return copy;
+            }) : arr);
+            slim.completed = stripPhotos(slim.completed);
+            slim.bossCompleted = stripPhotos(slim.bossCompleted);
+            try {
+                const slimSize = JSON.stringify(slim).length;
+                if (slimSize > 900000 && Array.isArray(slim.completed) && slim.completed.length > 40) {
+                    // Last resort: keep only the most recent completed entries in the cloud doc
+                    slim.completed = slim.completed.slice(-40);
+                }
+            } catch (_) { /* ignore */ }
+            console.warn('[sync] cloud payload slimmed (photos omitted) to fit Firestore 1MiB limit');
+            return slim;
+        }
+
         function rememberCloudSyncedState(pureState = sanitizeForFirestore(state)) {
             const fingerprintSource = { ...pureState };
             delete fingerprintSource.updatedAt;
@@ -11425,16 +11459,15 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
 
             try {
                 const docRef = fb.doc(fb.db, 'more_users', syncUid);
-                // Atomic read-merge-write: if remote changes mid-flight, Firestore retries the transaction.
-                let writtenState = pureState;
-                await fb.runTransaction(fb.db, async (transaction) => {
-                    const snap = await transaction.get(docRef);
-                    let toWrite = pureState;
+                // setDoc (not runTransaction): large photo-heavy docs + live onSnapshot
+                // make transactions abort in a loop → permanent "Da sincronizzare".
+                let toWrite = pureState;
+                try {
+                    const snap = await fb.getDoc(docRef);
                     if (snap.exists()) {
                         const remote = snap.data();
                         if (remote && remote.updatedAt && pureState.updatedAt && remote.updatedAt !== pureState.updatedAt) {
                             const merged = mergeUserStates(pureState, remote);
-                            // Keep live state consistent if merge improved it
                             const mergedFpSrc = { ...sanitizeForFirestore(merged) };
                             delete mergedFpSrc.updatedAt;
                             const localFpSrc = { ...pureState };
@@ -11450,14 +11483,18 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                             }
                         }
                     }
-                    transaction.set(docRef, toWrite, { merge: true });
-                    writtenState = toWrite;
-                });
+                } catch (readErr) {
+                    console.warn('[sync] pre-write merge skipped', readErr);
+                }
 
-                // Confirm fingerprint only after the transaction commits successfully
-                const fpSrc = { ...writtenState };
-                delete fpSrc.updatedAt;
-                lastSyncedCloudFingerprint = stableStringify(fpSrc);
+                toWrite = prepareCloudWritePayload(toWrite);
+                await fb.setDoc(docRef, toWrite, { merge: true });
+
+                // Confirm fingerprint from the *full* local pure state (not the slimmed
+                // cloud payload), so we don't keep re-pushing forever after photo strip.
+                const confirmSrc = { ...sanitizeForFirestore(state) };
+                delete confirmSrc.updatedAt;
+                lastSyncedCloudFingerprint = stableStringify(confirmSrc);
                 setPendingCloudPush(false);
                 purgeCloudSyncQueueMarkers();
                 cloudSyncQueued = false;
@@ -11468,8 +11505,9 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 return true;
             } catch (e) {
                 const code = e?.code || '';
-                const message = String(e?.message || '').toLowerCase();
+                const message = String(e?.message || e || '').toLowerCase();
                 const isPermission = code === 'permission-denied' || message.includes('permission');
+                const isSize = message.includes('exceeds') || message.includes('too big') || message.includes('1,048,576') || message.includes('1048576') || code === 'invalid-argument';
                 lastSyncError = e;
 
                 if (isPermission) {
@@ -11477,6 +11515,33 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     updateSyncStatusUI({ force: 'pending', label: 'Auth richiesta', keep: true });
                     showFirestoreError(e, 'Sincronizzazione non autorizzata. Riapri il profilo o effettua nuovamente l\'accesso.');
                     return false;
+                }
+
+                // Size errors: one recovery attempt with forced photo strip, then stop spamming
+                if (isSize && !flushCloudSync._sizeRecoveryAttempted) {
+                    flushCloudSync._sizeRecoveryAttempted = true;
+                    try {
+                        const slim = prepareCloudWritePayload(sanitizeForFirestore(state));
+                        // Force strip even if under threshold guess failed
+                        if (Array.isArray(slim.completed)) {
+                            slim.completed = slim.completed.map(c => c && c.photo ? { ...c, photo: null, photoOmitted: true } : c);
+                        }
+                        slim.updatedAt = Date.now();
+                        await fb.setDoc(fb.doc(fb.db, 'more_users', syncUid), slim, { merge: true });
+                        const confirmSrc = { ...sanitizeForFirestore(state) };
+                        delete confirmSrc.updatedAt;
+                        lastSyncedCloudFingerprint = stableStringify(confirmSrc);
+                        setPendingCloudPush(false);
+                        purgeCloudSyncQueueMarkers();
+                        cloudSyncQueued = false;
+                        lastSyncOkAt = Date.now();
+                        lastSyncError = null;
+                        updateSyncStatusUI({ force: 'synced', label: 'Sincronizzato' });
+                        showToast('Sync ok (foto solo su questo dispositivo — doc cloud troppo grande)');
+                        return true;
+                    } catch (e2) {
+                        console.warn('[sync] size recovery failed', e2);
+                    }
                 }
 
                 // Retry via timer + dirty flag — do NOT park a no-op cloud_sync in the offline queue
@@ -11490,7 +11555,16 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     flushCloudSync('retry');
                 }, retryDelay);
                 updateSyncStatusUI({ force: 'pending', label: 'Riprovo sync…', keep: true });
-                showFirestoreError(e, 'Sync cloud non riuscita. Riprovo automaticamente.');
+                // Throttle error toast: once per 20s max (retries are silent after the first)
+                const now = Date.now();
+                if (!flushCloudSync._lastErrToastAt || now - flushCloudSync._lastErrToastAt > 20000) {
+                    flushCloudSync._lastErrToastAt = now;
+                    showFirestoreError(e, isSize
+                        ? 'Documento troppo grande per il cloud. Riprovo senza foto…'
+                        : 'Sync cloud non riuscita. Riprovo automaticamente.');
+                } else {
+                    console.warn('[sync] retry', code || message || e);
+                }
                 return false;
             } finally {
                 cloudSyncInFlight = false;
@@ -18495,18 +18569,17 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
         const GITHUB_UPDATE_MIN_INTERVAL_MS = 30 * 60 * 1000; // respect public API rate limits
         const SW_UPDATE_MIN_INTERVAL_MS = 60 * 1000;
 
+        // Only block UI actions on an *in-flight* write — not on the soft dirty flag.
+        // hasPendingCloudPush alone used to freeze the update button forever when sync failed.
         function isCloudSyncBusy() {
             try {
                 if (typeof cloudSyncInFlight !== 'undefined' && cloudSyncInFlight) return true;
                 if (typeof offlineQueueProcessing !== 'undefined' && offlineQueueProcessing) return true;
-                if (typeof cloudSyncQueued !== 'undefined' && cloudSyncQueued) return true;
-                if (typeof hasPendingCloudPush === 'function' && hasPendingCloudPush()) return true;
-                if (typeof countRealOfflineActions === 'function' && countRealOfflineActions() > 0) return true;
             } catch (_) { /* helpers may not be ready yet */ }
             return false;
         }
 
-        function waitForCloudSyncIdle({ timeoutMs = 12000, pollMs = 200 } = {}) {
+        function waitForCloudSyncIdle({ timeoutMs = 4000, pollMs = 150 } = {}) {
             return new Promise((resolve) => {
                 const started = Date.now();
                 const tick = () => {
@@ -18520,7 +18593,6 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     }
                     setTimeout(tick, pollMs);
                 };
-                // Kick a best-effort flush so idle arrives sooner when only dirty-flag is set
                 try {
                     if (typeof scheduleCloudSync === 'function') {
                         scheduleCloudSync({ immediate: true, reason: 'pre-update-flush' });
@@ -18638,12 +18710,50 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             return false;
         }
 
+        async function clearAppShellCaches() {
+            // Drop cached index.html / app shell so reload cannot re-serve a broken build.
+            // Does NOT touch localStorage (progressi / account restano).
+            if (!('caches' in window)) return;
+            try {
+                const keys = await caches.keys();
+                await Promise.all(keys.map(async (key) => {
+                    try {
+                        const cache = await caches.open(key);
+                        const reqs = await cache.keys();
+                        await Promise.all(reqs.map((req) => {
+                            try {
+                                const u = new URL(req.url);
+                                const path = u.pathname || '';
+                                const isShell = path.endsWith('/')
+                                    || path.endsWith('/index.html')
+                                    || path.endsWith('index.html')
+                                    || path === ''
+                                    || /\/more\/?$/.test(path);
+                                return isShell ? cache.delete(req) : Promise.resolve(false);
+                            } catch (_) {
+                                return Promise.resolve(false);
+                            }
+                        }));
+                    } catch (_) { /* ignore one cache */ }
+                }));
+            } catch (e) {
+                console.warn('[update] clearAppShellCaches', e);
+            }
+        }
+
         async function applyPendingAppUpdate({ source = 'manual' } = {}) {
-            // Drain cloud work first so a reload cannot orphan a just-completed quest
-            const idle = await waitForCloudSyncIdle({ timeoutMs: 12000 });
-            if (!idle && typeof showToast === 'function') {
-                showToast('Aspetto la sincronizzazione, poi aggiorno…');
-                await waitForCloudSyncIdle({ timeoutMs: 8000 });
+            // Best-effort brief wait for an in-flight write only (max ~3s). Never block on
+            // the soft "Da sincronizzare" flag — that used to freeze the update button.
+            if (isCloudSyncBusy()) {
+                if (typeof showToast === 'function') showToast('Salvo i progressi, poi aggiorno…');
+                await waitForCloudSyncIdle({ timeoutMs: 3000 });
+            } else {
+                try {
+                    if (typeof scheduleCloudSync === 'function') {
+                        scheduleCloudSync({ immediate: true, reason: 'pre-update-flush' });
+                        await new Promise(r => setTimeout(r, 400));
+                    }
+                } catch (_) { /* ignore */ }
             }
 
             // Promote pending GitHub SHA if present
@@ -18655,18 +18765,33 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             localStorage.removeItem('more_pending_sha');
 
             swUpdateAccepted = true;
+            hideUpdatePrompt();
+            if (typeof showToast === 'function') showToast('Aggiorno…');
 
-            // Source of truth: activate waiting SW (it rotates CACHE_NAME on activate).
-            // Do NOT unregister SW or wipe all caches — that caused empty reloads when CDN lagged.
-            const activated = await activateWaitingServiceWorker();
+            // Activate waiting SW when present
+            let activated = false;
+            try {
+                activated = await activateWaitingServiceWorker();
+            } catch (e) {
+                console.warn('[update] activate waiting SW failed', e);
+            }
 
-            // Fallback reload if controllerchange does not fire (e.g. no waiting worker)
-            setTimeout(() => {
-                if (!swReloading) {
-                    swReloading = true;
-                    window.location.reload();
-                }
-            }, activated ? 2500 : 400);
+            // Always purge cached HTML shell so even an old SW cannot trap us on a broken index
+            await clearAppShellCaches();
+
+            const doReload = () => {
+                if (swReloading) return;
+                swReloading = true;
+                const url = new URL(window.location.href);
+                url.searchParams.set('_more_refresh', String(Date.now()));
+                window.location.replace(url.toString());
+            };
+
+            if (activated) {
+                setTimeout(doReload, 800);
+            } else {
+                doReload();
+            }
 
             void source;
         }
@@ -18807,10 +18932,14 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     window.location.reload();
                 };
 
-                // Always drain in-flight sync before reload (accepted or unexpected takeover).
-                // Never interrupt a quest complete / photo / Firestore write mid-flight.
-                if (isCloudSyncBusy() || !swUpdateAccepted) {
-                    waitForCloudSyncIdle({ timeoutMs: swUpdateAccepted ? 8000 : 15000 }).then(doReload);
+                // Only wait on a real in-flight write (not the soft dirty flag).
+                if (isCloudSyncBusy()) {
+                    waitForCloudSyncIdle({ timeoutMs: 3000 }).then(doReload);
+                    return;
+                }
+                // Unexpected takeover without user accept: still reload, but only after idle
+                if (!swUpdateAccepted) {
+                    waitForCloudSyncIdle({ timeoutMs: 1500 }).then(doReload);
                     return;
                 }
                 doReload();
