@@ -4,6 +4,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <script>
+        (function () {
+            var root = document.documentElement;
+            function setAppHeight() {
+                var h = Math.max(window.innerHeight || 0, root.clientHeight || 0);
+                if (window.visualViewport && window.visualViewport.height) {
+                    h = Math.max(h, Math.round(window.visualViewport.height));
+                }
+                if (h) root.style.setProperty('--app-height', h + 'px');
+            }
+            setAppHeight();
+            window.addEventListener('resize', setAppHeight, { passive: true });
+            window.addEventListener('pageshow', setAppHeight);
+            window.addEventListener('orientationchange', function () {
+                setTimeout(setAppHeight, 200);
+            });
+            window.addEventListener('load', function () {
+                setAppHeight();
+                setTimeout(setAppHeight, 100);
+                setTimeout(setAppHeight, 400);
+            });
+        })();
+    </script>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="more">
@@ -108,9 +131,9 @@
             --ink: #0c0c10;
         }
 
-        @supports (height: 100svh) {
+        @supports (height: 100dvh) {
             :root {
-                --app-height: 100svh;
+                --app-height: 100dvh;
             }
         }
 
@@ -126,16 +149,21 @@
         html {
             -webkit-text-size-adjust: 100%;
             height: 100%;
+            height: -webkit-fill-available;
             min-height: var(--app-height);
             color-scheme: dark;
+            overscroll-behavior: none;
         }
 
         body {
             font-family: var(--font-body);
             background: var(--bg);
             color: var(--text);
+            min-height: 100%;
+            min-height: -webkit-fill-available;
             min-height: var(--app-height);
             overflow-x: hidden;
+            overscroll-behavior: none;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
@@ -229,12 +257,15 @@
         #main-screen {
             display: flex;
             flex-direction: column;
+            min-height: 100%;
+            min-height: -webkit-fill-available;
             min-height: var(--app-height);
+            height: 100%;
+            height: -webkit-fill-available;
             height: var(--app-height);
-            max-height: var(--app-height);
-            overflow: hidden;
             position: relative;
             z-index: 1;
+            overflow: visible;
         }
 
 
@@ -255,6 +286,44 @@
             border-radius: 999px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Progressive blur: almost none at the welcome bar, strongest in the status-bar safe area */
+        .safe-top-veil {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: calc(var(--safe-top) + 52px);
+            z-index: 90;
+            pointer-events: none;
+        }
+
+        .safe-top-veil span {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .safe-top-veil-a {
+            height: 100%;
+            backdrop-filter: blur(3px) saturate(120%);
+            -webkit-backdrop-filter: blur(3px) saturate(120%);
+        }
+
+        .safe-top-veil-b {
+            height: calc(var(--safe-top) + 28px);
+            min-height: 32px;
+            backdrop-filter: blur(10px) saturate(140%);
+            -webkit-backdrop-filter: blur(10px) saturate(140%);
+        }
+
+        .safe-top-veil-c {
+            height: max(22px, var(--safe-top));
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            background: linear-gradient(to bottom, rgba(12, 12, 16, 0.42), rgba(12, 12, 16, 0.12) 62%, transparent);
         }
 
         .header-logo {
@@ -406,7 +475,7 @@
             flex: 1;
             min-height: 0;
             padding: 20px;
-            padding-top: calc(64px + var(--safe-top));
+            padding-top: calc(72px + var(--safe-top));
             padding-left: max(20px, var(--safe-left));
             padding-right: max(20px, var(--safe-right));
             padding-bottom: calc(88px + var(--safe-bottom));
@@ -470,8 +539,9 @@
         .tab-bar {
             position: fixed;
             bottom: calc(16px + var(--safe-bottom));
-            left: 50%;
-            transform: translateX(-50%);
+            left: 0;
+            right: 0;
+            margin: 0 auto;
             width: clamp(280px, 72vw, 360px);
             height: 64px;
             background: rgba(18, 18, 18, 0.88);
@@ -9649,6 +9719,11 @@
 
     <!-- ────────── MAIN SCREEN ────────── -->
     <div id="main-screen">
+        <div class="safe-top-veil" aria-hidden="true">
+            <span class="safe-top-veil-a"></span>
+            <span class="safe-top-veil-b"></span>
+            <span class="safe-top-veil-c"></span>
+        </div>
         <header class="header">
             <div style="display:flex; align-items:center; gap: 12px;">
                 <img src="icons/logo.png" alt="more logo" class="header-logo">
