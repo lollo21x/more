@@ -4,29 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-    <script>
-        (function () {
-            var root = document.documentElement;
-            function setAppHeight() {
-                var h = Math.max(window.innerHeight || 0, root.clientHeight || 0);
-                if (window.visualViewport && window.visualViewport.height) {
-                    h = Math.max(h, Math.round(window.visualViewport.height));
-                }
-                if (h) root.style.setProperty('--app-height', h + 'px');
-            }
-            setAppHeight();
-            window.addEventListener('resize', setAppHeight, { passive: true });
-            window.addEventListener('pageshow', setAppHeight);
-            window.addEventListener('orientationchange', function () {
-                setTimeout(setAppHeight, 200);
-            });
-            window.addEventListener('load', function () {
-                setAppHeight();
-                setTimeout(setAppHeight, 100);
-                setTimeout(setAppHeight, 400);
-            });
-        })();
-    </script>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="more">
@@ -149,21 +126,16 @@
         html {
             -webkit-text-size-adjust: 100%;
             height: 100%;
-            height: -webkit-fill-available;
             min-height: var(--app-height);
             color-scheme: dark;
-            overscroll-behavior: none;
         }
 
         body {
             font-family: var(--font-body);
             background: var(--bg);
             color: var(--text);
-            min-height: 100%;
-            min-height: -webkit-fill-available;
             min-height: var(--app-height);
             overflow-x: hidden;
-            overscroll-behavior: none;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
@@ -257,15 +229,9 @@
         #main-screen {
             display: flex;
             flex-direction: column;
-            min-height: 100%;
-            min-height: -webkit-fill-available;
             min-height: var(--app-height);
-            height: 100%;
-            height: -webkit-fill-available;
-            height: var(--app-height);
             position: relative;
             z-index: 1;
-            overflow: visible;
         }
 
 
@@ -288,42 +254,59 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* Progressive blur: almost none at the welcome bar, strongest in the status-bar safe area */
+        /* Progressive blur: strongest in the status-bar safe area, almost none at the welcome bar.
+           Overlapping masks so there is no visible step between blur strengths. */
         .safe-top-veil {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            height: calc(var(--safe-top) + 52px);
+            height: calc(var(--safe-top) + 56px);
             z-index: 90;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .safe-top-veil .blur-layer {
+            position: absolute;
+            inset: 0;
             pointer-events: none;
         }
 
-        .safe-top-veil span {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+        .safe-top-veil .blur-1 {
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            mask-image: linear-gradient(to bottom, black 0%, black 42%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 42%, transparent 100%);
         }
 
-        .safe-top-veil-a {
-            height: 100%;
-            backdrop-filter: blur(3px) saturate(120%);
-            -webkit-backdrop-filter: blur(3px) saturate(120%);
+        .safe-top-veil .blur-2 {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            mask-image: linear-gradient(to bottom, black 0%, black 30%, transparent 78%);
+            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 30%, transparent 78%);
         }
 
-        .safe-top-veil-b {
-            height: calc(var(--safe-top) + 28px);
-            min-height: 32px;
-            backdrop-filter: blur(10px) saturate(140%);
-            -webkit-backdrop-filter: blur(10px) saturate(140%);
+        .safe-top-veil .blur-3 {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            mask-image: linear-gradient(to bottom, black 0%, black 20%, transparent 62%);
+            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 20%, transparent 62%);
         }
 
-        .safe-top-veil-c {
-            height: max(22px, var(--safe-top));
-            backdrop-filter: blur(20px) saturate(160%);
-            -webkit-backdrop-filter: blur(20px) saturate(160%);
-            background: linear-gradient(to bottom, rgba(12, 12, 16, 0.42), rgba(12, 12, 16, 0.12) 62%, transparent);
+        .safe-top-veil .blur-4 {
+            backdrop-filter: blur(32px);
+            -webkit-backdrop-filter: blur(32px);
+            mask-image: linear-gradient(to bottom, black 0%, black 12%, transparent 48%);
+            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 12%, transparent 48%);
+        }
+
+        .safe-top-veil .blur-5 {
+            backdrop-filter: blur(44px);
+            -webkit-backdrop-filter: blur(44px);
+            mask-image: linear-gradient(to bottom, black 0%, black 6%, transparent 34%);
+            -webkit-mask-image: linear-gradient(to bottom, black 0%, black 6%, transparent 34%);
+            background: linear-gradient(to bottom, rgba(12, 12, 16, 0.28) 0%, transparent 50%);
         }
 
         .header-logo {
@@ -539,9 +522,8 @@
         .tab-bar {
             position: fixed;
             bottom: calc(16px + var(--safe-bottom));
-            left: 0;
-            right: 0;
-            margin: 0 auto;
+            left: 50%;
+            transform: translateX(-50%);
             width: clamp(280px, 72vw, 360px);
             height: 64px;
             background: rgba(18, 18, 18, 0.88);
@@ -9720,9 +9702,11 @@
     <!-- ────────── MAIN SCREEN ────────── -->
     <div id="main-screen">
         <div class="safe-top-veil" aria-hidden="true">
-            <span class="safe-top-veil-a"></span>
-            <span class="safe-top-veil-b"></span>
-            <span class="safe-top-veil-c"></span>
+            <div class="blur-layer blur-1"></div>
+            <div class="blur-layer blur-2"></div>
+            <div class="blur-layer blur-3"></div>
+            <div class="blur-layer blur-4"></div>
+            <div class="blur-layer blur-5"></div>
         </div>
         <header class="header">
             <div style="display:flex; align-items:center; gap: 12px;">
@@ -20152,6 +20136,46 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
         let lastSwUpdateCheckAt = 0;
         const GITHUB_UPDATE_MIN_INTERVAL_MS = 30 * 60 * 1000; // respect public API rate limits
         const SW_UPDATE_MIN_INTERVAL_MS = 60 * 1000;
+        const UPDATE_SUPPRESS_MS = 3 * 60 * 1000;
+        const GITHUB_COMMITS_URL = 'https://api.github.com/repos/lollo21x/more/commits/main';
+
+        function markLocalUpdateDone() {
+            localStorage.setItem('more_updated_at', String(Date.now()));
+        }
+
+        function isRecentlyUpdated() {
+            const t = parseInt(localStorage.getItem('more_updated_at') || '0', 10);
+            return t > 0 && (Date.now() - t) < UPDATE_SUPPRESS_MS;
+        }
+
+        function consumeRefreshFlag() {
+            try {
+                const url = new URL(window.location.href);
+                if (!url.searchParams.has('_more_refresh')) return false;
+                markLocalUpdateDone();
+                url.searchParams.delete('_more_refresh');
+                const next = url.pathname + url.search + url.hash;
+                window.history.replaceState({}, '', next);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+
+        consumeRefreshFlag();
+
+        async function stampCurrentGithubSha() {
+            try {
+                const res = await fetch(GITHUB_COMMITS_URL);
+                if (!res.ok) return null;
+                const data = await res.json();
+                if (data && data.sha) {
+                    localStorage.setItem('more_current_sha', data.sha);
+                    return data.sha;
+                }
+            } catch (_) { /* offline / rate limit */ }
+            return null;
+        }
 
         // Only block UI actions on an *in-flight* write — not on the soft dirty flag.
         // hasPendingCloudPush alone used to freeze the update button forever when sync failed.
@@ -20253,6 +20277,11 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
         }
 
         function markUpdateAvailable({ source = 'sw', sha = null } = {}) {
+            if (isRecentlyUpdated()) {
+                refreshSettingsUpdateBanner();
+                return;
+            }
+
             if (sha) localStorage.setItem('more_pending_sha', sha);
             else if (!localStorage.getItem('more_pending_sha')) {
                 localStorage.setItem('more_pending_sha', `sw:${Date.now()}`);
@@ -20340,11 +20369,13 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 } catch (_) { /* ignore */ }
             }
 
-            // Promote pending GitHub SHA if present
+            // Stamp the latest GitHub SHA as current so the prompt cannot loop after reload.
             const pendingSha = localStorage.getItem('more_pending_sha');
             if (pendingSha && !String(pendingSha).startsWith('sw:')) {
                 localStorage.setItem('more_current_sha', pendingSha);
             }
+            await stampCurrentGithubSha();
+            markLocalUpdateDone();
             localStorage.removeItem('more_update_ignored');
             localStorage.removeItem('more_pending_sha');
 
@@ -20386,6 +20417,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             installing.addEventListener('statechange', () => {
                 // installed + waiting means a new version is ready behind the current controller
                 if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+                    if (isRecentlyUpdated()) return;
                     markUpdateAvailable({ source: 'sw' });
                 }
             });
@@ -20403,7 +20435,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     if (!reg) return;
                     swRegistration = reg;
                     await reg.update();
-                    if (reg.waiting && navigator.serviceWorker.controller) {
+                    if (reg.waiting && navigator.serviceWorker.controller && !isRecentlyUpdated()) {
                         markUpdateAvailable({ source: 'sw' });
                     }
                 } catch (_) { /* offline / private mode */ }
@@ -20427,7 +20459,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     return;
                 }
 
-                fetch('https://api.github.com/repos/lollo21x/more/commits/main')
+                fetch(GITHUB_COMMITS_URL)
                     .then(res => {
                         if (!res.ok) throw new Error('rate limit or network');
                         return res.json();
@@ -20448,6 +20480,14 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                             if (pending && !String(pending).startsWith('sw:')) {
                                 localStorage.removeItem('more_pending_sha');
                             }
+                            refreshSettingsUpdateBanner();
+                            return;
+                        }
+
+                        // Just applied an update: adopt the latest SHA quietly so the sheet cannot loop
+                        if (isRecentlyUpdated()) {
+                            localStorage.setItem('more_current_sha', latestSha);
+                            localStorage.removeItem('more_pending_sha');
                             refreshSettingsUpdateBanner();
                             return;
                         }
@@ -20549,7 +20589,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                         activateFirstInstall(reg.waiting);
 
                         // Update already waiting from a previous session → prompt, do not auto-reload
-                        if (reg.waiting && navigator.serviceWorker.controller) {
+                        if (reg.waiting && navigator.serviceWorker.controller && !isRecentlyUpdated()) {
                             markUpdateAvailable({ source: 'sw' });
                         }
                         reg.update().catch(() => { });
