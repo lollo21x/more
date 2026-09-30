@@ -221,8 +221,8 @@
             inset: 0;
             z-index: 9999;
             pointer-events: none;
-            opacity: 0.042;
-            mix-blend-mode: overlay;
+            background-repeat: repeat;
+            background-size: 128px 128px;
         }
 
         /* ── MAIN SCREEN ──────────────────────────────────── */
@@ -650,8 +650,6 @@
             border: 1px solid var(--border-light);
             border-radius: var(--radius);
             padding: 28px 24px 24px;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             margin-bottom: 28px;
             text-align: center;
             position: relative;
@@ -708,19 +706,37 @@
                 0 0 60px rgba(200, 241, 53, 0.20);
             line-height: 1;
             margin-bottom: 14px;
+            position: relative;
+            isolation: isolate;
             animation: glow-pulse 3s ease-in-out infinite alternate;
         }
 
-        @keyframes glow-pulse {
-            0% {
-                text-shadow: 0 0 8px var(--accent-glow), 0 0 24px var(--accent-glow);
-                opacity: 0.92;
-            }
+        /* Il "respiro" del glow non anima piu' text-shadow (ripittura continua di 72px di blur):
+           alone separato che anima solo opacity/transform, quindi solo GPU. */
+        .xp-number::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 78%;
+            height: 170%;
+            border-radius: 50%;
+            background: radial-gradient(ellipse at center, rgba(200, 241, 53, 0.16) 0%, transparent 68%);
+            transform: translate(-50%, -50%);
+            opacity: 0.6;
+            z-index: -1;
+            pointer-events: none;
+            animation: xp-halo 3s ease-in-out infinite alternate;
+        }
 
-            100% {
-                text-shadow: 0 0 14px var(--accent-glow), 0 0 42px var(--accent-glow), 0 0 72px rgba(200, 241, 53, 0.22);
-                opacity: 1;
-            }
+        @keyframes glow-pulse {
+            0% { opacity: 0.92; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes xp-halo {
+            0% { opacity: 0.15; transform: translate(-50%, -50%) scale(0.9); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
         }
 
         .xp-progress-wrap {
@@ -819,8 +835,6 @@
                 rgba(255, 160, 0, 0.10) 0%,
                 rgba(255, 90, 0, 0.07) 50%,
                 rgba(255, 200, 0, 0.06) 100%);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
         }
 
         .summer-banner.summer-active {
@@ -1878,8 +1892,6 @@
             border: 1px solid var(--border-light);
             border-radius: var(--radius);
             padding: 18px 16px 16px;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             margin-bottom: 28px;
             transition: transform .2s var(--spring), box-shadow .3s var(--ease), border-color .2s;
             overflow: hidden;
@@ -2452,8 +2464,6 @@
             border: 1px solid rgba(200, 241, 53, 0.15);
             border-radius: var(--radius);
             padding: 20px 20px 20px 20px;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             transition: transform .2s var(--spring);
             word-break: break-word;
         }
@@ -3635,6 +3645,12 @@
         .blur-reveal {
             animation: blurReveal 0.4s var(--spring) both;
             animation-delay: var(--enter-delay, 0s);
+        }
+
+        /* Contenuto ri-renderizzato identico: niente replay dell'entrata (stesso stato finale, zero frame animati) */
+        .no-replay {
+            animation-duration: 0.001s !important;
+            animation-delay: 0s !important;
         }
 
         .fullscreen-sheet {
@@ -6864,8 +6880,6 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             overflow: hidden;
             margin-bottom: 12px;
             height: auto;
@@ -7504,7 +7518,8 @@
                 transition-duration: 0.01ms !important;
             }
 
-            .xp-number {
+            .xp-number,
+            .xp-number::before {
                 animation: none;
             }
 
@@ -7974,7 +7989,6 @@
         .ui-orb {
             position: absolute;
             border-radius: 50%;
-            filter: blur(2px);
             will-change: transform, opacity;
         }
 
@@ -9457,13 +9471,27 @@
     </div>
 
     <!-- GRAIN SVG FILTER -->
-    <svg id="grain" width="100%" height="100%">
-        <filter id="grain-filter">
-            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
-            <feColorMatrix type="saturate" values="0" />
-        </filter>
-        <rect width="100%" height="100%" filter="url(#grain-filter)" />
-    </svg>
+    <div id="grain" aria-hidden="true"></div>
+    <script>
+        /* Grana: tile 128x128 generato UNA volta (prima: feTurbulence a 3 ottave + blend overlay
+           ricalcolati sull'intero schermo). Stesso effetto, costo di composizione ~zero. */
+        (function () {
+            try {
+                var el = document.getElementById('grain');
+                var c = document.createElement('canvas');
+                c.width = c.height = 128;
+                var x = c.getContext('2d');
+                var img = x.createImageData(128, 128), d = img.data;
+                for (var i = 0; i < d.length; i += 4) {
+                    var n = Math.random(), v = n > 0.5 ? 255 : 0;
+                    d[i] = d[i + 1] = d[i + 2] = v;
+                    d[i + 3] = Math.abs(n - 0.5) * 2 * 5;
+                }
+                x.putImageData(img, 0, 0);
+                el.style.backgroundImage = 'url(' + c.toDataURL('image/png') + ')';
+            } catch (e) { /* la grana e' solo decorativa */ }
+        })();
+    </script>
 
     <!-- SVG ICONS (hidden defs) -->
     <svg style="display:none">
@@ -13938,7 +13966,11 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 levelBadge.style.setProperty('--badge-icon-fill', '');
             }
 
-            levelBadge.innerHTML = `<i class="fa-solid fa-crown"></i> LVL ${info.level} &middot; ${displayTitle.toUpperCase()}`;
+            const _badgeHtml = `<i class="fa-solid fa-crown"></i> LVL ${info.level} &middot; ${displayTitle.toUpperCase()}`;
+            if (levelBadge.__h !== _badgeHtml) {
+                levelBadge.innerHTML = _badgeHtml;
+                levelBadge.__h = _badgeHtml;
+            }
 
             if (info.nextLevelXP) {
                 const progress = ((state.xp - info.prevLevelXP) / (info.nextLevelXP - info.prevLevelXP)) * 100;
@@ -14067,12 +14099,19 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             });
         }
 
+        /* Se lo stesso contenuto viene ri-renderizzato (boot, login, snapshot cloud) non rilancia l'entrata a cascata */
+        function markNoReplay(root) {
+            if (!root) return;
+            root.querySelectorAll('.card-pop-in').forEach(n => n.classList.add('no-replay'));
+        }
+
         function renderActiveQuest() {
             // Party pin label
             const pinHeader = $('party-pin-header');
             if (pinHeader) pinHeader.style.display = state.currentQuest?.partyInviteId ? 'flex' : 'none';
 
             if (!state.currentQuest) {
+                questContainer.__questKey = null;
                 questContainer.innerHTML = `<div class="quest-empty ui-empty">
       <span class="ui-empty-orb" aria-hidden="true"></span>
       <div class="ui-empty-icon"><i class="fa-solid fa-scroll"></i></div>
@@ -14154,6 +14193,10 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
               <button class="btn-complete" id="btn-complete-quest" style="width:100%; margin-top:14px; padding:14px; font-size:15px; justify-content:center;"><i class="fa-solid fa-check"></i>Completata</button>
             </div>`;
             }
+
+            const _questKey = (q.isBoss ? 'b' : 'n') + '|' + q.title + '|' + (q.assignedAt || '');
+            if (questContainer.__questKey === _questKey) markNoReplay(questContainer);
+            questContainer.__questKey = _questKey;
 
             $('btn-complete-quest').addEventListener('click', () => promptQuestReview(q, 'normal'));
             $('btn-challenge-quest').addEventListener('click', () => challengeQuest(q));
@@ -14283,6 +14326,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
 
         function renderCompleted() {
             if (state.completed.length === 0) {
+                completedCont.__lastHTML = null;
                 completedCont.innerHTML = `<div class="completed-empty ui-empty">
       <span class="ui-empty-orb" aria-hidden="true"></span>
       <div class="ui-empty-icon"><i class="fa-solid fa-ghost"></i></div>
@@ -14295,12 +14339,12 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             // We need original indices for edit
             const originalIndices = state.completed.map((_, i) => i).slice(-10).reverse();
 
-            completedCont.innerHTML = `<ul class="completed-list">${last10.map((q, idx) => {
+            const _completedHtml = `<ul class="completed-list">${last10.map((q, idx) => {
                 const realIndex = originalIndices[idx];
                 let noteHtml = '';
                 if (q.note || q.photo) {
                     noteHtml = `<div style="margin-top: 12px; padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); width: 100%;">`;
-                    if (q.photo) noteHtml += `<img src="${q.photo}" style="width:100%; max-height:160px; object-fit:cover; border-radius: 4px; margin-bottom: ${q.note ? '8px' : '0'};">`;
+                    if (q.photo) noteHtml += `<img decoding="async" src="${q.photo}" style="width:100%; max-height:160px; object-fit:cover; border-radius: 4px; margin-bottom: ${q.note ? '8px' : '0'};">`;
                     if (q.note) noteHtml += `<div style="font-size: 13px; color: var(--text-dim); font-style: italic;">"${escapeHtml(q.note)}"</div>`;
                     noteHtml += `</div>`;
                 }
@@ -14344,7 +14388,11 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                   ${noteHtml}
                 </li>`;
             }).join('')}</ul>`;
-
+            // Stessa lista (es. re-render da login/snapshot): niente riscrittura DOM, niente rilancio animazioni, niente ri-decodifica foto
+            if (completedCont.__lastHTML !== _completedHtml) {
+                completedCont.innerHTML = _completedHtml;
+                completedCont.__lastHTML = _completedHtml;
+            }
         }
 
         let partyFriendCachePromise = null;
@@ -15960,6 +16008,9 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                             <button class="btn-ghost disabled"><i class="fa-solid fa-check"></i>Completata oggi</button>
                         </div>
                     </div>`;
+                const _dkDone = 'done|' + todayStr;
+                if ($('daily-quest-container').__dailyKey === _dkDone) markNoReplay($('daily-quest-container'));
+                $('daily-quest-container').__dailyKey = _dkDone;
                 $('daily-countdown').innerText = 'Torna domani!';
                 return;
             }
@@ -15993,6 +16044,10 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                   </div>
                   <button class="btn-complete" id="btn-complete-daily" style="width:100%; margin-top:16px; padding:14px; font-size:15px; justify-content:center;"><i class="fa-solid fa-check"></i>Completata</button>
                 </div>`;
+
+            const _dkQ = 'q|' + todayStr + '|' + dailyQuest.title;
+            if ($('daily-quest-container').__dailyKey === _dkQ) markNoReplay($('daily-quest-container'));
+            $('daily-quest-container').__dailyKey = _dkQ;
 
             $('btn-complete-daily').addEventListener('click', () => promptQuestReview(dailyQuest, 'daily'));
 
@@ -16682,7 +16737,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
 
             let completedCount = 0;
 
-            track.innerHTML = currentSeasonalQuests.map((q, i) => {
+            const _seasonalHtml = currentSeasonalQuests.map((q, i) => {
                 const isCompleted = completedTitles.has(q.title);
                 if (isCompleted) completedCount++;
 
@@ -16695,7 +16750,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                     : `<button class="btn-complete" style="width:100%; justify-content:center; padding:12px; font-size:15px; margin-top:16px;" onclick="promptQuestReview(currentSeasonalQuests[${i}], 'seasonal', ${i})"><i class="fa-solid fa-check"></i>Completata</button>`;
 
                 return `
-                    <div class="seasonal-card card-pop-in ${isCompleted ? 'completed' : ''}" style="--enter-delay:${i * 0.06}s; border: 2px solid ${isCompleted ? 'var(--border)' : info.color}; box-shadow: ${isCompleted ? 'none' : `0 0 15px ${info.color}33`}; position:relative;">
+                    <div class="seasonal-card card-pop-in ${i !== seasonalIndex ? 'no-replay' : ''} ${isCompleted ? 'completed' : ''}" style="--enter-delay:${i * 0.06}s; border: 2px solid ${isCompleted ? 'var(--border)' : info.color}; box-shadow: ${isCompleted ? 'none' : `0 0 15px ${info.color}33`}; position:relative;">
                       ${renderCategoryIconBadge(q)}
                       <div class="quest-meta-row">
                         <div class="quest-icon ${iconClass}">${getQuestIconSVG(q.difficulty)}</div>
@@ -16711,6 +16766,11 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                       ${actionBtn}
                     </div>`;
             }).join('');
+
+            if (track.__lastHTML !== _seasonalHtml) {
+                track.innerHTML = _seasonalHtml;
+                track.__lastHTML = _seasonalHtml;
+            }
 
             $('seasonal-counter').innerText = `${completedCount}/${currentSeasonalQuests.length}`;
             updateSeasonalCarouselPos();
@@ -19735,7 +19795,10 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
                 html += `</div>`;
             }
 
-            zone.innerHTML = html;
+            if (zone.__lastHTML !== html) {
+                zone.innerHTML = html;
+                zone.__lastHTML = html;
+            }
             zone.style.display = (inProgress.length + allAvailable.length + completedChains.length > 0) ? 'block' : 'none';
         }
 
@@ -20631,12 +20694,14 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
 
             function pad(n) { return String(n).padStart(2, '0'); }
 
+            let summerTickId = null;
             function tick() {
                 const now = Date.now();
 
                 if (now >= SUMMER_END) {
-                    // Summer over — hide banner
+                    // Summer over — hide banner e ferma il timer (prima girava ogni secondo per sempre)
                     banner.style.display = 'none';
+                    if (summerTickId) { clearInterval(summerTickId); summerTickId = null; }
                     return;
                 }
 
@@ -20676,7 +20741,7 @@ JSON only: {"message":"2 frasi col nome","recommendations":[{"title":"titolo esa
             }
 
             tick();
-            setInterval(tick, 1000);
+            if (Date.now() < SUMMER_END) summerTickId = setInterval(tick, 1000);
         })();
 
         /* ── QUEST POOL SEARCH + WILL ────────────────────── */
