@@ -252,6 +252,8 @@
             border-radius: 999px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2);
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
         }
 
         /* Progressive blur: strongest in the status-bar safe area, almost none at the welcome bar.
@@ -262,7 +264,7 @@
             left: 0;
             right: 0;
             height: calc(var(--safe-top) + 56px);
-            z-index: 90;
+            z-index: 99; /* subito sotto .header (100): il blur sfoca tutto cio' che sta sotto, la bar resta sopra */
             pointer-events: none;
             overflow: hidden;
         }
@@ -4421,8 +4423,7 @@
             gap: 8px;
             margin: 0 0 8px;
             padding: 0;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+            overflow: visible; /* niente scroll: le ::after di 6px delle pill creavano area scrollabile trascinabile su iOS */
             position: static;
             background: transparent;
         }
@@ -4951,6 +4952,9 @@
             overflow-x: hidden;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
+            /* su iOS lo scroller e' uno stacking context: senza z-index proprio la tab bar (z 120) restava sotto il veil (z 99) */
+            position: relative;
+            z-index: 100;
         }
 
         #my-profile-screen .profile-tabs,
