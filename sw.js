@@ -1,4 +1,4 @@
-const CACHE_NAME = 'more-v9.4.0';
+const CACHE_NAME = 'more-v9.4.1';
 
 const CORE_ASSETS = [
     './',
